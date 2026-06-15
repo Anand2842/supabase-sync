@@ -1,46 +1,47 @@
+# Portfolio Audit & Stabilization Plan
 
-## Goal
+Goal: verify every wired feature end-to-end (frontend → Supabase), fix anything broken, and replace placeholder media with real uploaded assets.
 
-Drop the uploaded `Anand Portfolio` static site into this Lovable project, serve it as the homepage, and wire `content.js` to Lovable Cloud so content edits, likes, saves, comments, and DMs persist server-side — without touching the portfolio UI.
+## 1. Backend wiring audit (read-only)
+- Re-read `public/portfolio/content.js`, `portfolio-storage.js`, `index.html` admin/inbox blocks.
+- Verify each Supabase call against current schema (`content`, `likes`, `saves`, `reel_likes`, `follows`, `following`, `comments`, `dms`) and RLS policies.
+- Check `portfolio-images` bucket policies + signed-URL hydration path.
+- Confirm `supabaseUrl` / `anonKey` are populated and the script loads before `support.js`/`image-slot.js`.
 
-## Approach
+## 2. Live preview testing (browser tool)
+Run each as a real user at `/portfolio/index.html`:
 
-The portfolio is a self-contained HTML page (`Anand Portfolio.dc.html`) that runs entirely in the browser via `support.js` (dc-runtime). It does not need TanStack/React routing. The cleanest way to host it inside this project is to serve the static files from `public/` and redirect `/` to it.
+| Area | Test |
+|---|---|
+| Public load | Page renders, content loads from `content` table, no console errors |
+| Likes | Tap heart on a post → row in `likes`, count updates, toggle off removes row |
+| Saves | Bookmark → row in `saves`, persists on reload |
+| Reel likes | Like reel → row in `reel_likes` |
+| Follow | Follow toggle → row in `following`/`follows`, persists |
+| Comments | Add comment → row in `comments`, visible to new visitor (incognito-style reload) |
+| DMs | Send DM → row in `dms`, visible in admin inbox |
+| Admin login | `/admin` → email/password → session established |
+| Admin edit | Change bio/post caption → `content` row updates, public reload shows it |
+| Image drop (admin) | Drop an image onto a slot → uploaded to `portfolio-images`, visible after reload AND in a second browser/incognito |
+| Inbox tab | Lists DM threads + comments; reply posts back to `dms` |
+| Logout | Session cleared, admin UI gated again |
 
-## Steps
+For each failure: capture console/network, fix in `content.js` / `portfolio-storage.js` / `index.html` only, re-test.
 
-1. **Copy static files to `public/portfolio/`**
-   - `Anand Portfolio.dc.html` → `public/portfolio/index.html`
-   - `support.js`, `image-slot.js`, `content.js`, `BACKEND.md` (ref) → same folder
-   - Rewrite the `<script src="./support.js">` and helmet script paths so they resolve from `/portfolio/`.
+## 3. Real media replacement
+- Log in as admin in preview, drop real images into each `<image-slot>` (profile, posts, reel covers) so they upload to Storage rather than living as base64 in `content.data`.
+- If videos are referenced, confirm the slot mechanism supports them; if not, note as a follow-up (out of scope unless you want video upload too).
+- Note: I need **you to provide the real images** (drag them into chat) — I can't invent your photos. Alternatively I can generate placeholder-but-on-brand images via AI. Confirm which.
 
-2. **Make `/` serve the portfolio**
-   - Replace `src/routes/index.tsx` with a route that redirects to `/portfolio/index.html` (or renders it in an iframe-free full-page redirect).
+## 4. Stability sweep
+- Check Supabase logs / linter for errors after the test pass.
+- Verify no `service_role` leakage, no admin endpoints exposed to anon.
+- Confirm reloads, second-browser visits, and signed-out state all behave.
 
-3. **Enable Lovable Cloud** (Supabase under the hood).
+## 5. Report
+Deliver a checklist showing pass/fail per item, list of fixes applied, and any remaining issues.
 
-4. **Run `supabase_schema.sql`** via a migration: `content`, `likes`, `saves`, `reel_likes`, `follows`, `following`, `comments`, `dms` tables + the existing RLS policies + `v_post_like_counts` and `v_dm_threads` views. Add the required `GRANT` statements for `anon`/`authenticated`/`service_role` that Supabase needs on top of the file's RLS (the schema file omits them).
-
-5. **Wire `content.js` to Supabase** (the only file edited, per the golden rule):
-   - Fill `CONFIG.supabaseUrl` and `CONFIG.supabaseAnonKey` from Lovable Cloud's published env (`VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`).
-   - Add the `db()` helper that loads `@supabase/supabase-js` from `esm.sh`.
-   - Add `visitorId()` helper.
-   - Replace the bodies of `loadContent`, `saveContent`, `getInteractions`, `setFlag`, `getComments`, `addComment`, `getDms`, `saveDms` with the Supabase versions from BACKEND.md §2. Keep names, args, return shapes, and demo-mode fallback identical.
-
-6. **Leave admin gate as the existing password (`letmein`)** for now — BACKEND.md prompt 6 (Supabase Auth swap) and prompt 7 (image storage) are explicitly marked optional/later and not in scope here.
-
-## What I will NOT change
-
-- The portfolio HTML, `support.js`, `image-slot.js` — untouched.
-- Function names, arguments, or return shapes in `content.js` — only bodies.
-- TanStack routing beyond making `/` redirect to the portfolio.
-
-## Out of scope (can do later on request)
-
-- Swapping the admin password for Supabase Auth.
-- Uploading dropped images to Supabase Storage.
-- Adding an Inbox tab inside `/admin`.
-
-## Open question
-
-The portfolio's `/admin` route is handled internally by the static page (type `/admin` or append `#admin`). Hosting under `/portfolio/index.html` means the URL bar will show `/portfolio/index.html`, not `/`. If you want the portfolio to live at the root URL (`yoursite.com/` instead of `yoursite.com/portfolio/index.html`), I can move the files to `public/` directly and serve `index.html` there — but TanStack Start's dev server may shadow it with the React `/` route. The redirect approach is the safest. Let me know if you'd rather I try root-level hosting.
+## Questions before I start
+1. **Media source for step 3**: upload your real photos here, or want me to generate on-brand AI images?
+2. **Admin credentials**: is the auth user already created and email-confirmed? If not, want me to disable email confirmation so I can sign up and test end-to-end?
+3. **Destructive testing OK?** I'll create test comments/DMs/likes under a visitor id; I'll delete them after. Confirm OK.

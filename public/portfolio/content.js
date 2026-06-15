@@ -43,7 +43,8 @@
       username: 'anand.builds',
       role: 'Founder & Full-Stack Developer',
       bio: 'Building things people actually use.\nStackline (\u201923) \u2192 Orbitly (\u201925) \u00B7 3\u00D7 hackathon winner',
-      email: 'aanand.ak15@gmail.com'
+      email: 'aanand.ak15@gmail.com',
+      resumeUrl: ''
     },
     posts: [
       { id: 'p1', time: '2d', label: 'Orbitly \u00B7 launch week', slot: 'post-orbitly', aspect: '4 / 5', grad: G.orbitly, big: 'O',

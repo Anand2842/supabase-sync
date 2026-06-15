@@ -602,7 +602,11 @@
       // data:image/ URLs from it. The `src` attribute is author-controlled
       // (Claude wrote it into the HTML) so it passes through unchanged.
       let stored = this.id ? getSlot(this.id) : this._local;
-      if (stored && stored.u && !/^data:image\//i.test(stored.u)) stored = null;
+      // Accept data:image/ URLs (canvas-encoded) AND signed/public URLs from
+      // our own Supabase storage bucket (portfolio-images), which is the only
+      // other source the runtime hydrates into the sidecar.
+      if (stored && stored.u && !/^data:image\//i.test(stored.u)
+          && !/^https?:\/\/[^/]*supabase\.co\/storage\/v1\//i.test(stored.u)) stored = null;
       const srcAttr = this.getAttribute('src') || '';
       this._userUrl = (stored && stored.u) || null;
       const url = this._userUrl || srcAttr;

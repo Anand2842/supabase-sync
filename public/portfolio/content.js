@@ -386,11 +386,107 @@
   }
 
   /* ==========================================================================
-     8. ADMIN (password gate — swap to Supabase Auth later)
+     8. ADMIN — real auth via Lovable Cloud (Supabase Auth)
      ========================================================================== */
-  function checkAdminPassword(pw) { return pw === CONFIG.adminPassword; }
-  function isAdminSession() { return readLS(KEYS.adminSession, false) === true; }
-  function setAdminSession(on) { writeLS(KEYS.adminSession, !!on); }
+  // Mirror of getSession() updated by onAuthStateChange so the UI can
+  // synchronously decide whether the admin shell is unlocked.
+  var _authed = false;
+  var _authReady = false;
+  var _authListeners = [];
+  function onAuthChange(fn) { _authListeners.push(fn); if (_authReady) fn(_authed); }
+  function _emit() { for (var i = 0; i < _authListeners.length; i++) { try { _authListeners[i](_authed); } catch (e) {} } }
+
+  (async function bootAuth() {
+    try {
+      var s = await db();
+      var r = await s.auth.getSession();
+      _authed = !!(r && r.data && r.data.session);
+      _authReady = true;
+      _emit();
+      s.auth.onAuthStateChange(function (_evt, session) {
+        _authed = !!session;
+        _emit();
+      });
+    } catch (e) { _authReady = true; _emit(); }
+  })();
+
+  function isAdminSession() { return _authed; }
+
+  async function loginAdmin(email, password) {
+    try {
+      var s = await db();
+      var r = await s.auth.signInWithPassword({ email: email, password: password });
+      if (r.error) return { ok: false, error: r.error.message };
+      _authed = !!r.data.session;
+      _emit();
+      return { ok: true };
+    } catch (e) { return { ok: false, error: String(e && e.message || e) }; }
+  }
+
+  async function signupAdmin(email, password) {
+    try {
+      var s = await db();
+      var r = await s.auth.signUp({
+        email: email,
+        password: password,
+        options: { emailRedirectTo: window.location.origin + window.location.pathname }
+      });
+      if (r.error) return { ok: false, error: r.error.message };
+      _authed = !!(r.data && r.data.session);
+      _emit();
+      return { ok: true, needsConfirm: !_authed };
+    } catch (e) { return { ok: false, error: String(e && e.message || e) }; }
+  }
+
+  async function logoutAdmin() {
+    try { var s = await db(); await s.auth.signOut(); } catch (e) {}
+    _authed = false; _emit();
+  }
+
+  /* ==========================================================================
+     9. INBOX — all DMs (grouped by thread) and all comments (admin only)
+     ========================================================================== */
+  async function getInbox() {
+    var out = { threads: [], comments: [] };
+    if (!isLive()) return out;
+    try {
+      var s = await db();
+      var [dmRes, cmRes] = await Promise.all([
+        s.from('dms').select('thread_id,sender,body,created_at').order('created_at'),
+        s.from('comments').select('target_id,username,body,created_at').order('created_at', { ascending: false })
+      ]);
+      var byThread = {};
+      (dmRes.data || []).forEach(function (m) {
+        (byThread[m.thread_id] = byThread[m.thread_id] || []).push(m);
+      });
+      out.threads = Object.keys(byThread).map(function (tid) {
+        var msgs = byThread[tid];
+        var last = msgs[msgs.length - 1];
+        return {
+          thread_id: tid,
+          short: tid.slice(0, 8),
+          count: msgs.length,
+          last_body: last.body,
+          last_sender: last.sender,
+          last_at: last.created_at,
+          messages: msgs
+        };
+      }).sort(function (a, b) { return (b.last_at || '').localeCompare(a.last_at || ''); });
+      out.comments = (cmRes.data || []).map(function (c) {
+        return { target_id: c.target_id, username: c.username, body: c.body, created_at: c.created_at };
+      });
+    } catch (e) { console.warn('[content] getInbox failed:', e); }
+    return out;
+  }
+
+  async function replyToThread(threadId, body) {
+    try {
+      var s = await db();
+      var r = await s.from('dms').insert({ thread_id: threadId, sender: 'them', body: body });
+      if (r.error) throw r.error;
+      return { ok: true };
+    } catch (e) { return { ok: false, error: String(e && e.message || e) }; }
+  }
 
   /* ==========================================================================
      EXPORT
@@ -398,6 +494,7 @@
   window.PortfolioContent = {
     CONFIG: CONFIG,
     SCHEMA_DEFAULT: DEFAULT_CONTENT,
+    DEFAULT_CONTENT: DEFAULT_CONTENT,
     loadContent: loadContent,
     saveContent: saveContent,
     resetDemo: resetDemo,
@@ -407,9 +504,13 @@
     addComment: addComment,
     getDms: getDms,
     saveDms: saveDms,
-    checkAdminPassword: checkAdminPassword,
     isAdminSession: isAdminSession,
-    setAdminSession: setAdminSession,
+    onAuthChange: onAuthChange,
+    loginAdmin: loginAdmin,
+    signupAdmin: signupAdmin,
+    logoutAdmin: logoutAdmin,
+    getInbox: getInbox,
+    replyToThread: replyToThread,
     isLive: isLive
   };
 })();

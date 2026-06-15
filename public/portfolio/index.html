@@ -21,6 +21,7 @@
     @keyframes popIn { from {transform:scale(.96);} to {transform:scale(1);} }
   </style>
   <script src="content.js"></script>
+  <script src="portfolio-storage.js"></script>
   <script src="image-slot.js"></script>
 </helmet>
 
@@ -668,17 +669,19 @@
     </sc-if>
 
     <sc-if value="{{ admLocked }}" hint-placeholder-val="{{ false }}">
-      <div data-screen-label="Admin login" style="position:absolute; inset:0; z-index:80; background:var(--bg); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px; padding:32px;">
+      <div data-screen-label="Admin login" style="position:absolute; inset:0; z-index:80; background:var(--bg); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; padding:32px;">
         <button onClick="{{ closeAdmin }}" style="position:absolute; top:14px; right:16px; background:none; border:none; cursor:pointer; color:var(--text2); padding:6px; display:flex;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"></path></svg></button>
         <div style="width:62px; height:62px; border-radius:18px; background:linear-gradient(135deg,#06b6d4,#3b82f6); display:flex; align-items:center; justify-content:center; color:#fff;"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></div>
         <div style="text-align:center;">
           <div style="font-size:20px; font-weight:800;">Studio</div>
-          <div style="font-size:13.5px; color:var(--text2); margin-top:3px;">Manage your portfolio content</div>
+          <div style="font-size:13.5px; color:var(--text2); margin-top:3px;">{{ admModeLabel }}</div>
         </div>
-        <input value="{{ admPw }}" onChange="{{ setAdmPw }}" onKeyDown="{{ admPwKey }}" type="password" placeholder="Enter password" style="width:100%; max-width:280px; background:var(--bg2); border:1px solid var(--border); border-radius:11px; padding:13px 15px; font-size:15px; color:var(--text); outline:none;" />
-        <sc-if value="{{ admPwError }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px; color:#ff3040; margin-top:-8px;">Wrong password — try again.</div></sc-if>
-        <button onClick="{{ admUnlock }}" style="width:100%; max-width:280px; border:none; border-radius:11px; padding:13px 0; font-size:15px; font-weight:700; cursor:pointer; background:linear-gradient(120deg,#06b6d4,#3b82f6); color:#fff;">Unlock</button>
-        <div style="font-size:11.5px; color:var(--text2); text-align:center; max-width:260px; line-height:1.5;">Demo password is <b>letmein</b> — change it in <b>content.js</b>, or swap for Supabase Auth (see BACKEND.md).</div>
+        <input value="{{ admEmail }}" onChange="{{ setAdmEmail }}" onKeyDown="{{ admPwKey }}" type="email" placeholder="you@email.com" autocomplete="email" style="width:100%; max-width:280px; background:var(--bg2); border:1px solid var(--border); border-radius:11px; padding:13px 15px; font-size:15px; color:var(--text); outline:none;" />
+        <input value="{{ admPw }}" onChange="{{ setAdmPw }}" onKeyDown="{{ admPwKey }}" type="password" placeholder="Password" autocomplete="current-password" style="width:100%; max-width:280px; background:var(--bg2); border:1px solid var(--border); border-radius:11px; padding:13px 15px; font-size:15px; color:var(--text); outline:none;" />
+        <sc-if value="{{ admPwError }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px; color:#ff3040; text-align:center; max-width:280px;">{{ admPwError }}</div></sc-if>
+        <button onClick="{{ admUnlock }}" style="width:100%; max-width:280px; border:none; border-radius:11px; padding:13px 0; font-size:15px; font-weight:700; cursor:pointer; background:linear-gradient(120deg,#06b6d4,#3b82f6); color:#fff;">{{ admModeBtn }}</button>
+        <button onClick="{{ admToggleMode }}" style="background:none; border:none; cursor:pointer; color:var(--text2); font-size:12.5px; text-decoration:underline;">{{ admModeToggle }}</button>
+        <div style="font-size:11.5px; color:var(--text2); text-align:center; max-width:280px; line-height:1.5;">Secured by Lovable Cloud Auth. Create an admin account once, then sign in here.</div>
       </div>
     </sc-if>
 
@@ -702,6 +705,7 @@
           <button onClick="{{ goAdmTiles }}" style="border:1px solid var(--border); border-radius:99px; padding:7px 14px; font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap; color: {{ admTabTilesC }}; background: {{ admTabTilesBg }};">Explore</button>
           <button onClick="{{ goAdmNotifs }}" style="border:1px solid var(--border); border-radius:99px; padding:7px 14px; font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap; color: {{ admTabNotifsC }}; background: {{ admTabNotifsBg }};">Activity</button>
           <button onClick="{{ goAdmPeople }}" style="border:1px solid var(--border); border-radius:99px; padding:7px 14px; font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap; color: {{ admTabPeopleC }}; background: {{ admTabPeopleBg }};">People</button>
+          <button onClick="{{ goAdmInbox }}" style="border:1px solid var(--border); border-radius:99px; padding:7px 14px; font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap; color: {{ admTabInboxC }}; background: {{ admTabInboxBg }};">Inbox</button>
         </div>
 
         <div style="flex:1; min-height:0; overflow-y:auto; scrollbar-width:none; padding:14px 14px 96px;">
@@ -899,6 +903,56 @@
             </div>
           </sc-if>
 
+          <sc-if value="{{ admIsInbox }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; flex-direction:column; gap:14px;">
+              <div style="display:flex; align-items:center; gap:10px;">
+                <div style="flex:1;">
+                  <div style="font-size:15px; font-weight:800;">Inbox</div>
+                  <div style="font-size:12px; color:var(--text2);">DMs and comments from visitors.</div>
+                </div>
+                <button onClick="{{ admReloadInbox }}" style="background:var(--bg); border:1px solid var(--border); border-radius:9px; cursor:pointer; color:var(--text); padding:8px 12px; font-size:12.5px; font-weight:600;">Refresh</button>
+              </div>
+
+              <div style="font-size:11.5px; color:var(--text2); font-weight:700; text-transform:uppercase; letter-spacing:.5px;">DM threads · {{ admInboxThreadCount }}</div>
+              <sc-if value="{{ admInboxNoThreads }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px; color:var(--text2); padding:6px 4px;">No DMs yet.</div></sc-if>
+              <sc-for list="{{ admInboxThreads }}" as="t" hint-placeholder-count="2">
+                <div style="background:var(--bg); border:1px solid var(--border); border-radius:14px; padding:12px;">
+                  <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+                    <div style="width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg,#06b6d4,#3b82f6); color:#fff; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; flex:none;">{{ t.initial }}</div>
+                    <div style="flex:1; min-width:0;">
+                      <div style="font-size:13.5px; font-weight:700;">visitor · {{ t.short }}</div>
+                      <div style="font-size:11.5px; color:var(--text2);">{{ t.count }} message · last {{ t.last_sender }}</div>
+                    </div>
+                  </div>
+                  <sc-for list="{{ t.messages }}" as="m" hint-placeholder-count="2">
+                    <div style="display:flex; gap:8px; margin-bottom:4px;">
+                      <div style="font-size:11px; font-weight:700; color: {{ m.color }}; min-width:46px;">{{ m.from }}</div>
+                      <div style="font-size:13px; color:var(--text); white-space:pre-wrap; word-break:break-word; flex:1;">{{ m.body }}</div>
+                    </div>
+                  </sc-for>
+                  <div style="display:flex; gap:6px; margin-top:10px;">
+                    <input value="{{ t.draft }}" onChange="{{ t.setDraft }}" placeholder="Write a reply…" style="flex:1; background:var(--bg2); border:1px solid var(--border); border-radius:9px; padding:9px 11px; font-size:13px; color:var(--text); outline:none;" />
+                    <button onClick="{{ t.send }}" style="border:none; border-radius:9px; padding:9px 14px; font-size:13px; font-weight:700; cursor:pointer; background:linear-gradient(120deg,#06b6d4,#3b82f6); color:#fff;">Reply</button>
+                  </div>
+                </div>
+              </sc-for>
+
+              <div style="font-size:11.5px; color:var(--text2); font-weight:700; text-transform:uppercase; letter-spacing:.5px; margin-top:6px;">Comments · {{ admInboxCommentCount }}</div>
+              <sc-if value="{{ admInboxNoComments }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px; color:var(--text2); padding:6px 4px;">No comments yet.</div></sc-if>
+              <sc-for list="{{ admInboxComments }}" as="c" hint-placeholder-count="3">
+                <div style="background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:11px 13px;">
+                  <div style="display:flex; gap:8px; align-items:baseline;">
+                    <div style="font-size:12.5px; font-weight:800;">{{ c.username }}</div>
+                    <div style="font-size:11px; color:var(--text2);">on {{ c.target_id }}</div>
+                  </div>
+                  <div style="font-size:13px; color:var(--text); margin-top:4px; white-space:pre-wrap; word-break:break-word;">{{ c.body }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+
+
+
         </div>
 
         <div style="position:absolute; left:0; right:0; bottom:0; padding:12px 14px; background:var(--bg); border-top:1px solid var(--border); display:flex; align-items:center; gap:12px;">
@@ -933,8 +987,9 @@ class Component extends DCLogic {
     reelMuted: true, reelCommentsFor: null, recents: ['hackathon', 'orbitly', 'open source'],
     storyReply: '', sentStoryReply: false,
     carousel: {}, editOpen: false, editDraft: null,
-    adminOpen: false, adminAuthed: false, adminPw: '', adminPwError: false,
+    adminOpen: false, adminAuthed: false, adminEmail: '', adminPw: '', adminPwError: null, adminMode: 'login',
     adminSection: 'posts', adminDraft: null, adminMsg: null,
+    inbox: { threads: [], comments: [] }, inboxDrafts: {},
     profile: {
       name: 'Anand', username: 'anand.builds',
       role: 'Founder & Full-Stack Developer',
@@ -1190,20 +1245,68 @@ class Component extends DCLogic {
     const PC = window.PortfolioContent;
     const authed = !!(PC && PC.isAdminSession && PC.isAdminSession());
     const draft = JSON.parse(JSON.stringify(this.data()));
-    this.setState({ adminOpen: true, adminAuthed: authed, adminDraft: draft, adminPw: '', adminPwError: false, adminSection: 'posts' });
+    this.setState({ adminOpen: true, adminAuthed: authed, adminDraft: draft, adminPw: '', adminPwError: null, adminSection: 'posts' });
+    if (authed) this.reloadInbox();
+    // React to auth changes (e.g. session restored / token refresh).
+    if (PC && PC.onAuthChange && !this._authSub) {
+      this._authSub = true;
+      PC.onAuthChange((on) => {
+        this.setState({ adminAuthed: on });
+        if (on) this.reloadInbox();
+      });
+    }
   }
   closeAdmin() {
     this.setState({ adminOpen: false });
     try { if ((location.hash || '').toLowerCase().indexOf('admin') !== -1) history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
   }
-  admUnlock() {
-    const PC = window.PortfolioContent;
-    if (PC && PC.checkAdminPassword(this.state.adminPw)) {
-      PC.setAdminSession(true);
-      this.setState({ adminAuthed: true, adminPw: '', adminPwError: false });
-    } else { this.setState({ adminPwError: true }); }
+  admToggleMode() {
+    this.setState({ adminMode: this.state.adminMode === 'login' ? 'signup' : 'login', adminPwError: null });
   }
-  admLogout() { const PC = window.PortfolioContent; if (PC) PC.setAdminSession(false); this.setState({ adminAuthed: false, adminOpen: false }); }
+  async admUnlock() {
+    const PC = window.PortfolioContent;
+    if (!PC) return;
+    const email = (this.state.adminEmail || '').trim();
+    const pw = this.state.adminPw || '';
+    if (!email || !pw) { this.setState({ adminPwError: 'Email and password required.' }); return; }
+    this.setState({ adminPwError: null });
+    const fn = this.state.adminMode === 'signup' ? PC.signupAdmin : PC.loginAdmin;
+    const r = await fn(email, pw);
+    if (!r.ok) { this.setState({ adminPwError: r.error || 'Could not sign in.' }); return; }
+    if (r.needsConfirm) {
+      this.setState({ adminPwError: 'Check your email to confirm, then sign in.', adminMode: 'login' });
+      return;
+    }
+    this.setState({ adminAuthed: true, adminPw: '', adminPwError: null });
+    this.reloadInbox();
+  }
+  async admLogout() {
+    const PC = window.PortfolioContent;
+    if (PC && PC.logoutAdmin) await PC.logoutAdmin();
+    this.setState({ adminAuthed: false, adminOpen: false });
+  }
+  async reloadInbox() {
+    const PC = window.PortfolioContent;
+    if (!PC || !PC.getInbox) return;
+    const inbox = await PC.getInbox();
+    this.setState({ inbox: inbox });
+  }
+  async sendInboxReply(threadId) {
+    const PC = window.PortfolioContent;
+    if (!PC || !PC.replyToThread) return;
+    const body = (this.state.inboxDrafts[threadId] || '').trim();
+    if (!body) return;
+    const r = await PC.replyToThread(threadId, body);
+    if (r.ok) {
+      const drafts = Object.assign({}, this.state.inboxDrafts); drafts[threadId] = '';
+      this.setState({ inboxDrafts: drafts });
+      this.reloadInbox();
+    }
+  }
+  setInboxDraft(threadId, v) {
+    const drafts = Object.assign({}, this.state.inboxDrafts); drafts[threadId] = v;
+    this.setState({ inboxDrafts: drafts });
+  }
   _at(obj, path) { if (!path) return obj; const parts = path.split('.'); let o = obj; for (let k = 0; k < parts.length; k++) o = o[parts[k]]; return o; }
   admSet(path, value) {
     const d = JSON.parse(JSON.stringify(this.state.adminDraft));
@@ -1637,11 +1740,17 @@ class Component extends DCLogic {
       admLocked: S.adminOpen && !S.adminAuthed,
       admReady: S.adminOpen && S.adminAuthed,
       admPw: S.adminPw,
+      admEmail: S.adminEmail,
       admPwError: S.adminPwError,
       admMsg: S.adminMsg,
-      setAdmPw: (e) => this.setState({ adminPw: e.target.value, adminPwError: false }),
+      admModeLabel: S.adminMode === 'signup' ? 'Create your admin account' : 'Sign in to manage your portfolio',
+      admModeBtn: S.adminMode === 'signup' ? 'Create account' : 'Sign in',
+      admModeToggle: S.adminMode === 'signup' ? 'Already have an account? Sign in' : "First time? Create an admin account",
+      setAdmPw: (e) => this.setState({ adminPw: e.target.value, adminPwError: null }),
+      setAdmEmail: (e) => this.setState({ adminEmail: e.target.value, adminPwError: null }),
       admPwKey: (e) => { if (e.key === 'Enter') this.admUnlock(); },
       admUnlock: () => this.admUnlock(),
+      admToggleMode: () => this.admToggleMode(),
       admLogout: () => this.admLogout(),
       closeAdmin: () => this.closeAdmin(),
       publishAdmin: () => this.publishAdmin(),
@@ -1653,6 +1762,7 @@ class Component extends DCLogic {
       admIsPeople: S.adminSection === 'people',
       admIsNotifs: S.adminSection === 'notifs',
       admIsProfile: S.adminSection === 'profile',
+      admIsInbox: S.adminSection === 'inbox',
       goAdmPosts: () => this.setState({ adminSection: 'posts' }),
       goAdmReels: () => this.setState({ adminSection: 'reels' }),
       goAdmStories: () => this.setState({ adminSection: 'stories' }),
@@ -1660,6 +1770,7 @@ class Component extends DCLogic {
       goAdmPeople: () => this.setState({ adminSection: 'people' }),
       goAdmNotifs: () => this.setState({ adminSection: 'notifs' }),
       goAdmProfile: () => this.setState({ adminSection: 'profile' }),
+      goAdmInbox: () => { this.setState({ adminSection: 'inbox' }); this.reloadInbox(); },
       admTabPostsC: S.adminSection === 'posts' ? 'var(--text)' : 'var(--text2)',
       admTabPostsBg: S.adminSection === 'posts' ? 'var(--bg)' : 'transparent',
       admTabReelsC: S.adminSection === 'reels' ? 'var(--text)' : 'var(--text2)',
@@ -1674,6 +1785,8 @@ class Component extends DCLogic {
       admTabNotifsBg: S.adminSection === 'notifs' ? 'var(--bg)' : 'transparent',
       admTabProfileC: S.adminSection === 'profile' ? 'var(--text)' : 'var(--text2)',
       admTabProfileBg: S.adminSection === 'profile' ? 'var(--bg)' : 'transparent',
+      admTabInboxC: S.adminSection === 'inbox' ? 'var(--text)' : 'var(--text2)',
+      admTabInboxBg: S.adminSection === 'inbox' ? 'var(--bg)' : 'transparent',
       admPosts, admReels, admStories, admTiles, admPeople, admNotifs,
       admAddPost: () => this.admAddPost(),
       admAddReel: () => this.admAddReel(),
@@ -1686,6 +1799,35 @@ class Component extends DCLogic {
       setAdmPfRole: (e) => this.admSet('profile.role', e.target.value),
       setAdmPfBio: (e) => this.admSet('profile.bio', e.target.value),
       setAdmPfEmail: (e) => this.admSet('profile.email', e.target.value),
+
+      admReloadInbox: () => this.reloadInbox(),
+      admInboxThreadCount: (S.inbox.threads || []).length,
+      admInboxCommentCount: (S.inbox.comments || []).length,
+      admInboxNoThreads: (S.inbox.threads || []).length === 0,
+      admInboxNoComments: (S.inbox.comments || []).length === 0,
+      admInboxThreads: (S.inbox.threads || []).map((t) => ({
+        thread_id: t.thread_id,
+        short: t.short,
+        initial: (t.short || '?').slice(0, 2).toUpperCase(),
+        count: t.count,
+        last_sender: t.last_sender,
+        draft: S.inboxDrafts[t.thread_id] || '',
+        setDraft: (e) => this.setInboxDraft(t.thread_id, e.target.value),
+        send: () => this.sendInboxReply(t.thread_id),
+        messages: t.messages.map((m) => ({
+          from: m.sender === 'them' ? 'you' : 'visitor',
+          color: m.sender === 'them' ? '#1f8a5b' : 'var(--text2)',
+          body: m.body
+        }))
+      })),
+      admInboxComments: (S.inbox.comments || []).map((c) => ({
+        username: c.username, body: c.body, target_id: c.target_id
+      })),
+
+      toastMsg: S.toast
+    };
+  }
+}
 
       toastMsg: S.toast
     };

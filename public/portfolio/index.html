@@ -1666,15 +1666,25 @@ class Component extends DCLogic {
       sendDm: () => this.sendDm(),
 
       following: S.following,
-      followLabel: S.following ? 'Following' : 'Follow',
+      followLabel: S.following ? 'Subscribed' : 'Subscribe',
       followBg: S.following ? 'var(--bg2)' : 'linear-gradient(120deg,#06b6d4,#3b82f6)',
       followColor: S.following ? 'var(--text)' : '#ffffff',
       toggleFollow: () => {
         const f = !S.following;
         this.setState({ following: f });
         this._save('following', null, f);
-        if (f) this.showToast('Thanks for the follow 💙');
+        if (f) this.showToast('Subscribed — I\u2019ll send you the next thing I ship 💙');
       },
+      resumeHref: (D.profile && D.profile.resumeUrl) ? D.profile.resumeUrl : ('mailto:' + (D.profile.email || 'aanand.ak15@gmail.com') + '?subject=Resume%20request'),
+      aboutTimeline: [
+        { year: '\u201923', title: 'Stackline', note: 'first startup — inventory autopilot, 120 stores', grad: 'linear-gradient(135deg,#0891b2,#155e75)' },
+        { year: '\u201925', title: 'Orbitly', note: 'team onboarding that runs itself · #2 on PH', grad: 'linear-gradient(135deg,#06b6d4,#3b82f6)' },
+        { year: 'Now', title: 'Building', note: 'shipping weekly · open to collabs', grad: 'linear-gradient(135deg,#1d4ed8,#6d28d9)' }
+      ],
+      aboutNow: 'Heads-down on Orbitly v2 \u2014 making it the fastest way for a new hire to feel useful on day one.',
+      aboutSkills: [
+        { label: 'TypeScript' }, { label: 'React' }, { label: 'Node' }, { label: 'Postgres' }, { label: 'Redis' }, { label: 'AWS' }, { label: 'Product' }, { label: 'Design' }
+      ],
       statPosts: String(D.posts.length),
       profileTab: S.profileTab,
       isPostsTab: S.profileTab === 'posts',

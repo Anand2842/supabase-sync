@@ -20,18 +20,20 @@
   var STATE_FILENAME = '.image-slots.state.json'; // what image-slot.js fetches
   var SIGNED_URL_TTL = 60 * 60 * 24 * 7; // 7 days
 
-  var sbPromise = null;
+  // Reuse the single Supabase client created by content.js so we don't end
+  // up with two GoTrueClient instances racing on the same storage key.
   async function sb() {
-    if (sbPromise) return sbPromise;
-    sbPromise = (async () => {
-      var PC = window.PortfolioContent;
-      var url = PC && PC.CONFIG && PC.CONFIG.supabaseUrl;
-      var key = PC && PC.CONFIG && PC.CONFIG.supabaseAnonKey;
-      var mod = await import('https://esm.sh/@supabase/supabase-js@2');
-      return mod.createClient(url, key);
-    })();
-    return sbPromise;
+    var PC = window.PortfolioContent;
+    if (PC && typeof PC._db === 'function') return PC._db();
+    // Fallback: poll briefly for PortfolioContent to appear.
+    for (var i = 0; i < 50; i++) {
+      PC = window.PortfolioContent;
+      if (PC && typeof PC._db === 'function') return PC._db();
+      await new Promise(function (r) { setTimeout(r, 20); });
+    }
+    throw new Error('PortfolioContent not ready');
   }
+
 
   async function downloadStateJson() {
     var s = await sb();

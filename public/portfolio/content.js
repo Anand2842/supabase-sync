@@ -511,6 +511,7 @@
     logoutAdmin: logoutAdmin,
     getInbox: getInbox,
     replyToThread: replyToThread,
-    isLive: isLive
+    isLive: isLive,
+    _db: db
   };
 })();

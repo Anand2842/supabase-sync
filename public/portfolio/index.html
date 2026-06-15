@@ -987,8 +987,9 @@ class Component extends DCLogic {
     reelMuted: true, reelCommentsFor: null, recents: ['hackathon', 'orbitly', 'open source'],
     storyReply: '', sentStoryReply: false,
     carousel: {}, editOpen: false, editDraft: null,
-    adminOpen: false, adminAuthed: false, adminPw: '', adminPwError: false,
+    adminOpen: false, adminAuthed: false, adminEmail: '', adminPw: '', adminPwError: null, adminMode: 'login',
     adminSection: 'posts', adminDraft: null, adminMsg: null,
+    inbox: { threads: [], comments: [] }, inboxDrafts: {},
     profile: {
       name: 'Anand', username: 'anand.builds',
       role: 'Founder & Full-Stack Developer',

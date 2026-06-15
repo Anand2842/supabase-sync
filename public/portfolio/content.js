@@ -9,8 +9,7 @@
      ========================================================================== */
   var CONFIG = {
     supabaseUrl: 'https://dhxbbhxacdotccfnbcyy.supabase.co',
-    supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRoeGJiaHhhY2RvdGNjZm5iY3l5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1NDE3MTIsImV4cCI6MjA5NzExNzcxMn0.QG62okVosjWnYFeDPl-nP3G4NRUDTWbm9eo-yMwyzLA',
-    adminPassword: 'letmein'
+    supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRoeGJiaHhhY2RvdGNjZm5iY3l5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1NDE3MTIsImV4cCI6MjA5NzExNzcxMn0.QG62okVosjWnYFeDPl-nP3G4NRUDTWbm9eo-yMwyzLA'
   };
 
   function isLive() { return !!(CONFIG.supabaseUrl && CONFIG.supabaseAnonKey); }

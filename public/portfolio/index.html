@@ -273,7 +273,7 @@
           <div style="display:flex; gap:8px; padding:14px 18px 6px;">
             <button onClick="{{ toggleFollow }}" style="flex:1; border:none; border-radius:9px; padding:9px 0; font-size:14px; font-weight:600; cursor:pointer; background: {{ followBg }}; color: {{ followColor }};">{{ followLabel }}</button>
             <button onClick="{{ openDm }}" style="flex:1; border:none; border-radius:9px; padding:9px 0; font-size:14px; font-weight:600; cursor:pointer; background:var(--bg2); color:var(--text);">Message</button>
-            <a href="{{ emailHref }}" style="flex:1; border-radius:9px; padding:9px 0; font-size:14px; font-weight:600; cursor:pointer; background:var(--bg2); color:var(--text); text-align:center; text-decoration:none;">Email</a>
+            <a href="{{ resumeHref }}" target="_blank" rel="noopener" style="flex:1; border-radius:9px; padding:9px 0; font-size:14px; font-weight:600; cursor:pointer; background:var(--bg2); color:var(--text); text-align:center; text-decoration:none;">Resume</a>
           </div>
           <div style="display:flex; gap:16px; padding:12px 18px 4px; overflow-x:auto; scrollbar-width:none;">
             <sc-for list="{{ stories }}" as="h" hint-placeholder-count="5">

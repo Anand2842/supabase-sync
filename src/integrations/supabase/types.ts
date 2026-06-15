@@ -14,10 +14,180 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      comments: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          target_id: string
+          username: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          target_id: string
+          username?: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          target_id?: string
+          username?: string
+        }
+        Relationships: []
+      }
+      content: {
+        Row: {
+          data: Json
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          data: Json
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          data?: Json
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      dms: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          sender: string
+          thread_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          sender: string
+          thread_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          sender?: string
+          thread_id?: string
+        }
+        Relationships: []
+      }
+      following: {
+        Row: {
+          updated_at: string
+          value: boolean
+          visitor_id: string
+        }
+        Insert: {
+          updated_at?: string
+          value?: boolean
+          visitor_id: string
+        }
+        Update: {
+          updated_at?: string
+          value?: boolean
+          visitor_id?: string
+        }
+        Relationships: []
+      }
+      follows: {
+        Row: {
+          created_at: string
+          username: string
+          visitor_id: string
+        }
+        Insert: {
+          created_at?: string
+          username: string
+          visitor_id: string
+        }
+        Update: {
+          created_at?: string
+          username?: string
+          visitor_id?: string
+        }
+        Relationships: []
+      }
+      likes: {
+        Row: {
+          created_at: string
+          target_id: string
+          visitor_id: string
+        }
+        Insert: {
+          created_at?: string
+          target_id: string
+          visitor_id: string
+        }
+        Update: {
+          created_at?: string
+          target_id?: string
+          visitor_id?: string
+        }
+        Relationships: []
+      }
+      reel_likes: {
+        Row: {
+          created_at: string
+          reel_id: string
+          visitor_id: string
+        }
+        Insert: {
+          created_at?: string
+          reel_id: string
+          visitor_id: string
+        }
+        Update: {
+          created_at?: string
+          reel_id?: string
+          visitor_id?: string
+        }
+        Relationships: []
+      }
+      saves: {
+        Row: {
+          created_at: string
+          target_id: string
+          visitor_id: string
+        }
+        Insert: {
+          created_at?: string
+          target_id: string
+          visitor_id: string
+        }
+        Update: {
+          created_at?: string
+          target_id?: string
+          visitor_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
-      [_ in never]: never
+      v_dm_threads: {
+        Row: {
+          last_at: string | null
+          last_message: string | null
+          messages: number | null
+          thread_id: string | null
+        }
+        Relationships: []
+      }
+      v_post_like_counts: {
+        Row: {
+          likes: number | null
+          target_id: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never

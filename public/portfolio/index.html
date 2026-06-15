@@ -1245,20 +1245,68 @@ class Component extends DCLogic {
     const PC = window.PortfolioContent;
     const authed = !!(PC && PC.isAdminSession && PC.isAdminSession());
     const draft = JSON.parse(JSON.stringify(this.data()));
-    this.setState({ adminOpen: true, adminAuthed: authed, adminDraft: draft, adminPw: '', adminPwError: false, adminSection: 'posts' });
+    this.setState({ adminOpen: true, adminAuthed: authed, adminDraft: draft, adminPw: '', adminPwError: null, adminSection: 'posts' });
+    if (authed) this.reloadInbox();
+    // React to auth changes (e.g. session restored / token refresh).
+    if (PC && PC.onAuthChange && !this._authSub) {
+      this._authSub = true;
+      PC.onAuthChange((on) => {
+        this.setState({ adminAuthed: on });
+        if (on) this.reloadInbox();
+      });
+    }
   }
   closeAdmin() {
     this.setState({ adminOpen: false });
     try { if ((location.hash || '').toLowerCase().indexOf('admin') !== -1) history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
   }
-  admUnlock() {
-    const PC = window.PortfolioContent;
-    if (PC && PC.checkAdminPassword(this.state.adminPw)) {
-      PC.setAdminSession(true);
-      this.setState({ adminAuthed: true, adminPw: '', adminPwError: false });
-    } else { this.setState({ adminPwError: true }); }
+  admToggleMode() {
+    this.setState({ adminMode: this.state.adminMode === 'login' ? 'signup' : 'login', adminPwError: null });
   }
-  admLogout() { const PC = window.PortfolioContent; if (PC) PC.setAdminSession(false); this.setState({ adminAuthed: false, adminOpen: false }); }
+  async admUnlock() {
+    const PC = window.PortfolioContent;
+    if (!PC) return;
+    const email = (this.state.adminEmail || '').trim();
+    const pw = this.state.adminPw || '';
+    if (!email || !pw) { this.setState({ adminPwError: 'Email and password required.' }); return; }
+    this.setState({ adminPwError: null });
+    const fn = this.state.adminMode === 'signup' ? PC.signupAdmin : PC.loginAdmin;
+    const r = await fn(email, pw);
+    if (!r.ok) { this.setState({ adminPwError: r.error || 'Could not sign in.' }); return; }
+    if (r.needsConfirm) {
+      this.setState({ adminPwError: 'Check your email to confirm, then sign in.', adminMode: 'login' });
+      return;
+    }
+    this.setState({ adminAuthed: true, adminPw: '', adminPwError: null });
+    this.reloadInbox();
+  }
+  async admLogout() {
+    const PC = window.PortfolioContent;
+    if (PC && PC.logoutAdmin) await PC.logoutAdmin();
+    this.setState({ adminAuthed: false, adminOpen: false });
+  }
+  async reloadInbox() {
+    const PC = window.PortfolioContent;
+    if (!PC || !PC.getInbox) return;
+    const inbox = await PC.getInbox();
+    this.setState({ inbox: inbox });
+  }
+  async sendInboxReply(threadId) {
+    const PC = window.PortfolioContent;
+    if (!PC || !PC.replyToThread) return;
+    const body = (this.state.inboxDrafts[threadId] || '').trim();
+    if (!body) return;
+    const r = await PC.replyToThread(threadId, body);
+    if (r.ok) {
+      const drafts = Object.assign({}, this.state.inboxDrafts); drafts[threadId] = '';
+      this.setState({ inboxDrafts: drafts });
+      this.reloadInbox();
+    }
+  }
+  setInboxDraft(threadId, v) {
+    const drafts = Object.assign({}, this.state.inboxDrafts); drafts[threadId] = v;
+    this.setState({ inboxDrafts: drafts });
+  }
   _at(obj, path) { if (!path) return obj; const parts = path.split('.'); let o = obj; for (let k = 0; k < parts.length; k++) o = o[parts[k]]; return o; }
   admSet(path, value) {
     const d = JSON.parse(JSON.stringify(this.state.adminDraft));

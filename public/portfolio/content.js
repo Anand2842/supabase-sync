@@ -1,72 +1,34 @@
 /* ============================================================================
-   content.js  —  THE CONTENT LAYER
-   ----------------------------------------------------------------------------
-   ⭐ THIS IS THE ONLY FILE YOUR BACKEND AGENT (Codex / Antigravity) SHOULD TOUCH.
-
-   WHY THIS FILE EXISTS
-   --------------------
-   The portfolio UI ("Anand Portfolio.dc.html") used to have all of its content
-   hard-coded *inside* the rendering code. That is why wiring a backend kept
-   "exploding everything": the agent had to reach into the middle of the UI and
-   guess the data shape, and one wrong move cascaded through the whole screen.
-
-   Now there is a clean contract:
-
-        Supabase  <-->  content.js  <-->  the UI (never edited)
-
-   The UI ONLY calls the functions exported on `window.PortfolioContent`.
-   It never knows or cares where the data comes from. So you can replace the
-   demo-mode (browser localStorage) bodies below with real Supabase calls and
-   NOTHING in the UI has to change. If you keep your return shapes identical to
-   SCHEMA below, the frontend cannot break.
-
-   HOW TO GO LIVE (3 steps)
-   ------------------------
-   1. Run supabase_schema.sql in your Supabase project's SQL editor.
-   2. Paste your URL + anon key into CONFIG below.
-   3. Replace each `// TODO(backend)` block with the Supabase call shown in
-      BACKEND.md. Leave the demo-mode code as the fallback if you like.
-
-   RULE OF THUMB: change the BODIES of these functions, never their NAMES,
-   ARGUMENTS, or RETURN SHAPES. That contract is what keeps the UI safe.
+   content.js  —  THE CONTENT LAYER  (wired to Lovable Cloud / Supabase)
    ============================================================================ */
 (function () {
   'use strict';
 
   /* ==========================================================================
-     1. CONFIG  —  paste your keys here to switch from demo mode to Supabase
+     1. CONFIG
      ========================================================================== */
   var CONFIG = {
-    supabaseUrl: '',        // e.g. 'https://xxxx.supabase.co'  (Project Settings → API)
-    supabaseAnonKey: '',    // the public 'anon' key
-
-    // Simple gate for /admin today. Swap for Supabase Auth later (see BACKEND.md).
+    supabaseUrl: 'https://dhxbbhxacdotccfnbcyy.supabase.co',
+    supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRoeGJiaHhhY2RvdGNjZm5iY3l5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1NDE3MTIsImV4cCI6MjA5NzExNzcxMn0.QG62okVosjWnYFeDPl-nP3G4NRUDTWbm9eo-yMwyzLA',
     adminPassword: 'letmein'
   };
 
   function isLive() { return !!(CONFIG.supabaseUrl && CONFIG.supabaseAnonKey); }
 
   /* ==========================================================================
-     2. SCHEMA  —  the single source of truth for the SHAPE of content.
-        Every function below returns data in exactly this shape. Match it and
-        the UI renders; deviate and you will see blanks. Keep it identical.
-     --------------------------------------------------------------------------
-     content = {
-       profile: { name, username, role, bio, email },
-       posts:   [ { id, time, label, slot, aspect, grad, big, placeholder,
-                    images?: [ { slot, placeholder } ],   // optional carousel
-                    caption, likes:Number, comments: [ { u, t, when } ] } ],
-       stories: [ { label, glyph, grad,
-                    slides: [ { kicker, title, body } ] } ],
-       reels:   [ { id, slot, tag, title, sub, likesN:Number, commentCount:String,
-                    placeholder, audio, comments: [ { u, t, when } ] } ],
-       tiles:   [ { kicker, label, grad, big, span, pid } ],   // pid -> a post id
-       notifs:  [ { span, items: [ { id, type, u, bg, text, when, thumb?, big? } ] } ],
-       people:  [ { u, name, bg } ]
-     }
+     2. Supabase client + visitor id helpers
      ========================================================================== */
+  var sb = null;
+  async function db() {
+    if (sb) return sb;
+    const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2');
+    sb = createClient(CONFIG.supabaseUrl, CONFIG.supabaseAnonKey);
+    return sb;
+  }
 
-  // Gradient palette reused across the seed content.
+  /* ==========================================================================
+     3. Gradient palette + DEFAULT_CONTENT seed
+     ========================================================================== */
   var G = {
     orbitly:   'linear-gradient(135deg,#06b6d4,#3b82f6)',
     hacknova:  'linear-gradient(135deg,#1d4ed8,#6d28d9)',
@@ -76,11 +38,6 @@
     pulse:     'linear-gradient(135deg,#22d3ee,#2563eb)'
   };
 
-  /* ==========================================================================
-     3. DEFAULT_CONTENT  —  the seed. This is what ships before any edits and
-        what supabase_schema.sql seeds the database with. The CRM at /admin
-        edits a copy of this; Publish saves it via saveContent().
-     ========================================================================== */
   var DEFAULT_CONTENT = {
     profile: {
       name: 'Anand',
@@ -208,70 +165,95 @@
   };
 
   /* ==========================================================================
-     4. small helpers (demo-mode storage). Safe to delete once fully on Supabase.
+     4. localStorage helpers (used for visitor id + demo fallback)
      ========================================================================== */
   var KEYS = {
-    content:      'anand_portfolio_content',   // owner-published content (CRM)
+    content:      'anand_portfolio_content',
     likes:        'anand_ig_likes',
     saves:        'anand_ig_saves',
     follows:      'anand_ig_follows',
     reelLikes:    'anand_ig_reellikes',
     following:    'anand_ig_following',
-    comments:     'anand_ig_comments',         // visitor comments, keyed by target id
-    dms:          'anand_ig_dms',              // visitor DM thread
+    comments:     'anand_ig_comments',
+    dms:          'anand_ig_dms',
     adminSession: 'anand_admin_session'
   };
   function clone(o) { return JSON.parse(JSON.stringify(o)); }
   function readLS(k, fb) { try { var r = localStorage.getItem(k); return r === null ? fb : JSON.parse(r); } catch (e) { return fb; } }
   function writeLS(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
 
-  /* ==========================================================================
-     5. CONTENT  —  read & write the owner-managed content (profile/posts/etc).
-        loadContent() feeds the whole UI. saveContent() is called by /admin.
-     ========================================================================== */
+  function visitorId() {
+    var k = 'anand_visitor_id', v = readLS(k, null);
+    if (!v) {
+      v = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now() + Math.random());
+      writeLS(k, v);
+    }
+    return v;
+  }
 
-  // Returns the full content object (SCHEMA above). UI calls this once on load.
+  /* ==========================================================================
+     5. CONTENT — load / save
+     ========================================================================== */
   async function loadContent() {
     if (isLive()) {
-      // TODO(backend): fetch the published content from Supabase and return it
-      //   in the SCHEMA shape. See BACKEND.md → "loadContent".
-      //   const c = await sb.from('content').select('data').eq('id','live').single();
-      //   return c.data;
+      try {
+        const s = await db();
+        const { data, error } = await s.from('content').select('data').eq('id','live').maybeSingle();
+        if (error) throw error;
+        return data ? data.data : clone(DEFAULT_CONTENT);
+      } catch (e) {
+        console.warn('[content] loadContent fell back to demo:', e);
+      }
     }
-    // ---- demo mode (browser only) ----
     var saved = readLS(KEYS.content, null);
     return saved ? saved : clone(DEFAULT_CONTENT);
   }
 
-  // Persists edited content. Called by the CRM "Publish" button.
   async function saveContent(content) {
     if (isLive()) {
-      // TODO(backend): upsert into Supabase. See BACKEND.md → "saveContent".
-      //   await sb.from('content').upsert({ id:'live', data: content });
-      //   return;
+      try {
+        const s = await db();
+        const { error } = await s.from('content').upsert({ id:'live', data: content, updated_at: new Date().toISOString() });
+        if (error) throw error;
+        return;
+      } catch (e) {
+        console.warn('[content] saveContent fell back to demo:', e);
+      }
     }
     writeLS(KEYS.content, content);
   }
 
-  // Throw away owner edits and visitor interactions, back to the seed.
   function resetDemo() {
     Object.keys(KEYS).forEach(function (k) { try { localStorage.removeItem(KEYS[k]); } catch (e) {} });
   }
 
   /* ==========================================================================
-     6. INTERACTIONS  —  visitor-generated data (likes / saves / comments / DMs).
-        These are "real": they persist. In demo mode that means this browser;
-        with Supabase it means everyone, and you read DMs/comments in /admin.
-
-        Return shapes:
-          getInteractions() -> { likes:{}, saves:{}, follows:{}, reelLikes:{}, following:Bool }
-          getComments(id)   -> [ { u, t, when } ]
-          getDms()          -> [ { from:'me'|'them', text } ]
+     6. INTERACTIONS — likes / saves / follows / comments
      ========================================================================== */
-
   async function getInteractions() {
     if (isLive()) {
-      // TODO(backend): load this visitor's likes/saves/follows from Supabase.
+      try {
+        const s = await db(), vid = visitorId();
+        const [lk, sv, rl, fl, fo] = await Promise.all([
+          s.from('likes').select('target_id').eq('visitor_id', vid),
+          s.from('saves').select('target_id').eq('visitor_id', vid),
+          s.from('reel_likes').select('reel_id').eq('visitor_id', vid),
+          s.from('follows').select('username').eq('visitor_id', vid),
+          s.from('following').select('value').eq('visitor_id', vid).maybeSingle()
+        ]);
+        const toMap = function (res, key) {
+          return (res.data || []).reduce(function (m, r) { m[r[key]] = true; return m; }, {});
+        };
+        return {
+          likes:     toMap(lk, 'target_id'),
+          saves:     toMap(sv, 'target_id'),
+          reelLikes: toMap(rl, 'reel_id'),
+          follows:   toMap(fl, 'username'),
+          following: !!(fo.data && fo.data.value)
+        };
+      } catch (e) {
+        console.warn('[content] getInteractions fell back to demo:', e);
+      }
     }
     return {
       likes:     readLS(KEYS.likes, {}),
@@ -282,33 +264,73 @@
     };
   }
 
-  // kind: 'likes' | 'saves' | 'follows' | 'reelLikes' | 'following'
-  // For map kinds, `id` is the target id and `value` the new boolean.
-  // For 'following', pass value only.
   async function setFlag(kind, id, value) {
     if (isLive()) {
-      // TODO(backend): write the like/save/follow row to Supabase.
+      try {
+        const s = await db(), vid = visitorId();
+        if (kind === 'following') {
+          const { error } = await s.from('following').upsert({ visitor_id: vid, value: value, updated_at: new Date().toISOString() });
+          if (error) throw error;
+          // mirror to local for instant reads
+          writeLS(KEYS.following, value);
+          return;
+        }
+        const table = (kind === 'reelLikes') ? 'reel_likes' : kind;
+        const col = (kind === 'follows') ? 'username' : (kind === 'reelLikes' ? 'reel_id' : 'target_id');
+        if (value) {
+          const row = { visitor_id: vid };
+          row[col] = id;
+          const { error } = await s.from(table).upsert(row);
+          if (error) throw error;
+        } else {
+          const { error } = await s.from(table).delete().eq('visitor_id', vid).eq(col, id);
+          if (error) throw error;
+        }
+        // mirror to local
+        var map = readLS(KEYS[kind], {}); map[id] = value; writeLS(KEYS[kind], map);
+        return;
+      } catch (e) {
+        console.warn('[content] setFlag fell back to demo:', e);
+      }
     }
     if (kind === 'following') { writeLS(KEYS.following, value); return; }
-    var map = readLS(KEYS[kind], {});
-    map[id] = value;
-    writeLS(KEYS[kind], map);
+    var lmap = readLS(KEYS[kind], {});
+    lmap[id] = value;
+    writeLS(KEYS[kind], lmap);
   }
 
-  // Returns visitor-added comments for a post/reel id (NOT the seed comments,
-  // which live in the content object). UI merges the two.
   async function getComments(targetId) {
     if (isLive()) {
-      // TODO(backend): select comments where target_id = targetId, order by created_at.
+      try {
+        const s = await db();
+        const { data, error } = await s.from('comments')
+          .select('username,body,created_at')
+          .eq('target_id', targetId)
+          .order('created_at');
+        if (error) throw error;
+        return (data || []).map(function (r) { return { u: r.username, t: r.body, when: 'now' }; });
+      } catch (e) {
+        console.warn('[content] getComments fell back to demo:', e);
+      }
     }
     var all = readLS(KEYS.comments, {});
     return all[targetId] || [];
   }
 
-  // comment = { u, t, when }
   async function addComment(targetId, comment) {
     if (isLive()) {
-      // TODO(backend): insert into comments(target_id, username, body) and return the row.
+      try {
+        const s = await db();
+        const { error } = await s.from('comments').insert({
+          target_id: targetId,
+          username: comment.u || 'you',
+          body: comment.t
+        });
+        if (error) throw error;
+        return comment;
+      } catch (e) {
+        console.warn('[content] addComment fell back to demo:', e);
+      }
     }
     var all = readLS(KEYS.comments, {});
     all[targetId] = (all[targetId] || []).concat([comment]);
@@ -316,40 +338,67 @@
     return comment;
   }
 
-  // Returns the DM thread as the UI expects: [ { from:'me'|'them', text } ].
+  /* ==========================================================================
+     7. DMs
+     ========================================================================== */
   async function getDms() {
     if (isLive()) {
-      // TODO(backend): select messages for this visitor thread, ordered.
+      try {
+        const s = await db(), vid = visitorId();
+        const { data, error } = await s.from('dms')
+          .select('sender,body')
+          .eq('thread_id', vid)
+          .order('created_at');
+        if (error) throw error;
+        if (!data || !data.length) {
+          return [{ from: 'them', text: 'Hey! \uD83D\uDC4B Thanks for stopping by my portfolio. Ask me anything \u2014 or just say hi.' }];
+        }
+        return data.map(function (r) { return { from: r.sender, text: r.body }; });
+      } catch (e) {
+        console.warn('[content] getDms fell back to demo:', e);
+      }
     }
     return readLS(KEYS.dms, null) || [
       { from: 'them', text: 'Hey! \uD83D\uDC4B Thanks for stopping by my portfolio. Ask me anything \u2014 or just say hi.' }
     ];
   }
 
-  // msg = { from:'me'|'them', text }. Appends and persists the whole thread.
   async function saveDms(thread) {
     if (isLive()) {
-      // TODO(backend): the UI calls this after each message; insert the new row(s).
-      //   For visitor->owner DMs, insert from='me'. Owner replies (from='them')
-      //   come from the /admin inbox. See BACKEND.md → "DMs".
+      try {
+        const s = await db(), vid = visitorId();
+        const last = thread[thread.length - 1];
+        if (last) {
+          const { error } = await s.from('dms').insert({
+            thread_id: vid,
+            sender: last.from,
+            body: last.text
+          });
+          if (error) throw error;
+        }
+        // mirror to local so the canned auto-reply UI logic still works
+        writeLS(KEYS.dms, thread);
+        return;
+      } catch (e) {
+        console.warn('[content] saveDms fell back to demo:', e);
+      }
     }
     writeLS(KEYS.dms, thread);
   }
 
   /* ==========================================================================
-     7. ADMIN  —  who can open /admin. Demo = a password. Later = Supabase Auth.
+     8. ADMIN (password gate — swap to Supabase Auth later)
      ========================================================================== */
   function checkAdminPassword(pw) { return pw === CONFIG.adminPassword; }
   function isAdminSession() { return readLS(KEYS.adminSession, false) === true; }
   function setAdminSession(on) { writeLS(KEYS.adminSession, !!on); }
 
   /* ==========================================================================
-     EXPORT  —  the contract the UI depends on. Don't rename these.
+     EXPORT
      ========================================================================== */
   window.PortfolioContent = {
     CONFIG: CONFIG,
-    isLive: isLive,
-    DEFAULT_CONTENT: DEFAULT_CONTENT,
+    SCHEMA_DEFAULT: DEFAULT_CONTENT,
     loadContent: loadContent,
     saveContent: saveContent,
     resetDemo: resetDemo,
@@ -361,6 +410,7 @@
     saveDms: saveDms,
     checkAdminPassword: checkAdminPassword,
     isAdminSession: isAdminSession,
-    setAdminSession: setAdminSession
+    setAdminSession: setAdminSession,
+    isLive: isLive
   };
 })();

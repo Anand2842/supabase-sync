@@ -403,8 +403,13 @@
       _authed = !!(r && r.data && r.data.session);
       _authReady = true;
       _emit();
-      s.auth.onAuthStateChange(function (_evt, session) {
-        _authed = !!session;
+      s.auth.onAuthStateChange(function (evt, session) {
+        // Ignore noisy events that fire on tab focus / hourly refresh —
+        // they were causing the UI to re-hydrate in a loop.
+        if (evt !== 'SIGNED_IN' && evt !== 'SIGNED_OUT' && evt !== 'USER_UPDATED') return;
+        var next = !!session;
+        if (next === _authed) return;
+        _authed = next;
         _emit();
       });
     } catch (e) { _authReady = true; _emit(); }

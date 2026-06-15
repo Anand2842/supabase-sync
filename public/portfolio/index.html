@@ -273,7 +273,7 @@
           <div style="display:flex; gap:8px; padding:14px 18px 6px;">
             <button onClick="{{ toggleFollow }}" style="flex:1; border:none; border-radius:9px; padding:9px 0; font-size:14px; font-weight:600; cursor:pointer; background: {{ followBg }}; color: {{ followColor }};">{{ followLabel }}</button>
             <button onClick="{{ openDm }}" style="flex:1; border:none; border-radius:9px; padding:9px 0; font-size:14px; font-weight:600; cursor:pointer; background:var(--bg2); color:var(--text);">Message</button>
-            <a href="{{ emailHref }}" style="flex:1; border-radius:9px; padding:9px 0; font-size:14px; font-weight:600; cursor:pointer; background:var(--bg2); color:var(--text); text-align:center; text-decoration:none;">Email</a>
+            <a href="{{ resumeHref }}" target="_blank" rel="noopener" style="flex:1; border-radius:9px; padding:9px 0; font-size:14px; font-weight:600; cursor:pointer; background:var(--bg2); color:var(--text); text-align:center; text-decoration:none;">Resume</a>
           </div>
           <div style="display:flex; gap:16px; padding:12px 18px 4px; overflow-x:auto; scrollbar-width:none;">
             <sc-for list="{{ stories }}" as="h" hint-placeholder-count="5">
@@ -326,10 +326,28 @@
           </sc-if>
 
           <sc-if value="{{ isTaggedTab }}" hint-placeholder-val="{{ false }}">
-            <div style="display:flex; flex-direction:column; align-items:center; gap:10px; padding:48px 24px; text-align:center;">
-              <div style="width:62px; height:62px; border-radius:50%; border:2px solid var(--text); display:flex; align-items:center; justify-content:center; color:var(--text);"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 1 0-16 0"></path><circle cx="12" cy="8" r="4"></circle></svg></div>
-              <div style="font-weight:700; font-size:19px;">Photos of me</div>
-              <div style="font-size:13.5px; color:var(--text2); max-width:260px;">When teammates and event pages tag me, those posts show up here. Want to collab? Tag me.</div>
+            <div style="display:flex; flex-direction:column; gap:14px; padding:22px 20px 32px;">
+              <div style="font-size:11px; font-weight:800; color:var(--text2); letter-spacing:1px;">JOURNEY</div>
+              <div style="display:flex; flex-direction:column; gap:10px;">
+                <sc-for list="{{ aboutTimeline }}" as="t" hint-placeholder-count="3">
+                  <div style="display:flex; gap:12px; align-items:flex-start;">
+                    <div style="width:34px; height:34px; border-radius:9px; background: {{ t.grad }}; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:13px; flex:none;">{{ t.year }}</div>
+                    <div style="font-size:13.5px; line-height:1.45;"><b>{{ t.title }}</b> <span style="color:var(--text2);">— {{ t.note }}</span></div>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="font-size:11px; font-weight:800; color:var(--text2); letter-spacing:1px; margin-top:8px;">RIGHT NOW</div>
+              <div style="font-size:14px; line-height:1.5; background:var(--bg2); border-radius:12px; padding:12px 14px;">{{ aboutNow }}</div>
+              <div style="font-size:11px; font-weight:800; color:var(--text2); letter-spacing:1px; margin-top:8px;">STACK</div>
+              <div style="display:flex; flex-wrap:wrap; gap:6px;">
+                <sc-for list="{{ aboutSkills }}" as="sk" hint-placeholder-count="6">
+                  <div style="font-size:12px; font-weight:600; background:var(--bg2); border:1px solid var(--border); border-radius:999px; padding:5px 11px;">{{ sk.label }}</div>
+                </sc-for>
+              </div>
+              <div style="display:flex; gap:8px; margin-top:14px;">
+                <a href="{{ resumeHref }}" target="_blank" rel="noopener" style="flex:1; text-align:center; background:linear-gradient(120deg,#06b6d4,#3b82f6); color:#fff; border-radius:11px; padding:11px 0; font-size:14px; font-weight:700; text-decoration:none;">Download resume</a>
+                <button onClick="{{ openDm }}" style="flex:1; background:var(--bg2); color:var(--text); border:none; border-radius:11px; padding:11px 0; font-size:14px; font-weight:700; cursor:pointer;">Say hi</button>
+              </div>
             </div>
           </sc-if>
         </div>
@@ -585,7 +603,7 @@
         <div onClick="{{ closeMenu }}" style="position:absolute; inset:0; background:rgba(0,0,0,.5);"></div>
         <div style="position:relative; background:var(--bg); border-radius:18px 18px 0 0; padding:8px 0 18px; animation:sheetUp .26s ease;">
           <div style="width:38px; height:4px; border-radius:2px; background:var(--border); margin:8px auto 6px;"></div>
-          <button onClick="{{ openEdit }}" style="width:100%; background:none; border:none; cursor:pointer; display:flex; align-items:center; gap:14px; padding:15px 22px; font-size:15px; color:var(--text);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path></svg>Edit profile</button>
+          <!-- Edit profile is admin-only; live editing happens in /admin (Studio). -->
           <button onClick="{{ openSaved }}" style="width:100%; background:none; border:none; cursor:pointer; display:flex; align-items:center; gap:14px; padding:15px 22px; font-size:15px; color:var(--text);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="m19 21-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"></path></svg>Saved</button>
           <a href="{{ emailHref }}" style="width:100%; background:none; border:none; cursor:pointer; display:flex; align-items:center; gap:14px; padding:15px 22px; font-size:15px; color:var(--text); text-decoration:none;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m3 7 9 6 9-6"></path></svg>Email me</a>
           <button onClick="{{ toggleTheme }}" style="width:100%; background:none; border:none; cursor:pointer; display:flex; align-items:center; gap:14px; padding:15px 22px; font-size:15px; color:var(--text);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M20.5 13.2A8.5 8.5 0 1 1 10.8 3.5a6.8 6.8 0 0 0 9.7 9.7Z"></path></svg>Switch appearance</button>
@@ -994,7 +1012,7 @@ class Component extends DCLogic {
       name: 'Anand', username: 'anand.builds',
       role: 'Founder & Full-Stack Developer',
       bio: 'Building things people actually use.\nStackline (\u201923) \u2192 Orbitly (\u201925) \u00B7 3\u00D7 hackathon winner',
-      email: 'hi@anand.dev'
+      email: 'aanand.ak15@gmail.com'
     }
   };
 
@@ -1048,9 +1066,9 @@ class Component extends DCLogic {
     }
 
     this._replies = [
-      'Got it — thanks! For anything serious, email hi@anand.dev. I read everything 🙌',
+      'Got it — thanks! For anything serious, email aanand.ak15@gmail.com. I read everything 🙌',
       'Appreciate it! Meanwhile, the Reels tab has quick demos of my work.',
-      'Nice! Let\u2019s talk — hi@anand.dev, or grab my links from the + button.'
+      'Nice! Let\u2019s talk — aanand.ak15@gmail.com, or grab my links from the + button.'
     ];
     this._ri = 0;
 
@@ -1648,15 +1666,25 @@ class Component extends DCLogic {
       sendDm: () => this.sendDm(),
 
       following: S.following,
-      followLabel: S.following ? 'Following' : 'Follow',
+      followLabel: S.following ? 'Subscribed' : 'Subscribe',
       followBg: S.following ? 'var(--bg2)' : 'linear-gradient(120deg,#06b6d4,#3b82f6)',
       followColor: S.following ? 'var(--text)' : '#ffffff',
       toggleFollow: () => {
         const f = !S.following;
         this.setState({ following: f });
         this._save('following', null, f);
-        if (f) this.showToast('Thanks for the follow 💙');
+        if (f) this.showToast('Subscribed — I\u2019ll send you the next thing I ship 💙');
       },
+      resumeHref: (D.profile && D.profile.resumeUrl) ? D.profile.resumeUrl : ('mailto:' + (D.profile.email || 'aanand.ak15@gmail.com') + '?subject=Resume%20request'),
+      aboutTimeline: [
+        { year: '\u201923', title: 'Stackline', note: 'first startup — inventory autopilot, 120 stores', grad: 'linear-gradient(135deg,#0891b2,#155e75)' },
+        { year: '\u201925', title: 'Orbitly', note: 'team onboarding that runs itself · #2 on PH', grad: 'linear-gradient(135deg,#06b6d4,#3b82f6)' },
+        { year: 'Now', title: 'Building', note: 'shipping weekly · open to collabs', grad: 'linear-gradient(135deg,#1d4ed8,#6d28d9)' }
+      ],
+      aboutNow: 'Heads-down on Orbitly v2 \u2014 making it the fastest way for a new hire to feel useful on day one.',
+      aboutSkills: [
+        { label: 'TypeScript' }, { label: 'React' }, { label: 'Node' }, { label: 'Postgres' }, { label: 'Redis' }, { label: 'AWS' }, { label: 'Product' }, { label: 'Design' }
+      ],
       statPosts: String(D.posts.length),
       profileTab: S.profileTab,
       isPostsTab: S.profileTab === 'posts',

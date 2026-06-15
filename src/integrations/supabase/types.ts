@@ -170,6 +170,78 @@ export type Database = {
         }
         Relationships: []
       }
+      story_groups: {
+        Row: {
+          cover_url: string | null
+          id: string
+          slides: Json
+          sort_order: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          cover_url?: string | null
+          id?: string
+          slides?: Json
+          sort_order?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          cover_url?: string | null
+          id?: string
+          slides?: Json
+          sort_order?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      subscribers: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+        }
+        Relationships: []
+      }
+      visitor_identities: {
+        Row: {
+          avatar_key: string
+          created_at: string
+          display_name: string
+          email: string | null
+          random_name: string | null
+          visitor_id: string
+        }
+        Insert: {
+          avatar_key: string
+          created_at?: string
+          display_name: string
+          email?: string | null
+          random_name?: string | null
+          visitor_id: string
+        }
+        Update: {
+          avatar_key?: string
+          created_at?: string
+          display_name?: string
+          email?: string | null
+          random_name?: string | null
+          visitor_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       v_dm_threads: {

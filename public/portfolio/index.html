@@ -1740,11 +1740,17 @@ class Component extends DCLogic {
       admLocked: S.adminOpen && !S.adminAuthed,
       admReady: S.adminOpen && S.adminAuthed,
       admPw: S.adminPw,
+      admEmail: S.adminEmail,
       admPwError: S.adminPwError,
       admMsg: S.adminMsg,
-      setAdmPw: (e) => this.setState({ adminPw: e.target.value, adminPwError: false }),
+      admModeLabel: S.adminMode === 'signup' ? 'Create your admin account' : 'Sign in to manage your portfolio',
+      admModeBtn: S.adminMode === 'signup' ? 'Create account' : 'Sign in',
+      admModeToggle: S.adminMode === 'signup' ? 'Already have an account? Sign in' : "First time? Create an admin account",
+      setAdmPw: (e) => this.setState({ adminPw: e.target.value, adminPwError: null }),
+      setAdmEmail: (e) => this.setState({ adminEmail: e.target.value, adminPwError: null }),
       admPwKey: (e) => { if (e.key === 'Enter') this.admUnlock(); },
       admUnlock: () => this.admUnlock(),
+      admToggleMode: () => this.admToggleMode(),
       admLogout: () => this.admLogout(),
       closeAdmin: () => this.closeAdmin(),
       publishAdmin: () => this.publishAdmin(),
@@ -1756,6 +1762,7 @@ class Component extends DCLogic {
       admIsPeople: S.adminSection === 'people',
       admIsNotifs: S.adminSection === 'notifs',
       admIsProfile: S.adminSection === 'profile',
+      admIsInbox: S.adminSection === 'inbox',
       goAdmPosts: () => this.setState({ adminSection: 'posts' }),
       goAdmReels: () => this.setState({ adminSection: 'reels' }),
       goAdmStories: () => this.setState({ adminSection: 'stories' }),
@@ -1763,6 +1770,7 @@ class Component extends DCLogic {
       goAdmPeople: () => this.setState({ adminSection: 'people' }),
       goAdmNotifs: () => this.setState({ adminSection: 'notifs' }),
       goAdmProfile: () => this.setState({ adminSection: 'profile' }),
+      goAdmInbox: () => { this.setState({ adminSection: 'inbox' }); this.reloadInbox(); },
       admTabPostsC: S.adminSection === 'posts' ? 'var(--text)' : 'var(--text2)',
       admTabPostsBg: S.adminSection === 'posts' ? 'var(--bg)' : 'transparent',
       admTabReelsC: S.adminSection === 'reels' ? 'var(--text)' : 'var(--text2)',
@@ -1777,6 +1785,8 @@ class Component extends DCLogic {
       admTabNotifsBg: S.adminSection === 'notifs' ? 'var(--bg)' : 'transparent',
       admTabProfileC: S.adminSection === 'profile' ? 'var(--text)' : 'var(--text2)',
       admTabProfileBg: S.adminSection === 'profile' ? 'var(--bg)' : 'transparent',
+      admTabInboxC: S.adminSection === 'inbox' ? 'var(--text)' : 'var(--text2)',
+      admTabInboxBg: S.adminSection === 'inbox' ? 'var(--bg)' : 'transparent',
       admPosts, admReels, admStories, admTiles, admPeople, admNotifs,
       admAddPost: () => this.admAddPost(),
       admAddReel: () => this.admAddReel(),
@@ -1789,6 +1799,35 @@ class Component extends DCLogic {
       setAdmPfRole: (e) => this.admSet('profile.role', e.target.value),
       setAdmPfBio: (e) => this.admSet('profile.bio', e.target.value),
       setAdmPfEmail: (e) => this.admSet('profile.email', e.target.value),
+
+      admReloadInbox: () => this.reloadInbox(),
+      admInboxThreadCount: (S.inbox.threads || []).length,
+      admInboxCommentCount: (S.inbox.comments || []).length,
+      admInboxNoThreads: (S.inbox.threads || []).length === 0,
+      admInboxNoComments: (S.inbox.comments || []).length === 0,
+      admInboxThreads: (S.inbox.threads || []).map((t) => ({
+        thread_id: t.thread_id,
+        short: t.short,
+        initial: (t.short || '?').slice(0, 2).toUpperCase(),
+        count: t.count,
+        last_sender: t.last_sender,
+        draft: S.inboxDrafts[t.thread_id] || '',
+        setDraft: (e) => this.setInboxDraft(t.thread_id, e.target.value),
+        send: () => this.sendInboxReply(t.thread_id),
+        messages: t.messages.map((m) => ({
+          from: m.sender === 'them' ? 'you' : 'visitor',
+          color: m.sender === 'them' ? '#1f8a5b' : 'var(--text2)',
+          body: m.body
+        }))
+      })),
+      admInboxComments: (S.inbox.comments || []).map((c) => ({
+        username: c.username, body: c.body, target_id: c.target_id
+      })),
+
+      toastMsg: S.toast
+    };
+  }
+}
 
       toastMsg: S.toast
     };

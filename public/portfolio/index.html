@@ -1,0 +1,1696 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&amp;display=swap" rel="stylesheet">
+  <style>
+    :root { --page:#fafbfc; --bg:#ffffff; --bg2:#f0f3f6; --text:#181b1f; --text2:#75808a; --border:#e3e7ec; }
+    html, body { margin:0; padding:0; background:var(--page); }
+    *, *::before, *::after { box-sizing:border-box; }
+    *::-webkit-scrollbar { width:0; height:0; }
+    @keyframes heartPop { 0% {transform:scale(0); opacity:0;} 15% {transform:scale(1.25); opacity:1;} 30% {transform:scale(.95);} 45% {transform:scale(1.08);} 75% {transform:scale(1); opacity:1;} 100% {transform:scale(1); opacity:0;} }
+    @keyframes reelbar { from {width:0%;} to {width:100%;} }
+    @keyframes sheetUp { from {transform:translateY(16px);} to {transform:translateY(0);} }
+    @keyframes popIn { from {transform:scale(.96);} to {transform:scale(1);} }
+  </style>
+  <script src="content.js"></script>
+  <script src="image-slot.js"></script>
+</helmet>
+
+<div style="min-height:100dvh; display:flex; justify-content:center; background:var(--page); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif; color:var(--text);">
+  <div data-screen-label="App" style="width:100%; max-width:470px; height:100dvh; display:flex; flex-direction:column; background:var(--bg); border-left:1px solid var(--border); border-right:1px solid var(--border); position:relative; overflow:hidden;">
+
+    <header style="display:flex; align-items:center; justify-content:space-between; padding:8px 16px; border-bottom:1px solid var(--border); flex:none; background:var(--bg); z-index:5;">
+      <div style="font-family:'Pacifico',cursive; font-size:24px; line-height:1.5; color:var(--text);">Anand</div>
+      <div style="display:flex; align-items:center; gap:4px;">
+        <button onClick="{{ toggleTheme }}" title="Toggle theme" style="background:none; border:none; padding:8px; cursor:pointer; color:var(--text); display:flex;">
+          <sc-if value="{{ dark }}" hint-placeholder-val="{{ false }}">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"></circle><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M19.1 4.9l-1.6 1.6M6.5 17.5l-1.6 1.6"></path></svg>
+          </sc-if>
+          <sc-if value="{{ light }}" hint-placeholder-val="{{ true }}">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M20.5 13.2A8.5 8.5 0 1 1 10.8 3.5a6.8 6.8 0 0 0 9.7 9.7Z"></path></svg>
+          </sc-if>
+        </button>
+        <button onClick="{{ openNotif }}" title="Notifications" style="background:none; border:none; padding:8px; cursor:pointer; color:var(--text); display:flex; position:relative;">
+          <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+          <sc-if value="{{ notifDot }}" hint-placeholder-val="{{ true }}">
+            <span style="position:absolute; top:6px; right:6px; width:8px; height:8px; border-radius:50%; background:#ff3040; border:2px solid var(--bg);"></span>
+          </sc-if>
+        </button>
+        <button onClick="{{ openDm }}" title="Messages" style="background:none; border:none; padding:8px; cursor:pointer; color:var(--text); display:flex; position:relative;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg>
+          <sc-if value="{{ dmDot }}" hint-placeholder-val="{{ true }}">
+            <span style="position:absolute; top:6px; right:5px; width:8px; height:8px; border-radius:50%; background:#ff3040; border:2px solid var(--bg);"></span>
+          </sc-if>
+        </button>
+      </div>
+    </header>
+
+    <main style="flex:1; min-height:0; overflow-y:auto; overscroll-behavior:contain; scrollbar-width:none; background:var(--bg);">
+
+      <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+        <div data-screen-label="Home feed">
+          <div style="display:flex; gap:14px; padding:12px 14px 10px; overflow-x:auto; border-bottom:1px solid var(--border); scrollbar-width:none;">
+            <sc-for list="{{ stories }}" as="s" hint-placeholder-count="6">
+              <button onClick="{{ s.open }}" style="background:none; border:none; padding:0; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:6px; flex:none; width:66px;">
+                <div style="width:62px; height:62px; border-radius:50%; padding:2.5px; background:conic-gradient(from 210deg,#06b6d4,#3b82f6,#7dd3fc,#06b6d4); opacity: {{ s.dim }};">
+                  <div style="width:100%; height:100%; border-radius:50%; background:var(--bg); padding:2.5px;">
+                    <div style="width:100%; height:100%; border-radius:50%; background: {{ s.grad }}; display:flex; align-items:center; justify-content:center; color:#ffffff; font-weight:700; font-size:16px; letter-spacing:.3px;">{{ s.glyph }}</div>
+                  </div>
+                </div>
+                <div style="font-size:11px; color:var(--text2); max-width:66px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ s.label }}</div>
+              </button>
+            </sc-for>
+          </div>
+
+          <sc-for list="{{ posts }}" as="p" hint-placeholder-count="2">
+            <article data-screen-label="Post" style="border-bottom:1px solid var(--border); padding-bottom:8px;">
+              <div style="display:flex; align-items:center; gap:10px; padding:10px 14px;">
+                <div style="width:36px; height:36px; border-radius:50%; padding:2px; background:conic-gradient(from 210deg,#06b6d4,#3b82f6,#7dd3fc,#06b6d4); flex:none;">
+                  <div style="width:100%; height:100%; border-radius:50%; background:linear-gradient(140deg,#06b6d4,#3b82f6); display:flex; align-items:center; justify-content:center; color:#ffffff; font-weight:700; font-size:14px; border:2px solid var(--bg);">A</div>
+                </div>
+                <div style="flex:1; min-width:0;">
+                  <div style="font-size:14px; font-weight:600; line-height:1.2;">anand.builds</div>
+                  <div style="font-size:12px; color:var(--text2); line-height:1.3; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ p.label }}</div>
+                </div>
+                <button onClick="{{ p.openOptions }}" style="background:none; border:none; padding:6px; cursor:pointer; display:flex; color:var(--text);"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg></button>
+              </div>
+
+              <div onDoubleClick="{{ p.onDouble }}" onTouchStart="{{ p.touchStart }}" onTouchEnd="{{ p.touchEnd }}" style="position:relative; width:100%; aspect-ratio: {{ p.aspect }}; background:var(--bg2); overflow:hidden;">
+                <div style="display:flex; height:100%; width:100%; transition:transform .32s cubic-bezier(.4,0,.2,1); transform:translateX( {{ p.trackX }} );">
+                  <sc-for list="{{ p.slides }}" as="sl" hint-placeholder-count="1">
+                    <div style="flex:none; width:100%; height:100%; position:relative;">
+                      <image-slot id="{{ sl.slot }}" shape="rect" placeholder="{{ sl.placeholder }}" style="position:absolute; inset:0; width:100%; height:100%;"></image-slot>
+                    </div>
+                  </sc-for>
+                </div>
+                {{ p.heartEl }}
+                <sc-if value="{{ p.multi }}" hint-placeholder-val="{{ false }}">
+                  <div style="position:absolute; top:12px; right:12px; background:rgba(0,0,0,.55); color:#ffffff; font-size:12px; font-weight:600; padding:3px 9px; border-radius:99px; z-index:4;">{{ p.counter }}</div>
+                  <sc-if value="{{ p.showPrev }}" hint-placeholder-val="{{ false }}">
+                    <button onClick="{{ p.carPrev }}" style="position:absolute; left:8px; top:50%; transform:translateY(-50%); z-index:4; width:30px; height:30px; border-radius:50%; border:none; cursor:pointer; background:rgba(255,255,255,.85); display:flex; align-items:center; justify-content:center; box-shadow:0 1px 4px rgba(0,0,0,.2);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#181b1f" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m14 6-6 6 6 6"></path></svg></button>
+                  </sc-if>
+                  <sc-if value="{{ p.showNext }}" hint-placeholder-val="{{ true }}">
+                    <button onClick="{{ p.carNext }}" style="position:absolute; right:8px; top:50%; transform:translateY(-50%); z-index:4; width:30px; height:30px; border-radius:50%; border:none; cursor:pointer; background:rgba(255,255,255,.85); display:flex; align-items:center; justify-content:center; box-shadow:0 1px 4px rgba(0,0,0,.2);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#181b1f" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m10 6 6 6-6 6"></path></svg></button>
+                  </sc-if>
+                  <div style="position:absolute; left:0; right:0; bottom:12px; z-index:4; display:flex; justify-content:center; gap:5px; filter:drop-shadow(0 1px 2px rgba(0,0,0,.3));">
+                    <sc-for list="{{ p.dots }}" as="d" hint-placeholder-count="3">
+                      <span style="width:6px; height:6px; border-radius:50%; background: {{ d.bg }};"></span>
+                    </sc-for>
+                  </div>
+                </sc-if>
+              </div>
+
+              <div style="display:flex; align-items:center; gap:4px; padding:6px 8px 0;">
+                <button onClick="{{ p.toggleLike }}" style="background:none; border:none; padding:6px; cursor:pointer; display:flex; color: {{ p.heartColor }};">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="{{ p.heartFill }}" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                </button>
+                <button onClick="{{ p.openComments }}" style="background:none; border:none; padding:6px; cursor:pointer; display:flex; color:var(--text);">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                </button>
+                <button onClick="{{ p.share }}" style="background:none; border:none; padding:6px; cursor:pointer; display:flex; color:var(--text);">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg>
+                </button>
+                <div style="flex:1;"></div>
+                <button onClick="{{ p.toggleSave }}" style="background:none; border:none; padding:6px; cursor:pointer; display:flex; color:var(--text);">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="{{ p.saveFill }}" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="m19 21-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"></path></svg>
+                </button>
+              </div>
+
+              <div style="font-weight:600; font-size:14px; padding:2px 14px;">{{ p.likeCount }} likes</div>
+              <div style="padding:3px 14px 0; font-size:14px; line-height:1.45;"><span style="font-weight:600;">anand.builds</span> {{ p.caption }}<sc-if value="{{ p.showMore }}" hint-placeholder-val="{{ false }}"><button onClick="{{ p.toggleCap }}" style="background:none; border:none; padding:0; cursor:pointer; color:var(--text2); font-size:14px;">more</button></sc-if></div>
+              <button onClick="{{ p.openComments }}" style="background:none; border:none; cursor:pointer; color:var(--text2); font-size:14px; padding:4px 14px 0; text-align:left; display:block;">View all {{ p.commentCount }} comments</button>
+              <div style="padding:4px 14px 0; font-size:11px; color:var(--text2); text-transform:uppercase; letter-spacing:.4px;">{{ p.time }} ago</div>
+            </article>
+          </sc-for>
+
+          <div style="display:flex; flex-direction:column; align-items:center; gap:8px; padding:36px 24px 48px; text-align:center;">
+            <div style="width:56px; height:56px; border-radius:50%; border:2px solid #3b82f6; display:flex; align-items:center; justify-content:center; color:#3b82f6;">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"></path></svg>
+            </div>
+            <div style="font-weight:600; font-size:15px;">You're all caught up</div>
+            <div style="font-size:13px; color:var(--text2); max-width:280px;">That's everything I've shipped (so far). Want the live demos? Check Reels — or DM me.</div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isExplore }}" hint-placeholder-val="{{ false }}">
+        <div data-screen-label="Explore" style="padding:12px 12px 32px;">
+          <div style="display:flex; align-items:center; gap:8px; background:var(--bg2); border-radius:10px; padding:9px 12px; margin-bottom:12px; color:var(--text2);">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="m20.5 20.5-4.6-4.6"></path></svg>
+            <input value="{{ search }}" onChange="{{ setSearch }}" placeholder="Search my work — try 'hackathon'" style="flex:1; background:none; border:none; outline:none; font-size:14px; color:var(--text); min-width:0;" />
+          </div>
+
+          <sc-if value="{{ searching }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-bottom:14px;">
+              <sc-for list="{{ peopleResults }}" as="pp" hint-placeholder-count="2">
+                <div style="display:flex; align-items:center; gap:12px; padding:7px 2px;">
+                  <div style="width:44px; height:44px; border-radius:50%; background: {{ pp.bg }}; flex:none; display:flex; align-items:center; justify-content:center; color:#ffffff; font-weight:700; font-size:16px;">{{ pp.initial }}</div>
+                  <div style="flex:1; min-width:0;">
+                    <div style="font-size:14px; font-weight:600; line-height:1.2;">{{ pp.u }}</div>
+                    <div style="font-size:12.5px; color:var(--text2); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ pp.name }}</div>
+                  </div>
+                  <button onClick="{{ pp.toggleFollow }}" style="border:1px solid var(--border); border-radius:8px; padding:6px 16px; font-size:13px; font-weight:600; cursor:pointer; background:var(--bg2); color:var(--text);">{{ pp.followLabel }}</button>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ showRecents }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:2px 2px 8px;">
+              <div style="font-size:15px; font-weight:700;">Recent</div>
+              <button onClick="{{ clearRecents }}" style="background:none; border:none; cursor:pointer; color:#3b82f6; font-size:13.5px; font-weight:600;">Clear all</button>
+            </div>
+            <sc-for list="{{ recents }}" as="rc" hint-placeholder-count="3">
+              <button onClick="{{ rc.set }}" style="display:flex; align-items:center; gap:12px; padding:7px 2px; background:none; border:none; cursor:pointer; width:100%; text-align:left;">
+                <div style="width:36px; height:36px; border-radius:50%; background:var(--bg2); flex:none; display:flex; align-items:center; justify-content:center; color:var(--text2);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="m20.5 20.5-4.6-4.6"></path></svg></div>
+                <span style="font-size:14px; color:var(--text);">{{ rc.term }}</span>
+              </button>
+            </sc-for>
+          </sc-if>
+
+          <div style="display:grid; grid-template-columns:repeat(3,1fr); grid-auto-rows:140px; grid-auto-flow:dense; gap:3px;">
+            <sc-for list="{{ tiles }}" as="t" hint-placeholder-count="6">
+              <button onClick="{{ t.open }}" style="grid-row: {{ t.span }}; background: {{ t.grad }}; border:none; cursor:pointer; border-radius:3px; position:relative; display:flex; flex-direction:column; justify-content:flex-end; padding:10px; color:#ffffff; overflow:hidden; text-align:left;">
+                <div style="position:absolute; top:-12px; right:-6px; font-size:64px; font-weight:800; opacity:.18; letter-spacing:-2px;">{{ t.big }}</div>
+                <div style="font-size:9px; font-weight:700; letter-spacing:1.2px; opacity:.85;">{{ t.kicker }}</div>
+                <div style="font-size:13px; font-weight:600; line-height:1.25; text-wrap:pretty;">{{ t.label }}</div>
+              </button>
+            </sc-for>
+          </div>
+          <sc-if value="{{ noTiles }}" hint-placeholder-val="{{ false }}">
+            <div style="text-align:center; color:var(--text2); font-size:14px; padding:40px 20px;">Nothing matches that — yet. Maybe it's our next project? <span style="color:#3b82f6; font-weight:600;">DM me.</span></div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isReels }}" hint-placeholder-val="{{ false }}">
+        <div data-screen-label="Reels" style="height:100%; overflow-y:auto; scroll-snap-type:y mandatory; scrollbar-width:none; background:#000000;">
+          <sc-for list="{{ reels }}" as="r" hint-placeholder-count="1">
+            <section data-screen-label="Reel" style="position:relative; height:100%; scroll-snap-align:start; scroll-snap-stop:always; overflow:hidden; background:#0a1016;">
+              <image-slot id="{{ r.slot }}" shape="rect" placeholder="{{ r.placeholder }}" style="position:absolute; inset:0; width:100%; height:100%;"></image-slot>
+              <div onClick="{{ r.toggle }}" onDoubleClick="{{ r.doubleLike }}" style="position:absolute; inset:0; z-index:2; cursor:pointer;"></div>
+              <button onClick="{{ r.toggleMute }}" style="position:absolute; top:14px; right:14px; z-index:4; width:34px; height:34px; border-radius:50%; border:none; cursor:pointer; background:rgba(0,0,0,.45); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; color:#ffffff;">
+                <sc-if value="{{ r.muted }}" hint-placeholder-val="{{ true }}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z"></path><path d="m23 9-6 6M17 9l6 6"></path></svg></sc-if>
+                <sc-if value="{{ r.unmuted }}" hint-placeholder-val="{{ false }}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z"></path><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a9 9 0 0 1 0 14"></path></svg></sc-if>
+              </button>
+              <sc-if value="{{ r.paused }}" hint-placeholder-val="{{ false }}">
+                <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; z-index:2; pointer-events:none;">
+                  <div style="width:74px; height:74px; border-radius:50%; background:rgba(0,0,0,.45); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center;">
+                    <svg width="34" height="34" viewBox="0 0 24 24" fill="#ffffff"><path d="M8.5 5.8v12.4l10-6.2z"></path></svg>
+                  </div>
+                </div>
+              </sc-if>
+              {{ r.progressEl }}
+              <div style="position:absolute; left:0; right:0; bottom:0; padding:18px 70px 22px 16px; background:linear-gradient(transparent, rgba(0,0,0,.72)); color:#ffffff; z-index:3; pointer-events:none;">
+                <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+                  <div style="width:30px; height:30px; border-radius:50%; background:linear-gradient(140deg,#06b6d4,#3b82f6); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:12px; border:1.5px solid #ffffff;">A</div>
+                  <div style="font-size:13.5px; font-weight:600;">anand.builds</div>
+                  <div style="font-size:11px; border:1px solid rgba(255,255,255,.7); border-radius:6px; padding:2.5px 8px;">{{ r.tag }}</div>
+                </div>
+                <div style="font-size:14.5px; font-weight:600; margin-bottom:3px;">{{ r.title }}</div>
+                <div style="font-size:12.5px; opacity:.85; line-height:1.4; margin-bottom:8px;">{{ r.sub }}</div>
+                <div style="display:flex; align-items:center; gap:7px; font-size:12px;">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l11-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="17" cy="16" r="3"></circle></svg>
+                  <span style="opacity:.9; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ r.audio }}</span>
+                </div>
+              </div>
+              <div style="position:absolute; right:8px; bottom:90px; display:flex; flex-direction:column; align-items:center; gap:18px; z-index:3; color:#ffffff;">
+                <button onClick="{{ r.like }}" style="background:none; border:none; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; color: {{ r.heartColor }};">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="{{ r.heartFill }}" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="filter:drop-shadow(0 2px 6px rgba(0,0,0,.4));"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                  <span style="font-size:12px; font-weight:600; color:#ffffff;">{{ r.likeCount }}</span>
+                </button>
+                <button onClick="{{ r.openComments }}" style="background:none; border:none; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; color:#ffffff;">
+                  <svg width="27" height="27" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="filter:drop-shadow(0 2px 6px rgba(0,0,0,.4));"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                  <span style="font-size:12px; font-weight:600;">{{ r.commentCount }}</span>
+                </button>
+                <button onClick="{{ r.share }}" style="background:none; border:none; cursor:pointer; display:flex; color:#ffffff;">
+                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="filter:drop-shadow(0 2px 6px rgba(0,0,0,.4));"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg>
+                </button>
+              </div>
+            </section>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isProfile }}" hint-placeholder-val="{{ false }}">
+        <div data-screen-label="Profile" style="padding-bottom:32px;">
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px 4px;">
+            <div style="display:flex; align-items:center; gap:6px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text);"><rect x="4" y="10.5" width="16" height="11" rx="2.5"></rect><path d="M7.5 10.5V7a4.5 4.5 0 0 1 9 0v3.5"></path></svg>
+              <div style="font-size:17px; font-weight:700;">{{ pfUsername }}</div>
+            </div>
+            <button onClick="{{ openMenu }}" title="Menu" style="background:none; border:none; padding:6px; cursor:pointer; color:var(--text); display:flex;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            </button>
+          </div>
+          <div style="display:flex; align-items:center; gap:22px; padding:8px 18px 6px;">
+            <div style="width:94px; height:94px; border-radius:50%; padding:3px; background:conic-gradient(from 210deg,#06b6d4,#3b82f6,#7dd3fc,#06b6d4); flex:none;">
+              <div style="width:100%; height:100%; border-radius:50%; background:var(--bg); padding:3px;">
+                <image-slot id="avatar-main" shape="circle" placeholder="Your photo" style="width:100%; height:100%; display:block;"></image-slot>
+              </div>
+            </div>
+            <div style="flex:1; display:flex; justify-content:space-around; text-align:center;">
+              <div><div style="font-size:18px; font-weight:700;">{{ statPosts }}</div><div style="font-size:12.5px; color:var(--text2);">projects</div></div>
+              <div><div style="font-size:18px; font-weight:700;">3</div><div style="font-size:12.5px; color:var(--text2);">hack wins</div></div>
+              <div><div style="font-size:18px; font-weight:700;">2</div><div style="font-size:12.5px; color:var(--text2);">startups</div></div>
+            </div>
+          </div>
+          <div style="padding:6px 18px 0; font-size:14px; line-height:1.5;">
+            <div style="font-weight:700;">{{ pfName }}</div>
+            <div style="color:var(--text2); font-size:13px; margin-bottom:2px;">{{ pfRole }}</div>
+            <div style="white-space:pre-line;">{{ pfBio }}</div>
+            <a href="{{ emailHref }}" style="color:#1d4ed8; text-decoration:none; font-weight:600;">{{ emailText }}</a>
+          </div>
+          <div style="display:flex; gap:8px; padding:14px 18px 6px;">
+            <button onClick="{{ toggleFollow }}" style="flex:1; border:none; border-radius:9px; padding:9px 0; font-size:14px; font-weight:600; cursor:pointer; background: {{ followBg }}; color: {{ followColor }};">{{ followLabel }}</button>
+            <button onClick="{{ openDm }}" style="flex:1; border:none; border-radius:9px; padding:9px 0; font-size:14px; font-weight:600; cursor:pointer; background:var(--bg2); color:var(--text);">Message</button>
+            <a href="{{ emailHref }}" style="flex:1; border-radius:9px; padding:9px 0; font-size:14px; font-weight:600; cursor:pointer; background:var(--bg2); color:var(--text); text-align:center; text-decoration:none;">Email</a>
+          </div>
+          <div style="display:flex; gap:16px; padding:12px 18px 4px; overflow-x:auto; scrollbar-width:none;">
+            <sc-for list="{{ stories }}" as="h" hint-placeholder-count="5">
+              <button onClick="{{ h.open }}" style="background:none; border:none; padding:0; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:5px; flex:none; width:60px;">
+                <div style="width:56px; height:56px; border-radius:50%; border:1.5px solid var(--border); padding:3px;">
+                  <div style="width:100%; height:100%; border-radius:50%; background: {{ h.grad }}; display:flex; align-items:center; justify-content:center; color:#ffffff; font-weight:700; font-size:14px;">{{ h.glyph }}</div>
+                </div>
+                <div style="font-size:11px; color:var(--text);">{{ h.label }}</div>
+              </button>
+            </sc-for>
+          </div>
+          <div style="display:flex; justify-content:space-around; border-top:1px solid var(--border); margin-top:10px;">
+            <button onClick="{{ setPostsTab }}" style="background:none; border:none; cursor:pointer; flex:1; display:flex; justify-content:center; padding:11px 0; border-top:1.5px solid {{ postsTabBorder }}; margin-top:-1px; color: {{ postsTabColor }};">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z"></path></svg>
+            </button>
+            <button onClick="{{ setReelsTab }}" style="background:none; border:none; cursor:pointer; flex:1; display:flex; justify-content:center; padding:11px 0; border-top:1.5px solid {{ reelsTabBorder }}; margin-top:-1px; color: {{ reelsTabColor }};">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="3.5" width="19" height="17" rx="4.5"></rect><path d="M2.5 8.5h19M8 3.5l2.6 5M14.5 3.5l2.6 5"></path><path d="M10.5 11.8v5.6l4.7-2.8z" fill="currentColor" stroke="none"></path></svg>
+            </button>
+            <button onClick="{{ setTaggedTab }}" style="background:none; border:none; cursor:pointer; flex:1; display:flex; justify-content:center; padding:11px 0; border-top:1.5px solid {{ taggedTabBorder }}; margin-top:-1px; color: {{ taggedTabColor }};">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 1 0-16 0"></path><circle cx="12" cy="8" r="4"></circle></svg>
+            </button>
+          </div>
+
+          <sc-if value="{{ isPostsTab }}" hint-placeholder-val="{{ true }}">
+            <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:3px; padding-top:3px;">
+              <sc-for list="{{ gridPosts }}" as="g" hint-placeholder-count="6">
+                <button onClick="{{ g.open }}" style="aspect-ratio:1/1; border:none; cursor:pointer; background: {{ g.grad }}; position:relative; display:flex; flex-direction:column; justify-content:flex-end; padding:8px; color:#ffffff; overflow:hidden; text-align:left;">
+                  <div style="position:absolute; top:-10px; right:-4px; font-size:52px; font-weight:800; opacity:.18; letter-spacing:-2px;">{{ g.big }}</div>
+                  <div style="font-size:11.5px; font-weight:600; line-height:1.25; text-wrap:pretty;">{{ g.label }}</div>
+                  <div style="display:flex; align-items:center; gap:3px; font-size:10.5px; opacity:.85; margin-top:2px;">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="#ffffff"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                    {{ g.likes }}
+                  </div>
+                </button>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isReelsTab }}" hint-placeholder-val="{{ false }}">
+            <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:3px; padding-top:3px;">
+              <sc-for list="{{ reelGrid }}" as="rg" hint-placeholder-count="3">
+                <button onClick="{{ rg.open }}" style="aspect-ratio:9/16; border:none; cursor:pointer; background: {{ rg.grad }}; position:relative; display:flex; flex-direction:column; justify-content:flex-end; padding:8px; color:#ffffff; overflow:hidden; text-align:left;">
+                  <div style="position:absolute; top:-10px; right:-4px; font-size:56px; font-weight:800; opacity:.16; letter-spacing:-2px;">{{ rg.big }}</div>
+                  <div style="position:absolute; top:7px; left:7px; display:flex;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="3.5" width="19" height="17" rx="4.5"></rect><path d="M10.5 11.8v5.6l4.7-2.8z" fill="#ffffff" stroke="none"></path></svg></div>
+                  <div style="font-size:11px; font-weight:600; line-height:1.25; text-wrap:pretty;">{{ rg.title }}</div>
+                  <div style="display:flex; align-items:center; gap:3px; font-size:10.5px; opacity:.85; margin-top:2px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"></path><circle cx="12" cy="12" r="2.5" fill="#ffffff" stroke="none"></circle></svg>{{ rg.views }}</div>
+                </button>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isTaggedTab }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; flex-direction:column; align-items:center; gap:10px; padding:48px 24px; text-align:center;">
+              <div style="width:62px; height:62px; border-radius:50%; border:2px solid var(--text); display:flex; align-items:center; justify-content:center; color:var(--text);"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 1 0-16 0"></path><circle cx="12" cy="8" r="4"></circle></svg></div>
+              <div style="font-weight:700; font-size:19px;">Photos of me</div>
+              <div style="font-size:13.5px; color:var(--text2); max-width:260px;">When teammates and event pages tag me, those posts show up here. Want to collab? Tag me.</div>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+    </main>
+
+    <nav style="flex:none; display:flex; align-items:center; justify-content:space-around; border-top:1px solid var(--border); padding:7px 0 9px; background:var(--bg); color:var(--text2); z-index:5;">
+      <button onClick="{{ goHome }}" title="Home" style="background:none; border:none; padding:8px 14px; cursor:pointer; display:flex; color: {{ navHomeC }};">
+        <svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="{{ navHomeSw }}" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10v10a1 1 0 0 0 1 1h5v-7h6v7h5a1 1 0 0 0 1-1V10"></path><path d="m2.5 11 9.5-8 9.5 8"></path></svg>
+      </button>
+      <button onClick="{{ goExplore }}" title="Explore" style="background:none; border:none; padding:8px 14px; cursor:pointer; display:flex; color: {{ navSearchC }};">
+        <svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="{{ navSearchSw }}" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="m20.5 20.5-4.6-4.6"></path></svg>
+      </button>
+      <button onClick="{{ openCreate }}" title="Create" style="background:none; border:none; padding:4px 14px; cursor:pointer; display:flex;">
+        <div style="width:34px; height:34px; border-radius:10px; background:linear-gradient(140deg,#06b6d4,#3b82f6); display:flex; align-items:center; justify-content:center; color:#ffffff; box-shadow:0 4px 12px rgba(59,130,246,.35);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 7v10M7 12h10"></path></svg>
+        </div>
+      </button>
+      <button onClick="{{ goReels }}" title="Reels" style="background:none; border:none; padding:8px 14px; cursor:pointer; display:flex; color: {{ navReelsC }};">
+        <svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="{{ navReelsSw }}" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="3.5" width="19" height="17" rx="4.5"></rect><path d="M2.5 8.5h19M8 3.5l2.6 5M14.5 3.5l2.6 5"></path><path d="M10.5 11.8v5.6l4.7-2.8z" fill="currentColor" stroke="none"></path></svg>
+      </button>
+      <button onClick="{{ goProfile }}" title="Profile" style="background:none; border:none; padding:8px 14px; cursor:pointer; display:flex;">
+        <div style="width:27px; height:27px; border-radius:50%; background:linear-gradient(140deg,#06b6d4,#3b82f6); display:flex; align-items:center; justify-content:center; color:#ffffff; font-weight:700; font-size:12px; border: {{ navProfileRing }};">A</div>
+      </button>
+    </nav>
+
+    <sc-if value="{{ storyOpen }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Story viewer" style="position:absolute; inset:0; z-index:60; background:#000000; display:flex; flex-direction:column; overflow:hidden;">
+        <div style="position:absolute; inset:0; background: {{ svGrad }};"></div>
+        <div style="position:absolute; inset:0; background:radial-gradient(120% 90% at 50% 0%, rgba(255,255,255,.14), transparent 55%);"></div>
+        <div onClick="{{ prevTap }}" style="position:absolute; left:0; top:0; bottom:0; width:33%; z-index:2; cursor:pointer;"></div>
+        <div onClick="{{ nextTap }}" style="position:absolute; right:0; top:0; bottom:0; width:67%; z-index:2; cursor:pointer;"></div>
+        <div style="position:relative; display:flex; gap:4px; padding:12px 12px 0; z-index:3;">
+          <sc-for list="{{ svBars }}" as="b" hint-placeholder-count="2">
+            <div style="flex:1; height:2.5px; border-radius:2px; background:rgba(255,255,255,.35); overflow:hidden;"><div style="height:100%; background:#ffffff; width: {{ b.w }};"></div></div>
+          </sc-for>
+        </div>
+        <div style="position:relative; display:flex; align-items:center; gap:10px; padding:12px 12px 0; z-index:3; color:#ffffff;">
+          <div style="width:34px; height:34px; border-radius:50%; background:rgba(255,255,255,.22); border:1.5px solid rgba(255,255,255,.7); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px;">{{ svGlyph }}</div>
+          <div style="flex:1; font-size:14px; font-weight:600;">{{ svLabel }} <span style="font-weight:400; opacity:.7; font-size:13px;">· now</span></div>
+          <button onClick="{{ closeStory }}" style="background:none; border:none; cursor:pointer; color:#ffffff; padding:6px; display:flex;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"></path></svg>
+          </button>
+        </div>
+        <div style="position:relative; flex:1; display:flex; flex-direction:column; justify-content:center; padding:0 34px 60px; color:#ffffff; z-index:1;">
+          <div style="font-size:12px; font-weight:700; letter-spacing:2.5px; opacity:.8; margin-bottom:14px;">{{ svKicker }}</div>
+          <div style="font-size:34px; font-weight:800; line-height:1.12; letter-spacing:-.5px; margin-bottom:14px; text-wrap:pretty;">{{ svTitle }}</div>
+          <div style="font-size:16.5px; line-height:1.55; opacity:.92; max-width:300px; text-wrap:pretty;">{{ svBody }}</div>
+        </div>
+        <div style="position:relative; z-index:5; display:flex; align-items:center; gap:10px; padding:12px 14px 16px;">
+          <div style="flex:1; display:flex; align-items:center; border:1px solid rgba(255,255,255,.55); border-radius:22px; padding:9px 16px;">
+            <input value="{{ storyReply }}" onChange="{{ setStoryReply }}" onKeyDown="{{ storyReplyKey }}" placeholder="Reply to Anand…" style="flex:1; background:none; border:none; outline:none; font-size:14px; color:#ffffff; min-width:0;" />
+          </div>
+          <button onClick="{{ reactLove }}" style="background:none; border:none; cursor:pointer; font-size:22px; line-height:1; padding:4px;">❤️</button>
+          <button onClick="{{ reactFire }}" style="background:none; border:none; cursor:pointer; font-size:22px; line-height:1; padding:4px;">🔥</button>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ commentsOpen }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Comments" style="position:absolute; inset:0; z-index:50; display:flex; flex-direction:column; justify-content:flex-end;">
+        <div onClick="{{ closeComments }}" style="position:absolute; inset:0; background:rgba(0,0,0,.5);"></div>
+        <div style="position:relative; background:var(--bg); border-radius:18px 18px 0 0; max-height:72%; display:flex; flex-direction:column; animation:sheetUp .28s ease;">
+          <div style="width:38px; height:4px; border-radius:2px; background:var(--border); margin:10px auto 0;"></div>
+          <div style="text-align:center; font-weight:700; font-size:15px; padding:10px 0 12px; border-bottom:1px solid var(--border);">Comments</div>
+          <div style="flex:1; overflow-y:auto; padding:14px 16px; display:flex; flex-direction:column; gap:16px; scrollbar-width:none;">
+            <sc-for list="{{ cList }}" as="c" hint-placeholder-count="2">
+              <div style="display:flex; gap:10px;">
+                <div style="width:32px; height:32px; border-radius:50%; background: {{ c.bg }}; flex:none; display:flex; align-items:center; justify-content:center; color:#ffffff; font-weight:700; font-size:12px;">{{ c.initial }}</div>
+                <div style="flex:1; min-width:0; font-size:14px; line-height:1.45;"><span style="font-weight:600;">{{ c.u }}</span> {{ c.t }}<div style="display:flex; align-items:center; gap:14px; font-size:12px; color:var(--text2); margin-top:4px;"><span>{{ c.when }}</span><span style="font-weight:600;">{{ c.likeText }}</span><button onClick="{{ c.reply }}" style="background:none; border:none; padding:0; cursor:pointer; color:var(--text2); font-size:12px; font-weight:600;">Reply</button></div></div>
+                <button onClick="{{ c.toggleLike }}" style="background:none; border:none; padding:4px 0; cursor:pointer; display:flex; align-items:flex-start; color: {{ c.likeColor }};">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="{{ c.likeFill }}" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                </button>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px; padding:10px 14px 14px; border-top:1px solid var(--border);">
+            <div style="width:34px; height:34px; border-radius:50%; background:var(--bg2); flex:none; display:flex; align-items:center; justify-content:center; color:var(--text2); font-weight:700; font-size:13px;">?</div>
+            <input value="{{ draft }}" onChange="{{ setDraft }}" onKeyDown="{{ draftKey }}" placeholder="Add a comment…" style="flex:1; background:none; border:none; outline:none; font-size:14px; color:var(--text); min-width:0;" />
+            <button onClick="{{ addComment }}" style="background:none; border:none; cursor:pointer; font-weight:700; font-size:14px; color: {{ postBtnColor }};">Post</button>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ createOpen }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Create popup" style="position:absolute; inset:0; z-index:55; display:flex; align-items:center; justify-content:center; padding:24px;">
+        <div onClick="{{ closeCreate }}" style="position:absolute; inset:0; background:rgba(0,0,0,.5);"></div>
+        <div style="position:relative; background:var(--bg); border-radius:20px; padding:24px 22px 20px; width:100%; max-width:340px; animation:popIn .22s ease; box-shadow:0 24px 60px rgba(0,0,0,.3);">
+          <button onClick="{{ closeCreate }}" style="position:absolute; top:12px; right:12px; background:none; border:none; cursor:pointer; color:var(--text2); padding:6px; display:flex;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"></path></svg>
+          </button>
+          <div style="width:54px; height:54px; border-radius:16px; background:linear-gradient(140deg,#06b6d4,#3b82f6); display:flex; align-items:center; justify-content:center; color:#ffffff; margin-bottom:14px;">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 7v10M7 12h10"></path></svg>
+          </div>
+          <div style="font-size:19px; font-weight:800; letter-spacing:-.3px; margin-bottom:6px;">New post? That's my job 😄</div>
+          <div style="font-size:14px; color:var(--text2); line-height:1.5; margin-bottom:18px;">Only I can post here — but the next project on this feed could be yours. Let's build it together.</div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px;">
+            <a href="{{ emailHref }}" style="display:flex; align-items:center; gap:8px; background:var(--bg2); border-radius:11px; padding:11px 12px; text-decoration:none; color:var(--text); font-size:13.5px; font-weight:600;"><span style="color:#3b82f6;">✉</span> Email me</a>
+            <a href="#" title="Add your GitHub link" style="display:flex; align-items:center; gap:8px; background:var(--bg2); border-radius:11px; padding:11px 12px; text-decoration:none; color:var(--text); font-size:13.5px; font-weight:600;"><span style="color:#3b82f6;">&lt;/&gt;</span> GitHub</a>
+            <a href="#" title="Add your LinkedIn link" style="display:flex; align-items:center; gap:8px; background:var(--bg2); border-radius:11px; padding:11px 12px; text-decoration:none; color:var(--text); font-size:13.5px; font-weight:600;"><span style="color:#3b82f6;">in</span> LinkedIn</a>
+            <a href="#" title="Add your résumé link" style="display:flex; align-items:center; gap:8px; background:var(--bg2); border-radius:11px; padding:11px 12px; text-decoration:none; color:var(--text); font-size:13.5px; font-weight:600;"><span style="color:#3b82f6;">⤓</span> Résumé</a>
+          </div>
+          <button onClick="{{ createToDm }}" style="width:100%; border:none; border-radius:11px; padding:12px 0; font-size:14px; font-weight:700; cursor:pointer; background:linear-gradient(120deg,#06b6d4,#3b82f6); color:#ffffff;">Or DM me right here</button>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ dmOpen }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Messages" style="position:absolute; inset:0; z-index:58; background:var(--bg); display:flex; flex-direction:column;">
+        <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-bottom:1px solid var(--border); flex:none;">
+          <button onClick="{{ closeDm }}" style="background:none; border:none; cursor:pointer; color:var(--text); padding:6px; display:flex;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m14 6-6 6 6 6"></path></svg>
+          </button>
+          <div style="width:34px; height:34px; border-radius:50%; background:linear-gradient(140deg,#06b6d4,#3b82f6); display:flex; align-items:center; justify-content:center; color:#ffffff; font-weight:700; font-size:13px;">A</div>
+          <div style="flex:1;">
+            <div style="font-size:14px; font-weight:600; line-height:1.2;">anand.builds</div>
+            <div style="font-size:12px; color:var(--text2);">usually replies fast</div>
+          </div>
+        </div>
+        <div style="flex:1; min-height:0; overflow-y:auto; padding:16px 14px; display:flex; flex-direction:column; gap:8px; scrollbar-width:none;">
+          <sc-for list="{{ dmMsgs }}" as="m" hint-placeholder-count="1">
+            <div style="display:flex; justify-content: {{ m.align }};">
+              <div style="max-width:75%; padding:9px 13px; border-radius:18px; font-size:14px; line-height:1.45; background: {{ m.bg }}; color: {{ m.color }};">{{ m.text }}</div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; padding:10px 14px 14px; flex:none;">
+          <div style="flex:1; display:flex; align-items:center; gap:8px; border:1px solid var(--border); border-radius:22px; padding:9px 14px; background:var(--bg);">
+            <input value="{{ dmDraft }}" onChange="{{ setDmDraft }}" onKeyDown="{{ dmKey }}" placeholder="Message…" style="flex:1; background:none; border:none; outline:none; font-size:14px; color:var(--text); min-width:0;" />
+          </div>
+          <button onClick="{{ sendDm }}" style="border:none; border-radius:50%; width:40px; height:40px; cursor:pointer; background:linear-gradient(120deg,#06b6d4,#3b82f6); color:#ffffff; display:flex; align-items:center; justify-content:center; flex:none;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg>
+          </button>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ notifOpen }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Notifications" style="position:absolute; inset:0; z-index:58; background:var(--bg); display:flex; flex-direction:column;">
+        <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-bottom:1px solid var(--border); flex:none;">
+          <button onClick="{{ closeNotif }}" style="background:none; border:none; cursor:pointer; color:var(--text); padding:6px; display:flex;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m14 6-6 6 6 6"></path></svg>
+          </button>
+          <div style="font-size:16px; font-weight:700;">Notifications</div>
+        </div>
+        <div style="flex:1; min-height:0; overflow-y:auto; scrollbar-width:none; padding:6px 0 24px;">
+          <sc-for list="{{ notifGroups }}" as="grp" hint-placeholder-count="2">
+            <div style="font-size:15px; font-weight:700; padding:14px 16px 6px;">{{ grp.span }}</div>
+            <sc-for list="{{ grp.items }}" as="n" hint-placeholder-count="3">
+              <div style="display:flex; align-items:center; gap:12px; padding:8px 16px;">
+                <div style="width:44px; height:44px; border-radius:50%; background: {{ n.bg }}; flex:none; display:flex; align-items:center; justify-content:center; color:#ffffff; font-weight:700; font-size:16px;">{{ n.initial }}</div>
+                <div style="flex:1; min-width:0; font-size:13.5px; line-height:1.4;"><span style="font-weight:600;">{{ n.u }}</span> {{ n.text }} <span style="color:var(--text2);">{{ n.when }}</span></div>
+                <sc-if value="{{ n.isFollow }}" hint-placeholder-val="{{ true }}">
+                  <button onClick="{{ n.toggleFollow }}" style="flex:none; border:none; border-radius:9px; padding:7px 14px; font-size:13px; font-weight:600; cursor:pointer; background: {{ n.followBg }}; color: {{ n.followColor }};">{{ n.followLabel }}</button>
+                </sc-if>
+                <sc-if value="{{ n.hasThumb }}" hint-placeholder-val="{{ false }}">
+                  <div style="width:44px; height:44px; border-radius:6px; background: {{ n.thumb }}; flex:none; display:flex; align-items:center; justify-content:center; color:#ffffff; font-weight:800; font-size:15px;">{{ n.big }}</div>
+                </sc-if>
+              </div>
+            </sc-for>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ postViewOpen }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Post detail" style="position:absolute; inset:0; z-index:57; background:var(--bg); display:flex; flex-direction:column;">
+        <div style="display:flex; align-items:center; gap:10px; padding:8px 10px; border-bottom:1px solid var(--border); flex:none;">
+          <button onClick="{{ closePost }}" style="background:none; border:none; cursor:pointer; color:var(--text); padding:6px; display:flex;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m14 6-6 6 6 6"></path></svg>
+          </button>
+          <div style="font-size:12px; color:var(--text2); text-transform:uppercase; letter-spacing:.4px; line-height:1; ">Project</div>
+          <div style="font-size:15px; font-weight:700; margin-left:-4px;">Post</div>
+        </div>
+        <div style="flex:1; min-height:0; overflow-y:auto; scrollbar-width:none;">
+          <article style="padding-bottom:8px;">
+            <div style="display:flex; align-items:center; gap:10px; padding:10px 14px;">
+              <div style="width:36px; height:36px; border-radius:50%; padding:2px; background:conic-gradient(from 210deg,#06b6d4,#3b82f6,#7dd3fc,#06b6d4); flex:none;">
+                <div style="width:100%; height:100%; border-radius:50%; background:linear-gradient(140deg,#06b6d4,#3b82f6); display:flex; align-items:center; justify-content:center; color:#ffffff; font-weight:700; font-size:14px; border:2px solid var(--bg);">A</div>
+              </div>
+              <div style="flex:1; min-width:0;">
+                <div style="font-size:14px; font-weight:600; line-height:1.2;">anand.builds</div>
+                <div style="font-size:12px; color:var(--text2); line-height:1.3; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ viewPost.label }}</div>
+              </div>
+              <button onClick="{{ viewPost.openOptions }}" style="background:none; border:none; padding:6px; cursor:pointer; display:flex; color:var(--text);"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg></button>
+            </div>
+            <div onDoubleClick="{{ viewPost.onDouble }}" onTouchStart="{{ viewPost.touchStart }}" onTouchEnd="{{ viewPost.touchEnd }}" style="position:relative; width:100%; aspect-ratio: {{ viewPost.aspect }}; background:var(--bg2); overflow:hidden;">
+              <div style="display:flex; height:100%; width:100%; transition:transform .32s cubic-bezier(.4,0,.2,1); transform:translateX( {{ viewPost.trackX }} );">
+                <sc-for list="{{ viewPost.slides }}" as="sl" hint-placeholder-count="1">
+                  <div style="flex:none; width:100%; height:100%; position:relative;">
+                    <image-slot id="{{ sl.slot }}" shape="rect" placeholder="{{ sl.placeholder }}" style="position:absolute; inset:0; width:100%; height:100%;"></image-slot>
+                  </div>
+                </sc-for>
+              </div>
+              {{ viewPost.heartEl }}
+              <sc-if value="{{ viewPost.multi }}" hint-placeholder-val="{{ false }}">
+                <div style="position:absolute; top:12px; right:12px; background:rgba(0,0,0,.55); color:#ffffff; font-size:12px; font-weight:600; padding:3px 9px; border-radius:99px; z-index:4;">{{ viewPost.counter }}</div>
+                <sc-if value="{{ viewPost.showPrev }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ viewPost.carPrev }}" style="position:absolute; left:8px; top:50%; transform:translateY(-50%); z-index:4; width:30px; height:30px; border-radius:50%; border:none; cursor:pointer; background:rgba(255,255,255,.85); display:flex; align-items:center; justify-content:center; box-shadow:0 1px 4px rgba(0,0,0,.2);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#181b1f" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m14 6-6 6 6 6"></path></svg></button>
+                </sc-if>
+                <sc-if value="{{ viewPost.showNext }}" hint-placeholder-val="{{ true }}">
+                  <button onClick="{{ viewPost.carNext }}" style="position:absolute; right:8px; top:50%; transform:translateY(-50%); z-index:4; width:30px; height:30px; border-radius:50%; border:none; cursor:pointer; background:rgba(255,255,255,.85); display:flex; align-items:center; justify-content:center; box-shadow:0 1px 4px rgba(0,0,0,.2);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#181b1f" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m10 6 6 6-6 6"></path></svg></button>
+                </sc-if>
+                <div style="position:absolute; left:0; right:0; bottom:12px; z-index:4; display:flex; justify-content:center; gap:5px; filter:drop-shadow(0 1px 2px rgba(0,0,0,.3));">
+                  <sc-for list="{{ viewPost.dots }}" as="d" hint-placeholder-count="3">
+                    <span style="width:6px; height:6px; border-radius:50%; background: {{ d.bg }};"></span>
+                  </sc-for>
+                </div>
+              </sc-if>
+            </div>
+            <div style="display:flex; align-items:center; gap:4px; padding:6px 8px 0;">
+              <button onClick="{{ viewPost.toggleLike }}" style="background:none; border:none; padding:6px; cursor:pointer; display:flex; color: {{ viewPost.heartColor }};">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="{{ viewPost.heartFill }}" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+              </button>
+              <button onClick="{{ viewPost.openComments }}" style="background:none; border:none; padding:6px; cursor:pointer; display:flex; color:var(--text);">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+              </button>
+              <button onClick="{{ viewPost.share }}" style="background:none; border:none; padding:6px; cursor:pointer; display:flex; color:var(--text);">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg>
+              </button>
+              <div style="flex:1;"></div>
+              <button onClick="{{ viewPost.toggleSave }}" style="background:none; border:none; padding:6px; cursor:pointer; display:flex; color:var(--text);">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="{{ viewPost.saveFill }}" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="m19 21-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"></path></svg>
+              </button>
+            </div>
+            <div style="font-weight:600; font-size:14px; padding:2px 14px;">{{ viewPost.likeCount }} likes</div>
+            <div style="padding:3px 14px 0; font-size:14px; line-height:1.45;"><span style="font-weight:600;">anand.builds</span> {{ viewPost.caption }}<sc-if value="{{ viewPost.showMore }}" hint-placeholder-val="{{ false }}"><button onClick="{{ viewPost.toggleCap }}" style="background:none; border:none; padding:0; cursor:pointer; color:var(--text2); font-size:14px;">more</button></sc-if></div>
+            <button onClick="{{ viewPost.openComments }}" style="background:none; border:none; cursor:pointer; color:var(--text2); font-size:14px; padding:4px 14px 0; text-align:left; display:block;">View all {{ viewPost.commentCount }} comments</button>
+            <div style="padding:4px 14px 0; font-size:11px; color:var(--text2); text-transform:uppercase; letter-spacing:.4px;">{{ viewPost.time }} ago</div>
+          </article>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ optionsOpen }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Post options" style="position:absolute; inset:0; z-index:62; display:flex; flex-direction:column; justify-content:flex-end;">
+        <div onClick="{{ closeOptions }}" style="position:absolute; inset:0; background:rgba(0,0,0,.5);"></div>
+        <div style="position:relative; background:var(--bg); border-radius:18px 18px 0 0; padding:8px 0 18px; animation:sheetUp .26s ease;">
+          <div style="width:38px; height:4px; border-radius:2px; background:var(--border); margin:8px auto 6px;"></div>
+          <button onClick="{{ optShare }}" style="width:100%; background:none; border:none; cursor:pointer; display:flex; align-items:center; gap:14px; padding:15px 22px; font-size:15px; color:var(--text);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"></path><path d="M16 6l-4-4-4 4"></path><path d="M12 2v13"></path></svg>Share to…</button>
+          <button onClick="{{ optShare }}" style="width:100%; background:none; border:none; cursor:pointer; display:flex; align-items:center; gap:14px; padding:15px 22px; font-size:15px; color:var(--text);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"></path><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"></path></svg>Copy link</button>
+          <button onClick="{{ optSave }}" style="width:100%; background:none; border:none; cursor:pointer; display:flex; align-items:center; gap:14px; padding:15px 22px; font-size:15px; color:var(--text);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="m19 21-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"></path></svg>Save</button>
+          <button onClick="{{ optDm }}" style="width:100%; background:none; border:none; cursor:pointer; display:flex; align-items:center; gap:14px; padding:15px 22px; font-size:15px; color:var(--text);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>Ask about this project</button>
+          <div style="height:8px; background:var(--bg2); margin:6px 0;"></div>
+          <button onClick="{{ closeOptions }}" style="width:100%; background:none; border:none; cursor:pointer; padding:15px 22px; font-size:15px; font-weight:600; color:var(--text); text-align:center;">Cancel</button>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Profile menu" style="position:absolute; inset:0; z-index:62; display:flex; flex-direction:column; justify-content:flex-end;">
+        <div onClick="{{ closeMenu }}" style="position:absolute; inset:0; background:rgba(0,0,0,.5);"></div>
+        <div style="position:relative; background:var(--bg); border-radius:18px 18px 0 0; padding:8px 0 18px; animation:sheetUp .26s ease;">
+          <div style="width:38px; height:4px; border-radius:2px; background:var(--border); margin:8px auto 6px;"></div>
+          <button onClick="{{ openEdit }}" style="width:100%; background:none; border:none; cursor:pointer; display:flex; align-items:center; gap:14px; padding:15px 22px; font-size:15px; color:var(--text);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path></svg>Edit profile</button>
+          <button onClick="{{ openSaved }}" style="width:100%; background:none; border:none; cursor:pointer; display:flex; align-items:center; gap:14px; padding:15px 22px; font-size:15px; color:var(--text);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="m19 21-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"></path></svg>Saved</button>
+          <a href="{{ emailHref }}" style="width:100%; background:none; border:none; cursor:pointer; display:flex; align-items:center; gap:14px; padding:15px 22px; font-size:15px; color:var(--text); text-decoration:none;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m3 7 9 6 9-6"></path></svg>Email me</a>
+          <button onClick="{{ toggleTheme }}" style="width:100%; background:none; border:none; cursor:pointer; display:flex; align-items:center; gap:14px; padding:15px 22px; font-size:15px; color:var(--text);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M20.5 13.2A8.5 8.5 0 1 1 10.8 3.5a6.8 6.8 0 0 0 9.7 9.7Z"></path></svg>Switch appearance</button>
+          <button onClick="{{ openDm }}" style="width:100%; background:none; border:none; cursor:pointer; display:flex; align-items:center; gap:14px; padding:15px 22px; font-size:15px; color:var(--text);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg>Message me</button>
+          <div style="height:8px; background:var(--bg2); margin:6px 0;"></div>
+          <button onClick="{{ closeMenu }}" style="width:100%; background:none; border:none; cursor:pointer; padding:15px 22px; font-size:15px; font-weight:600; color:var(--text); text-align:center;">Cancel</button>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ savedOpen }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Saved" style="position:absolute; inset:0; z-index:59; background:var(--bg); display:flex; flex-direction:column;">
+        <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-bottom:1px solid var(--border); flex:none;">
+          <button onClick="{{ closeSaved }}" style="background:none; border:none; cursor:pointer; color:var(--text); padding:6px; display:flex;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m14 6-6 6 6 6"></path></svg>
+          </button>
+          <div style="font-size:16px; font-weight:700;">Saved</div>
+        </div>
+        <sc-if value="{{ hasSaved }}" hint-placeholder-val="{{ false }}">
+          <div style="flex:1; min-height:0; overflow-y:auto; scrollbar-width:none; padding:3px;">
+            <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:3px;">
+              <sc-for list="{{ savedPosts }}" as="sv" hint-placeholder-count="3">
+                <button onClick="{{ sv.open }}" style="aspect-ratio:1/1; border:none; cursor:pointer; background: {{ sv.grad }}; position:relative; display:flex; flex-direction:column; justify-content:flex-end; padding:8px; color:#ffffff; overflow:hidden; text-align:left;">
+                  <div style="position:absolute; top:-10px; right:-4px; font-size:52px; font-weight:800; opacity:.18; letter-spacing:-2px;">{{ sv.big }}</div>
+                  <div style="font-size:11.5px; font-weight:600; line-height:1.25; text-wrap:pretty;">{{ sv.label }}</div>
+                </button>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+        <sc-if value="{{ noSaved }}" hint-placeholder-val="{{ true }}">
+          <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; padding:40px 30px; text-align:center;">
+            <div style="width:64px; height:64px; border-radius:50%; border:2px solid var(--text); display:flex; align-items:center; justify-content:center; color:var(--text);"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="m19 21-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"></path></svg></div>
+            <div style="font-weight:700; font-size:19px;">Nothing saved yet</div>
+            <div style="font-size:13.5px; color:var(--text2); max-width:250px;">Tap the bookmark on any project to keep it here for later.</div>
+          </div>
+        </sc-if>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ editOpen }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Edit profile" style="position:absolute; inset:0; z-index:65; background:var(--bg); display:flex; flex-direction:column;">
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid var(--border); flex:none;">
+          <button onClick="{{ closeEdit }}" style="background:none; border:none; cursor:pointer; color:var(--text); font-size:15px;">Cancel</button>
+          <div style="font-size:16px; font-weight:700;">Edit profile</div>
+          <button onClick="{{ saveProfile }}" style="background:none; border:none; cursor:pointer; color:#1d8ef0; font-size:15px; font-weight:700;">Done</button>
+        </div>
+        <div style="flex:1; min-height:0; overflow-y:auto; scrollbar-width:none; padding:8px 20px 32px;">
+          <div style="display:flex; flex-direction:column; align-items:center; gap:8px; padding:18px 0 8px;">
+            <div style="width:88px; height:88px; border-radius:50%; padding:3px; background:conic-gradient(from 210deg,#06b6d4,#3b82f6,#7dd3fc,#06b6d4);">
+              <div style="width:100%; height:100%; border-radius:50%; background:var(--bg); padding:3px;">
+                <image-slot id="avatar-main" shape="circle" placeholder="Your photo" style="width:100%; height:100%; display:block;"></image-slot>
+              </div>
+            </div>
+            <div style="font-size:13.5px; font-weight:600; color:#1d8ef0;">Edit picture — drag a photo above</div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:4px; padding:14px 0 6px; border-bottom:1px solid var(--border);">
+            <label style="font-size:12px; color:var(--text2); font-weight:600;">Name</label>
+            <input value="{{ edName }}" onChange="{{ setEdName }}" placeholder="Your name" style="background:none; border:none; outline:none; font-size:15px; color:var(--text); padding:2px 0;" />
+          </div>
+          <div style="display:flex; flex-direction:column; gap:4px; padding:14px 0 6px; border-bottom:1px solid var(--border);">
+            <label style="font-size:12px; color:var(--text2); font-weight:600;">Username</label>
+            <input value="{{ edUsername }}" onChange="{{ setEdUsername }}" placeholder="username" style="background:none; border:none; outline:none; font-size:15px; color:var(--text); padding:2px 0;" />
+          </div>
+          <div style="display:flex; flex-direction:column; gap:4px; padding:14px 0 6px; border-bottom:1px solid var(--border);">
+            <label style="font-size:12px; color:var(--text2); font-weight:600;">Headline</label>
+            <input value="{{ edRole }}" onChange="{{ setEdRole }}" placeholder="What you do" style="background:none; border:none; outline:none; font-size:15px; color:var(--text); padding:2px 0;" />
+          </div>
+          <div style="display:flex; flex-direction:column; gap:4px; padding:14px 0 6px; border-bottom:1px solid var(--border);">
+            <label style="font-size:12px; color:var(--text2); font-weight:600;">Bio</label>
+            <textarea value="{{ edBio }}" onChange="{{ setEdBio }}" rows="3" placeholder="A line or two about you" style="background:none; border:none; outline:none; font-size:15px; color:var(--text); padding:2px 0; resize:none; font-family:inherit; line-height:1.5;"></textarea>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:4px; padding:14px 0 6px; border-bottom:1px solid var(--border);">
+            <label style="font-size:12px; color:var(--text2); font-weight:600;">Email</label>
+            <input value="{{ edEmail }}" onChange="{{ setEdEmail }}" placeholder="you@email.com" style="background:none; border:none; outline:none; font-size:15px; color:var(--text); padding:2px 0;" />
+          </div>
+          <button onClick="{{ saveProfile }}" style="width:100%; margin-top:22px; border:none; border-radius:11px; padding:13px 0; font-size:15px; font-weight:700; cursor:pointer; background:linear-gradient(120deg,#06b6d4,#3b82f6); color:#ffffff;">Save changes</button>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ admLocked }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Admin login" style="position:absolute; inset:0; z-index:80; background:var(--bg); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px; padding:32px;">
+        <button onClick="{{ closeAdmin }}" style="position:absolute; top:14px; right:16px; background:none; border:none; cursor:pointer; color:var(--text2); padding:6px; display:flex;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"></path></svg></button>
+        <div style="width:62px; height:62px; border-radius:18px; background:linear-gradient(135deg,#06b6d4,#3b82f6); display:flex; align-items:center; justify-content:center; color:#fff;"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></div>
+        <div style="text-align:center;">
+          <div style="font-size:20px; font-weight:800;">Studio</div>
+          <div style="font-size:13.5px; color:var(--text2); margin-top:3px;">Manage your portfolio content</div>
+        </div>
+        <input value="{{ admPw }}" onChange="{{ setAdmPw }}" onKeyDown="{{ admPwKey }}" type="password" placeholder="Enter password" style="width:100%; max-width:280px; background:var(--bg2); border:1px solid var(--border); border-radius:11px; padding:13px 15px; font-size:15px; color:var(--text); outline:none;" />
+        <sc-if value="{{ admPwError }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px; color:#ff3040; margin-top:-8px;">Wrong password — try again.</div></sc-if>
+        <button onClick="{{ admUnlock }}" style="width:100%; max-width:280px; border:none; border-radius:11px; padding:13px 0; font-size:15px; font-weight:700; cursor:pointer; background:linear-gradient(120deg,#06b6d4,#3b82f6); color:#fff;">Unlock</button>
+        <div style="font-size:11.5px; color:var(--text2); text-align:center; max-width:260px; line-height:1.5;">Demo password is <b>letmein</b> — change it in <b>content.js</b>, or swap for Supabase Auth (see BACKEND.md).</div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ admReady }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Admin" style="position:absolute; inset:0; z-index:80; background:var(--page); display:flex; flex-direction:column;">
+        <div style="display:flex; align-items:center; gap:10px; padding:11px 14px; border-bottom:1px solid var(--border); background:var(--bg); flex:none;">
+          <div style="width:30px; height:30px; border-radius:9px; background:linear-gradient(135deg,#06b6d4,#3b82f6); display:flex; align-items:center; justify-content:center; color:#fff; flex:none;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19 7-7 3 3-7 7-3-3z"></path><path d="m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path><path d="m2 2 7.586 7.586"></path><circle cx="11" cy="11" r="2"></circle></svg></div>
+          <div style="flex:1; min-width:0;">
+            <div style="font-size:15px; font-weight:800; line-height:1.1;">Content Studio</div>
+            <div style="font-size:11px; color:var(--text2);">Edit, then Publish to update your live portfolio</div>
+          </div>
+          <button onClick="{{ admLogout }}" title="Lock" style="background:none; border:none; cursor:pointer; color:var(--text2); padding:7px; display:flex;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><path d="m16 17 5-5-5-5"></path><path d="M21 12H9"></path></svg></button>
+          <button onClick="{{ closeAdmin }}" title="View portfolio" style="background:none; border:none; cursor:pointer; color:var(--text2); padding:7px; display:flex;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"></path></svg></button>
+        </div>
+
+        <div style="display:flex; gap:6px; padding:9px 12px; overflow-x:auto; scrollbar-width:none; background:var(--bg); border-bottom:1px solid var(--border); flex:none;">
+          <button onClick="{{ goAdmProfile }}" style="border:1px solid var(--border); border-radius:99px; padding:7px 14px; font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap; color: {{ admTabProfileC }}; background: {{ admTabProfileBg }};">Profile</button>
+          <button onClick="{{ goAdmPosts }}" style="border:1px solid var(--border); border-radius:99px; padding:7px 14px; font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap; color: {{ admTabPostsC }}; background: {{ admTabPostsBg }};">Posts</button>
+          <button onClick="{{ goAdmStories }}" style="border:1px solid var(--border); border-radius:99px; padding:7px 14px; font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap; color: {{ admTabStoriesC }}; background: {{ admTabStoriesBg }};">Stories</button>
+          <button onClick="{{ goAdmReels }}" style="border:1px solid var(--border); border-radius:99px; padding:7px 14px; font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap; color: {{ admTabReelsC }}; background: {{ admTabReelsBg }};">Reels</button>
+          <button onClick="{{ goAdmTiles }}" style="border:1px solid var(--border); border-radius:99px; padding:7px 14px; font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap; color: {{ admTabTilesC }}; background: {{ admTabTilesBg }};">Explore</button>
+          <button onClick="{{ goAdmNotifs }}" style="border:1px solid var(--border); border-radius:99px; padding:7px 14px; font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap; color: {{ admTabNotifsC }}; background: {{ admTabNotifsBg }};">Activity</button>
+          <button onClick="{{ goAdmPeople }}" style="border:1px solid var(--border); border-radius:99px; padding:7px 14px; font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap; color: {{ admTabPeopleC }}; background: {{ admTabPeopleBg }};">People</button>
+        </div>
+
+        <div style="flex:1; min-height:0; overflow-y:auto; scrollbar-width:none; padding:14px 14px 96px;">
+
+          <sc-if value="{{ admIsProfile }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; flex-direction:column; gap:12px;">
+              <div style="background:var(--bg); border:1px solid var(--border); border-radius:14px; padding:16px;">
+                <label style="font-size:11.5px; color:var(--text2); font-weight:700; text-transform:uppercase; letter-spacing:.5px;">Name</label>
+                <input value="{{ admPfName }}" onChange="{{ setAdmPfName }}" style="width:100%; background:var(--bg2); border:1px solid var(--border); border-radius:9px; padding:11px 13px; font-size:14.5px; color:var(--text); outline:none; margin-top:6px;" />
+                <label style="font-size:11.5px; color:var(--text2); font-weight:700; text-transform:uppercase; letter-spacing:.5px; display:block; margin-top:14px;">Username</label>
+                <input value="{{ admPfUsername }}" onChange="{{ setAdmPfUsername }}" style="width:100%; background:var(--bg2); border:1px solid var(--border); border-radius:9px; padding:11px 13px; font-size:14.5px; color:var(--text); outline:none; margin-top:6px;" />
+                <label style="font-size:11.5px; color:var(--text2); font-weight:700; text-transform:uppercase; letter-spacing:.5px; display:block; margin-top:14px;">Headline</label>
+                <input value="{{ admPfRole }}" onChange="{{ setAdmPfRole }}" style="width:100%; background:var(--bg2); border:1px solid var(--border); border-radius:9px; padding:11px 13px; font-size:14.5px; color:var(--text); outline:none; margin-top:6px;" />
+                <label style="font-size:11.5px; color:var(--text2); font-weight:700; text-transform:uppercase; letter-spacing:.5px; display:block; margin-top:14px;">Bio</label>
+                <textarea value="{{ admPfBio }}" onChange="{{ setAdmPfBio }}" rows="3" style="width:100%; background:var(--bg2); border:1px solid var(--border); border-radius:9px; padding:11px 13px; font-size:14.5px; color:var(--text); outline:none; margin-top:6px; resize:none; font-family:inherit; line-height:1.5;"></textarea>
+                <label style="font-size:11.5px; color:var(--text2); font-weight:700; text-transform:uppercase; letter-spacing:.5px; display:block; margin-top:14px;">Email</label>
+                <input value="{{ admPfEmail }}" onChange="{{ setAdmPfEmail }}" style="width:100%; background:var(--bg2); border:1px solid var(--border); border-radius:9px; padding:11px 13px; font-size:14.5px; color:var(--text); outline:none; margin-top:6px;" />
+              </div>
+              <div style="font-size:12px; color:var(--text2); line-height:1.5; padding:0 4px;">Your profile photo is set by dragging an image onto the avatar in the app's <b>Edit profile</b> screen. It saves automatically.</div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ admIsPosts }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; flex-direction:column; gap:12px;">
+              <sc-for list="{{ admPosts }}" as="p" hint-placeholder-count="2">
+                <div style="background:var(--bg); border:1px solid var(--border); border-radius:14px; padding:14px;">
+                  <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
+                    <span style="font-size:12px; font-weight:800; color:var(--text2);">{{ p.n }}</span>
+                    <div style="flex:1;"></div>
+                    <button onClick="{{ p.up }}" title="Move up" style="background:var(--bg2); border:none; border-radius:7px; cursor:pointer; color:var(--text); padding:6px; display:flex;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"></path></svg></button>
+                    <button onClick="{{ p.down }}" title="Move down" style="background:var(--bg2); border:none; border-radius:7px; cursor:pointer; color:var(--text); padding:6px; display:flex;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg></button>
+                    <button onClick="{{ p.del }}" title="Delete" style="background:var(--bg2); border:none; border-radius:7px; cursor:pointer; color:#ff3040; padding:6px; display:flex;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path></svg></button>
+                  </div>
+                  <div style="display:flex; flex-wrap:wrap; gap:8px;">
+                    <sc-for list="{{ p.images }}" as="im" hint-placeholder-count="1">
+                      <div style="display:flex; flex-direction:column; gap:5px; width:104px;">
+                        <div style="position:relative; aspect-ratio:1/1; border-radius:10px; overflow:hidden; background:var(--bg2); border:1px solid var(--border);">
+                          <image-slot id="{{ im.slot }}" shape="rect" placeholder="{{ im.placeholder }}" style="width:100%; height:100%; display:block;"></image-slot>
+                          <sc-if value="{{ im.canRemove }}" hint-placeholder-val="{{ false }}"><button onClick="{{ im.remove }}" style="position:absolute; top:4px; right:4px; width:20px; height:20px; border-radius:50%; border:none; cursor:pointer; background:rgba(0,0,0,.6); color:#fff; display:flex; align-items:center; justify-content:center;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"></path></svg></button></sc-if>
+                        </div>
+                        <input value="{{ im.placeholder }}" onChange="{{ im.setPh }}" placeholder="label" style="width:100%; background:var(--bg2); border:1px solid var(--border); border-radius:7px; padding:5px 7px; font-size:11px; color:var(--text); outline:none;" />
+                      </div>
+                    </sc-for>
+                    <button onClick="{{ p.addImage }}" style="width:104px; aspect-ratio:1/1; border:1.5px dashed var(--border); border-radius:10px; background:none; cursor:pointer; color:var(--text2); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; font-size:11px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>Add image</button>
+                  </div>
+                  <label style="font-size:11px; color:var(--text2); font-weight:700; text-transform:uppercase; letter-spacing:.5px; display:block; margin-top:12px;">Title</label>
+                  <input value="{{ p.label }}" onChange="{{ p.setLabel }}" style="width:100%; background:var(--bg2); border:1px solid var(--border); border-radius:9px; padding:10px 12px; font-size:14px; color:var(--text); outline:none; margin-top:5px;" />
+                  <label style="font-size:11px; color:var(--text2); font-weight:700; text-transform:uppercase; letter-spacing:.5px; display:block; margin-top:11px;">Caption</label>
+                  <textarea value="{{ p.caption }}" onChange="{{ p.setCaption }}" rows="3" style="width:100%; background:var(--bg2); border:1px solid var(--border); border-radius:9px; padding:10px 12px; font-size:14px; color:var(--text); outline:none; margin-top:5px; resize:none; font-family:inherit; line-height:1.5;"></textarea>
+                  <div style="display:flex; gap:10px; margin-top:11px;">
+                    <div style="flex:1;"><label style="font-size:11px; color:var(--text2); font-weight:700; text-transform:uppercase; letter-spacing:.5px;">Posted</label><input value="{{ p.time }}" onChange="{{ p.setTime }}" placeholder="2d" style="width:100%; background:var(--bg2); border:1px solid var(--border); border-radius:9px; padding:10px 12px; font-size:14px; color:var(--text); outline:none; margin-top:5px;" /></div>
+                    <div style="flex:1;"><label style="font-size:11px; color:var(--text2); font-weight:700; text-transform:uppercase; letter-spacing:.5px;">Likes</label><input value="{{ p.likes }}" onChange="{{ p.setLikes }}" type="number" style="width:100%; background:var(--bg2); border:1px solid var(--border); border-radius:9px; padding:10px 12px; font-size:14px; color:var(--text); outline:none; margin-top:5px;" /></div>
+                    <div style="width:78px;"><label style="font-size:11px; color:var(--text2); font-weight:700; text-transform:uppercase; letter-spacing:.5px;">Badge</label><input value="{{ p.big }}" onChange="{{ p.setBig }}" placeholder="O" style="width:100%; background:var(--bg2); border:1px solid var(--border); border-radius:9px; padding:10px 12px; font-size:14px; color:var(--text); outline:none; margin-top:5px;" /></div>
+                  </div>
+                  <label style="font-size:11px; color:var(--text2); font-weight:700; text-transform:uppercase; letter-spacing:.5px; display:block; margin-top:11px;">Accent (no-image fallback)</label>
+                  <div style="display:flex; flex-wrap:wrap; gap:7px; margin-top:6px;">
+                    <sc-for list="{{ p.swatches }}" as="sw" hint-placeholder-count="6"><button onClick="{{ sw.pick }}" style="width:30px; height:30px; border-radius:8px; cursor:pointer; background: {{ sw.grad }}; border: {{ sw.ring }};"></button></sc-for>
+                  </div>
+                </div>
+              </sc-for>
+              <button onClick="{{ admAddPost }}" style="width:100%; border:1.5px dashed var(--border); border-radius:13px; background:none; cursor:pointer; color:var(--text); padding:15px; font-size:14px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:8px;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>Add post</button>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ admIsStories }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; flex-direction:column; gap:12px;">
+              <sc-for list="{{ admStories }}" as="s" hint-placeholder-count="2">
+                <div style="background:var(--bg); border:1px solid var(--border); border-radius:14px; padding:14px;">
+                  <div style="display:flex; align-items:center; gap:10px; margin-bottom:11px;">
+                    <div style="width:46px; height:46px; border-radius:50%; background: {{ s.grad }}; display:flex; align-items:center; justify-content:center; color:#fff; font-size:15px; font-weight:700; flex:none;">{{ s.glyph }}</div>
+                    <div style="flex:1; min-width:0;">
+                      <input value="{{ s.label }}" onChange="{{ s.setLabel }}" placeholder="Highlight name" style="width:100%; background:var(--bg2); border:1px solid var(--border); border-radius:8px; padding:8px 10px; font-size:13.5px; font-weight:600; color:var(--text); outline:none;" />
+                    </div>
+                    <button onClick="{{ s.up }}" style="background:var(--bg2); border:none; border-radius:7px; cursor:pointer; color:var(--text); padding:6px; display:flex;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"></path></svg></button>
+                    <button onClick="{{ s.down }}" style="background:var(--bg2); border:none; border-radius:7px; cursor:pointer; color:var(--text); padding:6px; display:flex;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg></button>
+                    <button onClick="{{ s.del }}" style="background:var(--bg2); border:none; border-radius:7px; cursor:pointer; color:#ff3040; padding:6px; display:flex;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path></svg></button>
+                  </div>
+                  <div style="display:flex; gap:10px; align-items:center;">
+                    <div style="width:80px;"><label style="font-size:10.5px; color:var(--text2); font-weight:700; text-transform:uppercase; letter-spacing:.5px;">Glyph</label><input value="{{ s.glyph }}" onChange="{{ s.setGlyph }}" style="width:100%; background:var(--bg2); border:1px solid var(--border); border-radius:8px; padding:8px 10px; font-size:13.5px; color:var(--text); outline:none; margin-top:4px;" /></div>
+                    <div style="flex:1;"><label style="font-size:10.5px; color:var(--text2); font-weight:700; text-transform:uppercase; letter-spacing:.5px;">Cover color</label><div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:5px;"><sc-for list="{{ s.swatches }}" as="sw" hint-placeholder-count="6"><button onClick="{{ sw.pick }}" style="width:26px; height:26px; border-radius:7px; cursor:pointer; background: {{ sw.grad }}; border: {{ sw.ring }};"></button></sc-for></div></div>
+                  </div>
+                  <div style="margin-top:12px; padding-top:11px; border-top:1px dashed var(--border); display:flex; flex-direction:column; gap:9px;">
+                    <sc-for list="{{ s.slides }}" as="sl" hint-placeholder-count="1">
+                      <div style="background:var(--bg2); border-radius:10px; padding:11px;">
+                        <div style="display:flex; align-items:center; margin-bottom:7px;"><span style="font-size:11px; font-weight:700; color:var(--text2);">{{ sl.sn }}</span><div style="flex:1;"></div><sc-if value="{{ sl.canDel }}" hint-placeholder-val="{{ false }}"><button onClick="{{ sl.del }}" style="background:none; border:none; cursor:pointer; color:#ff3040; font-size:12px; font-weight:600;">Remove</button></sc-if></div>
+                        <input value="{{ sl.kicker }}" onChange="{{ sl.setKicker }}" placeholder="KICKER" style="width:100%; background:var(--bg); border:1px solid var(--border); border-radius:7px; padding:8px 10px; font-size:12px; color:var(--text); outline:none; text-transform:uppercase; letter-spacing:.5px;" />
+                        <input value="{{ sl.title }}" onChange="{{ sl.setTitle }}" placeholder="Title" style="width:100%; background:var(--bg); border:1px solid var(--border); border-radius:7px; padding:8px 10px; font-size:14px; font-weight:600; color:var(--text); outline:none; margin-top:6px;" />
+                        <textarea value="{{ sl.body }}" onChange="{{ sl.setBody }}" rows="2" placeholder="Body" style="width:100%; background:var(--bg); border:1px solid var(--border); border-radius:7px; padding:8px 10px; font-size:13px; color:var(--text); outline:none; margin-top:6px; resize:none; font-family:inherit; line-height:1.45;"></textarea>
+                      </div>
+                    </sc-for>
+                    <button onClick="{{ s.addSlide }}" style="align-self:flex-start; background:none; border:1px dashed var(--border); border-radius:8px; cursor:pointer; color:var(--text2); padding:7px 12px; font-size:12.5px; font-weight:600;">+ Add slide</button>
+                  </div>
+                </div>
+              </sc-for>
+              <button onClick="{{ admAddStory }}" style="width:100%; border:1.5px dashed var(--border); border-radius:13px; background:none; cursor:pointer; color:var(--text); padding:15px; font-size:14px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:8px;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>Add highlight</button>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ admIsReels }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; flex-direction:column; gap:12px;">
+              <sc-for list="{{ admReels }}" as="r" hint-placeholder-count="2">
+                <div style="background:var(--bg); border:1px solid var(--border); border-radius:14px; padding:14px;">
+                  <div style="display:flex; gap:12px;">
+                    <div style="width:74px; aspect-ratio:9/16; border-radius:10px; overflow:hidden; background:var(--bg2); border:1px solid var(--border); flex:none;"><image-slot id="{{ r.slot }}" shape="rect" placeholder="Cover" style="width:100%; height:100%; display:block;"></image-slot></div>
+                    <div style="flex:1; min-width:0;">
+                      <div style="display:flex; align-items:center; gap:6px; margin-bottom:6px;"><span style="font-size:12px; font-weight:800; color:var(--text2);">{{ r.n }}</span><div style="flex:1;"></div>
+                        <button onClick="{{ r.up }}" style="background:var(--bg2); border:none; border-radius:7px; cursor:pointer; color:var(--text); padding:5px; display:flex;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"></path></svg></button>
+                        <button onClick="{{ r.down }}" style="background:var(--bg2); border:none; border-radius:7px; cursor:pointer; color:var(--text); padding:5px; display:flex;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg></button>
+                        <button onClick="{{ r.del }}" style="background:var(--bg2); border:none; border-radius:7px; cursor:pointer; color:#ff3040; padding:5px; display:flex;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path></svg></button>
+                      </div>
+                      <input value="{{ r.title }}" onChange="{{ r.setTitle }}" placeholder="Reel title" style="width:100%; background:var(--bg2); border:1px solid var(--border); border-radius:8px; padding:8px 10px; font-size:13.5px; font-weight:600; color:var(--text); outline:none;" />
+                      <input value="{{ r.sub }}" onChange="{{ r.setSub }}" placeholder="Subtitle" style="width:100%; background:var(--bg2); border:1px solid var(--border); border-radius:8px; padding:8px 10px; font-size:12.5px; color:var(--text); outline:none; margin-top:6px;" />
+                    </div>
+                  </div>
+                  <div style="display:flex; gap:10px; margin-top:11px;">
+                    <div style="width:100px;"><label style="font-size:10.5px; color:var(--text2); font-weight:700; text-transform:uppercase; letter-spacing:.5px;">Tag</label><input value="{{ r.tag }}" onChange="{{ r.setTag }}" style="width:100%; background:var(--bg2); border:1px solid var(--border); border-radius:8px; padding:8px 10px; font-size:13px; color:var(--text); outline:none; margin-top:4px;" /></div>
+                    <div style="width:90px;"><label style="font-size:10.5px; color:var(--text2); font-weight:700; text-transform:uppercase; letter-spacing:.5px;">Likes</label><input value="{{ r.likesN }}" onChange="{{ r.setLikes }}" type="number" style="width:100%; background:var(--bg2); border:1px solid var(--border); border-radius:8px; padding:8px 10px; font-size:13px; color:var(--text); outline:none; margin-top:4px;" /></div>
+                    <div style="flex:1;"><label style="font-size:10.5px; color:var(--text2); font-weight:700; text-transform:uppercase; letter-spacing:.5px;">Audio</label><input value="{{ r.audio }}" onChange="{{ r.setAudio }}" style="width:100%; background:var(--bg2); border:1px solid var(--border); border-radius:8px; padding:8px 10px; font-size:13px; color:var(--text); outline:none; margin-top:4px;" /></div>
+                  </div>
+                </div>
+              </sc-for>
+              <button onClick="{{ admAddReel }}" style="width:100%; border:1.5px dashed var(--border); border-radius:13px; background:none; cursor:pointer; color:var(--text); padding:15px; font-size:14px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:8px;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>Add reel</button>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ admIsTiles }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; flex-direction:column; gap:12px;">
+              <sc-for list="{{ admTiles }}" as="t" hint-placeholder-count="2">
+                <div style="background:var(--bg); border:1px solid var(--border); border-radius:14px; padding:14px;">
+                  <div style="display:flex; align-items:center; gap:10px;">
+                    <div style="width:42px; height:42px; border-radius:10px; background: {{ t.grad }}; display:flex; align-items:center; justify-content:center; color:#fff; font-size:14px; font-weight:800; flex:none;">{{ t.big }}</div>
+                    <div style="flex:1; min-width:0;">
+                      <input value="{{ t.label }}" onChange="{{ t.setLabel }}" placeholder="Tile label" style="width:100%; background:var(--bg2); border:1px solid var(--border); border-radius:8px; padding:8px 10px; font-size:13.5px; font-weight:600; color:var(--text); outline:none;" />
+                    </div>
+                    <button onClick="{{ t.up }}" style="background:var(--bg2); border:none; border-radius:7px; cursor:pointer; color:var(--text); padding:6px; display:flex;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"></path></svg></button>
+                    <button onClick="{{ t.down }}" style="background:var(--bg2); border:none; border-radius:7px; cursor:pointer; color:var(--text); padding:6px; display:flex;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg></button>
+                    <button onClick="{{ t.del }}" style="background:var(--bg2); border:none; border-radius:7px; cursor:pointer; color:#ff3040; padding:6px; display:flex;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path></svg></button>
+                  </div>
+                  <div style="display:flex; gap:10px; margin-top:11px;">
+                    <div style="flex:1;"><label style="font-size:10.5px; color:var(--text2); font-weight:700; text-transform:uppercase; letter-spacing:.5px;">Kicker</label><input value="{{ t.kicker }}" onChange="{{ t.setKicker }}" style="width:100%; background:var(--bg2); border:1px solid var(--border); border-radius:8px; padding:8px 10px; font-size:13px; color:var(--text); outline:none; margin-top:4px;" /></div>
+                    <div style="width:74px;"><label style="font-size:10.5px; color:var(--text2); font-weight:700; text-transform:uppercase; letter-spacing:.5px;">Badge</label><input value="{{ t.big }}" onChange="{{ t.setBig }}" style="width:100%; background:var(--bg2); border:1px solid var(--border); border-radius:8px; padding:8px 10px; font-size:13px; color:var(--text); outline:none; margin-top:4px;" /></div>
+                  </div>
+                  <div style="display:flex; gap:10px; margin-top:11px; align-items:flex-end;">
+                    <div style="flex:1;"><label style="font-size:10.5px; color:var(--text2); font-weight:700; text-transform:uppercase; letter-spacing:.5px;">Opens project</label>
+                      <select value="{{ t.pid }}" onChange="{{ t.setPid }}" style="width:100%; background:var(--bg2); border:1px solid var(--border); border-radius:8px; padding:8px 10px; font-size:13px; color:var(--text); outline:none; margin-top:4px;">
+                        <sc-for list="{{ t.options }}" as="o" hint-placeholder-count="3"><option value="{{ o.id }}">{{ o.label }}</option></sc-for>
+                      </select>
+                    </div>
+                    <button onClick="{{ t.toggleWide }}" style="background:var(--bg2); border:1px solid var(--border); border-radius:8px; cursor:pointer; color:var(--text); padding:9px 13px; font-size:12.5px; font-weight:600; white-space:nowrap;">{{ t.wideLabel }}</button>
+                  </div>
+                  <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:10px;"><sc-for list="{{ t.swatches }}" as="sw" hint-placeholder-count="6"><button onClick="{{ sw.pick }}" style="width:26px; height:26px; border-radius:7px; cursor:pointer; background: {{ sw.grad }}; border: {{ sw.ring }};"></button></sc-for></div>
+                </div>
+              </sc-for>
+              <button onClick="{{ admAddTile }}" style="width:100%; border:1.5px dashed var(--border); border-radius:13px; background:none; cursor:pointer; color:var(--text); padding:15px; font-size:14px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:8px;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>Add tile</button>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ admIsNotifs }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; flex-direction:column; gap:14px;">
+              <sc-for list="{{ admNotifs }}" as="g" hint-placeholder-count="2">
+                <div style="background:var(--bg); border:1px solid var(--border); border-radius:14px; padding:14px;">
+                  <input value="{{ g.span }}" onChange="{{ g.setSpan }}" placeholder="Group name (e.g. Today)" style="width:100%; background:none; border:none; border-bottom:1px solid var(--border); padding:4px 2px 8px; font-size:14px; font-weight:800; color:var(--text); outline:none;" />
+                  <div style="display:flex; flex-direction:column; gap:9px; margin-top:11px;">
+                    <sc-for list="{{ g.items }}" as="it" hint-placeholder-count="2">
+                      <div style="background:var(--bg2); border-radius:10px; padding:11px;">
+                        <div style="display:flex; gap:8px;">
+                          <input value="{{ it.u }}" onChange="{{ it.setU }}" placeholder="username" style="flex:1; background:var(--bg); border:1px solid var(--border); border-radius:7px; padding:7px 9px; font-size:12.5px; font-weight:600; color:var(--text); outline:none;" />
+                          <input value="{{ it.when }}" onChange="{{ it.setWhen }}" placeholder="2h" style="width:64px; background:var(--bg); border:1px solid var(--border); border-radius:7px; padding:7px 9px; font-size:12.5px; color:var(--text); outline:none;" />
+                          <button onClick="{{ it.del }}" style="background:var(--bg); border:1px solid var(--border); border-radius:7px; cursor:pointer; color:#ff3040; padding:7px; display:flex;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path></svg></button>
+                        </div>
+                        <input value="{{ it.text }}" onChange="{{ it.setText }}" placeholder="started following you." style="width:100%; background:var(--bg); border:1px solid var(--border); border-radius:7px; padding:7px 9px; font-size:12.5px; color:var(--text); outline:none; margin-top:6px;" />
+                      </div>
+                    </sc-for>
+                    <button onClick="{{ g.addItem }}" style="align-self:flex-start; background:none; border:1px dashed var(--border); border-radius:8px; cursor:pointer; color:var(--text2); padding:7px 12px; font-size:12.5px; font-weight:600;">+ Add activity</button>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ admIsPeople }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; flex-direction:column; gap:12px;">
+              <sc-for list="{{ admPeople }}" as="pp" hint-placeholder-count="3">
+                <div style="background:var(--bg); border:1px solid var(--border); border-radius:14px; padding:13px; display:flex; gap:11px; align-items:center;">
+                  <div style="width:42px; height:42px; border-radius:50%; background: {{ pp.grad }}; flex:none;"></div>
+                  <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:6px;">
+                    <input value="{{ pp.u }}" onChange="{{ pp.setU }}" placeholder="username" style="width:100%; background:var(--bg2); border:1px solid var(--border); border-radius:8px; padding:7px 10px; font-size:13px; font-weight:600; color:var(--text); outline:none;" />
+                    <input value="{{ pp.name }}" onChange="{{ pp.setName }}" placeholder="Name · role" style="width:100%; background:var(--bg2); border:1px solid var(--border); border-radius:8px; padding:7px 10px; font-size:12.5px; color:var(--text); outline:none;" />
+                    <div style="display:flex; flex-wrap:wrap; gap:5px;"><sc-for list="{{ pp.swatches }}" as="sw" hint-placeholder-count="6"><button onClick="{{ sw.pick }}" style="width:22px; height:22px; border-radius:6px; cursor:pointer; background: {{ sw.grad }}; border: {{ sw.ring }};"></button></sc-for></div>
+                  </div>
+                  <button onClick="{{ pp.del }}" style="background:var(--bg2); border:none; border-radius:8px; cursor:pointer; color:#ff3040; padding:8px; display:flex; align-self:flex-start;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path></svg></button>
+                </div>
+              </sc-for>
+              <button onClick="{{ admAddPerson }}" style="width:100%; border:1.5px dashed var(--border); border-radius:13px; background:none; cursor:pointer; color:var(--text); padding:15px; font-size:14px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:8px;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>Add person</button>
+            </div>
+          </sc-if>
+
+        </div>
+
+        <div style="position:absolute; left:0; right:0; bottom:0; padding:12px 14px; background:var(--bg); border-top:1px solid var(--border); display:flex; align-items:center; gap:12px;">
+          <sc-if value="{{ admMsg }}" hint-placeholder-val="{{ false }}"><div style="flex:1; font-size:12.5px; font-weight:600; color:#1f8a5b;">{{ admMsg }}</div></sc-if>
+          <sc-if value="{{ admMsg }}" hint-placeholder-val="{{ true }}"><div style="flex:1; font-size:12px; color:var(--text2);">Changes are local until you publish.</div></sc-if>
+          <button onClick="{{ publishAdmin }}" style="border:none; border-radius:11px; padding:13px 26px; font-size:14.5px; font-weight:800; cursor:pointer; background:linear-gradient(120deg,#06b6d4,#3b82f6); color:#fff; white-space:nowrap;">Publish</button>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ toastMsg }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute; bottom:84px; left:50%; transform:translateX(-50%); background:var(--text); color:var(--bg); padding:9px 18px; border-radius:99px; font-size:13px; font-weight:600; z-index:70; box-shadow:0 8px 24px rgba(0,0,0,.28); white-space:nowrap;">{{ toastMsg }}</div>
+    </sc-if>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = {
+    tab: 'home', dark: false,
+    likes: {}, saves: {}, heart: null,
+    commentsFor: null, draft: '', extraComments: {},
+    story: null, slide: 0, progress: 0, viewed: {},
+    createOpen: false, dmOpen: false, dmSeen: false, dmDraft: '',
+    dmMsgs: [{ from: 'them', text: 'Hey! 👋 Thanks for stopping by my portfolio. Ask me anything — or just say hi.' }],
+    reelLikes: {}, reelPlaying: {},
+    following: false, toast: null, search: '',
+    notifOpen: false, notifSeen: false, follows: {},
+    postView: null, optionsFor: null, expandedCaps: {},
+    commentLikes: {}, profileTab: 'posts', menuOpen: false, savedOpen: false,
+    reelMuted: true, reelCommentsFor: null, recents: ['hackathon', 'orbitly', 'open source'],
+    storyReply: '', sentStoryReply: false,
+    carousel: {}, editOpen: false, editDraft: null,
+    adminOpen: false, adminAuthed: false, adminPw: '', adminPwError: false,
+    adminSection: 'posts', adminDraft: null, adminMsg: null,
+    profile: {
+      name: 'Anand', username: 'anand.builds',
+      role: 'Founder & Full-Stack Developer',
+      bio: 'Building things people actually use.\nStackline (\u201923) \u2192 Orbitly (\u201925) \u00B7 3\u00D7 hackathon winner',
+      email: 'hi@anand.dev'
+    }
+  };
+
+  data() {
+    if (this._d) return this._d;
+    // Content comes from content.js (the content layer) — the single source of
+    // truth. The CRM at /admin edits a copy of this and publishes via saveContent.
+    var PC = window.PortfolioContent;
+    var seed = (PC && PC.DEFAULT_CONTENT) ? PC.DEFAULT_CONTENT
+      : { profile:{name:'',username:'',role:'',bio:'',email:''}, posts:[], stories:[], reels:[], tiles:[], notifs:[], people:[] };
+    this._d = JSON.parse(JSON.stringify(seed));
+    return this._d;
+  }
+
+  componentDidMount() {
+    let dark = false;
+    try { dark = localStorage.getItem('anand_ig_theme') === 'dark'; } catch (e) {}
+    this.applyTheme(dark);
+    if (dark) this.setState({ dark: true });
+
+    const PC = window.PortfolioContent;
+
+    // 1. Load owner-managed content (profile/posts/reels/...) from the content layer.
+    if (PC && PC.loadContent) {
+      PC.loadContent().then((c) => {
+        if (!c) return;
+        this._d = c;
+        this.setState({ profile: Object.assign({}, this.state.profile, c.profile || {}) });
+        // Pull in any visitor comments that were saved against these posts/reels.
+        const ids = (c.posts || []).map((p) => p.id).concat((c.reels || []).map((r) => r.id));
+        Promise.all(ids.map((id) => PC.getComments(id).then((cs) => ({ id, cs })))).then((rows) => {
+          const ex = {};
+          rows.forEach((row) => { if (row.cs && row.cs.length) ex[row.id] = row.cs; });
+          this.setState({ extraComments: ex });
+        });
+        this.forceUpdate();
+      });
+    }
+
+    // 2. Load this visitor's interactions (likes / saves / follows) — "real" data.
+    if (PC && PC.getInteractions) {
+      PC.getInteractions().then((i) => this.setState({
+        likes: i.likes || {}, saves: i.saves || {}, follows: i.follows || {},
+        reelLikes: i.reelLikes || {}, following: !!i.following
+      }));
+    }
+
+    // 3. Load the DM thread.
+    if (PC && PC.getDms) {
+      PC.getDms().then((dms) => { if (dms && dms.length) this.setState({ dmMsgs: dms }); });
+    }
+
+    this._replies = [
+      'Got it — thanks! For anything serious, email hi@anand.dev. I read everything 🙌',
+      'Appreciate it! Meanwhile, the Reels tab has quick demos of my work.',
+      'Nice! Let\u2019s talk — hi@anand.dev, or grab my links from the + button.'
+    ];
+    this._ri = 0;
+
+    // 4. Hidden /admin entry — open on #admin in the URL, or by typing "/admin".
+    this._adminBuf = '';
+    this._onHash = () => { if ((location.hash || '').toLowerCase().replace('/', '') === '#admin') this.openAdmin(); };
+    this._onKey = (e) => {
+      if (this.state.adminOpen) return;
+      const t = e.target && e.target.tagName;
+      if (t === 'INPUT' || t === 'TEXTAREA') return; // don't capture while typing in a field
+      if (e.key && e.key.length === 1) this._adminBuf = (this._adminBuf + e.key).slice(-6);
+      if (this._adminBuf.toLowerCase() === '/admin') { this._adminBuf = ''; this.openAdmin(); }
+    };
+    window.addEventListener('hashchange', this._onHash);
+    window.addEventListener('keydown', this._onKey);
+    this._onHash();
+  }
+  componentWillUnmount() {
+    clearInterval(this._t); clearTimeout(this._toastT); clearTimeout(this._heartT); clearTimeout(this._dmT);
+    window.removeEventListener('hashchange', this._onHash);
+    window.removeEventListener('keydown', this._onKey);
+  }
+
+  applyTheme(dark) {
+    const v = dark
+      ? { page: '#000000', bg: '#0b0d11', bg2: '#16191e', text: '#f2f4f6', text2: '#98a1aa', border: '#22262c' }
+      : { page: '#fafbfc', bg: '#ffffff', bg2: '#f0f3f6', text: '#181b1f', text2: '#75808a', border: '#e3e7ec' };
+    const r = document.documentElement.style;
+    Object.keys(v).forEach((k) => r.setProperty('--' + k, v[k]));
+    try { localStorage.setItem('anand_ig_theme', dark ? 'dark' : 'light'); } catch (e) {}
+  }
+
+  showToast(msg) {
+    clearTimeout(this._toastT);
+    this.setState({ toast: msg });
+    this._toastT = setTimeout(() => this.setState({ toast: null }), 1800);
+  }
+
+  // Single seam for persisting an interaction flag through the content layer.
+  _save(kind, id, value) { try { if (window.PortfolioContent) window.PortfolioContent.setFlag(kind, id, value); } catch (e) {} }
+  toggleLike(id) {
+    const likes = Object.assign({}, this.state.likes);
+    likes[id] = !likes[id];
+    this.setState({ likes });
+    this._save('likes', id, likes[id]);
+  }
+  doubleTap(id) {
+    const likes = Object.assign({}, this.state.likes);
+    likes[id] = true;
+    this.setState({ likes, heart: id });
+    this._save('likes', id, true);
+    clearTimeout(this._heartT);
+    this._heartT = setTimeout(() => this.setState({ heart: null }), 950);
+  }
+  toggleSave(id) {
+    const saves = Object.assign({}, this.state.saves);
+    saves[id] = !saves[id];
+    this.setState({ saves });
+    this._save('saves', id, saves[id]);
+    this.showToast(saves[id] ? 'Saved to collection' : 'Removed from saved');
+  }
+  share() {
+    try { navigator.clipboard.writeText(location.href); } catch (e) {}
+    this.showToast('Link copied — share away!');
+  }
+  carouselGo(id, i, len) {
+    const n = Math.max(0, Math.min(len - 1, i));
+    const c = Object.assign({}, this.state.carousel);
+    c[id] = n;
+    this.setState({ carousel: c });
+  }
+  openEdit() { this.setState({ editOpen: true, editDraft: Object.assign({}, this.state.profile), menuOpen: false }); }
+  closeEdit() { this.setState({ editOpen: false, editDraft: null }); }
+  setEditField(k, v) { this.setState({ editDraft: Object.assign({}, this.state.editDraft || this.state.profile, { [k]: v }) }); }
+  saveProfile() {
+    const p = this.state.editDraft || this.state.profile;
+    this.setState({ profile: p, editOpen: false, editDraft: null });
+    // Profile is part of the content layer — persist the whole content object.
+    if (this._d) this._d = Object.assign({}, this._d, { profile: p });
+    try { if (window.PortfolioContent) window.PortfolioContent.saveContent(this._d); } catch (e) {}
+    this.showToast('Profile updated ✓');
+  }
+  openPost(id) { this.setState({ postView: id, optionsFor: null }); }
+  closePost() { this.setState({ postView: null }); }
+  toggleFollowUser(u) {
+    const follows = Object.assign({}, this.state.follows);
+    follows[u] = !follows[u];
+    this.setState({ follows });
+    this._save('follows', u, follows[u]);
+  }
+  toggleCommentLike(key) {
+    const cl = Object.assign({}, this.state.commentLikes);
+    cl[key] = !cl[key];
+    this.setState({ commentLikes: cl });
+  }
+  toggleCaption(id) {
+    const ec = Object.assign({}, this.state.expandedCaps);
+    ec[id] = !ec[id];
+    this.setState({ expandedCaps: ec });
+  }
+  sendStoryReply() {
+    const t = this.state.storyReply.trim();
+    if (!t) return;
+    this.setState({ storyReply: '', story: null });
+    this.showToast('Reply sent — I\u2019ll get back to you 💬');
+  }
+  quickReact(emoji) {
+    this.showToast(emoji + ' sent to my story');
+  }
+
+  openStory(i) {
+    clearInterval(this._t);
+    const viewed = Object.assign({}, this.state.viewed);
+    viewed[i] = true;
+    this.setState({ story: i, slide: 0, progress: 0, viewed });
+    this._t = setInterval(() => this.tick(), 50);
+  }
+  tick() {
+    const { story, slide, progress } = this.state;
+    if (story === null || story === undefined) return;
+    if (this.state.storyReply) return;
+    const slides = this.data().stories[story].slides;
+    if (progress >= 100) {
+      if (slide < slides.length - 1) this.setState({ slide: slide + 1, progress: 0 });
+      else this.nextStory();
+    } else {
+      this.setState({ progress: progress + 1.15 });
+    }
+  }
+  nextStory() {
+    const s = this.state.story;
+    if (s < this.data().stories.length - 1) this.openStory(s + 1);
+    else this.closeStory();
+  }
+  closeStory() {
+    clearInterval(this._t);
+    this.setState({ story: null });
+  }
+
+  addComment() {
+    const t = this.state.draft.trim();
+    if (!t) return;
+    const id = this.state.commentsFor;
+    const c = { u: 'you', t: t, when: 'now' };
+    const ex = Object.assign({}, this.state.extraComments);
+    ex[id] = (ex[id] || []).concat([c]);
+    this.setState({ extraComments: ex, draft: '' });
+    try { if (window.PortfolioContent) window.PortfolioContent.addComment(id, c); } catch (e) {}
+  }
+
+  _saveDms(thread) { try { if (window.PortfolioContent) window.PortfolioContent.saveDms(thread); } catch (e) {} }
+  sendDm() {
+    const t = this.state.dmDraft.trim();
+    if (!t) return;
+    const thread = this.state.dmMsgs.concat([{ from: 'me', text: t }]);
+    this.setState({ dmMsgs: thread, dmDraft: '' });
+    this._saveDms(thread);
+    clearTimeout(this._dmT);
+    this._dmT = setTimeout(() => {
+      const reply = this._replies[this._ri % this._replies.length];
+      this._ri += 1;
+      const thread2 = this.state.dmMsgs.concat([{ from: 'them', text: reply }]);
+      this.setState({ dmMsgs: thread2 });
+      this._saveDms(thread2);
+    }, 900);
+  }
+
+  heartEl(id) {
+    if (this.state.heart !== id) return null;
+    return React.createElement('div', {
+      style: { position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', zIndex: 3 }
+    }, React.createElement('svg', {
+      width: 96, height: 96, viewBox: '0 0 24 24',
+      style: { animation: 'heartPop .95s ease forwards', filter: 'drop-shadow(0 6px 20px rgba(0,0,0,.35))' }
+    }, React.createElement('path', {
+      d: 'M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z',
+      fill: '#ff3040'
+    })));
+  }
+
+  // ---------- /admin CRM ----------
+  _palette() {
+    return [
+      'linear-gradient(135deg,#06b6d4,#3b82f6)', 'linear-gradient(135deg,#1d4ed8,#6d28d9)',
+      'linear-gradient(135deg,#0891b2,#155e75)', 'linear-gradient(135deg,#334155,#0f172a)',
+      'linear-gradient(135deg,#22d3ee,#2563eb)', 'linear-gradient(135deg,#0ea5e9,#0369a1)',
+      'linear-gradient(135deg,#f59e0b,#ef4444)', 'linear-gradient(135deg,#8b5cf6,#ec4899)',
+      'linear-gradient(150deg,#0e7490,#0f766e)', 'linear-gradient(135deg,#2563eb,#312e81)'
+    ];
+  }
+  openAdmin() {
+    const PC = window.PortfolioContent;
+    const authed = !!(PC && PC.isAdminSession && PC.isAdminSession());
+    const draft = JSON.parse(JSON.stringify(this.data()));
+    this.setState({ adminOpen: true, adminAuthed: authed, adminDraft: draft, adminPw: '', adminPwError: false, adminSection: 'posts' });
+  }
+  closeAdmin() {
+    this.setState({ adminOpen: false });
+    try { if ((location.hash || '').toLowerCase().indexOf('admin') !== -1) history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
+  }
+  admUnlock() {
+    const PC = window.PortfolioContent;
+    if (PC && PC.checkAdminPassword(this.state.adminPw)) {
+      PC.setAdminSession(true);
+      this.setState({ adminAuthed: true, adminPw: '', adminPwError: false });
+    } else { this.setState({ adminPwError: true }); }
+  }
+  admLogout() { const PC = window.PortfolioContent; if (PC) PC.setAdminSession(false); this.setState({ adminAuthed: false, adminOpen: false }); }
+  _at(obj, path) { if (!path) return obj; const parts = path.split('.'); let o = obj; for (let k = 0; k < parts.length; k++) o = o[parts[k]]; return o; }
+  admSet(path, value) {
+    const d = JSON.parse(JSON.stringify(this.state.adminDraft));
+    const parts = path.split('.'); let o = d;
+    for (let k = 0; k < parts.length - 1; k++) o = o[parts[k]];
+    o[parts[parts.length - 1]] = value;
+    this.setState({ adminDraft: d });
+  }
+  admAdd(listPath, item) { const d = JSON.parse(JSON.stringify(this.state.adminDraft)); this._at(d, listPath).push(item); this.setState({ adminDraft: d }); }
+  admDel(listPath, index) { const d = JSON.parse(JSON.stringify(this.state.adminDraft)); this._at(d, listPath).splice(index, 1); this.setState({ adminDraft: d }); }
+  admMove(listPath, index, dir) {
+    const d = JSON.parse(JSON.stringify(this.state.adminDraft)); const arr = this._at(d, listPath);
+    const ni = index + dir; if (ni < 0 || ni >= arr.length) return;
+    const t = arr[index]; arr[index] = arr[ni]; arr[ni] = t; this.setState({ adminDraft: d });
+  }
+  _admEnsureImages(d, i) { const p = d.posts[i]; if (!p.images || !p.images.length) p.images = [{ slot: p.slot, placeholder: p.placeholder }]; return p; }
+  admAddImage(i) { const d = JSON.parse(JSON.stringify(this.state.adminDraft)); const p = this._admEnsureImages(d, i); p.images.push({ slot: (p.slot || p.id) + '-' + (p.images.length + 1), placeholder: 'New image' }); this.setState({ adminDraft: d }); }
+  admRemoveImage(i, j) { const d = JSON.parse(JSON.stringify(this.state.adminDraft)); const p = this._admEnsureImages(d, i); if (p.images.length > 1) { p.images.splice(j, 1); p.slot = p.images[0].slot; p.placeholder = p.images[0].placeholder; } this.setState({ adminDraft: d }); }
+  admSetImagePlaceholder(i, j, v) { const d = JSON.parse(JSON.stringify(this.state.adminDraft)); const p = this._admEnsureImages(d, i); p.images[j].placeholder = v; if (j === 0) p.placeholder = v; this.setState({ adminDraft: d }); }
+  admAddPost() { const id = 'p' + Date.now(); this.admAdd('posts', { id: id, time: 'now', label: 'New project', slot: 'post-' + id, aspect: '1 / 1', grad: this._palette()[0], big: 'N', placeholder: 'Drop an image here', caption: 'Describe this project…', likes: 0, comments: [] }); }
+  admAddReel() { const id = 'r' + Date.now(); this.admAdd('reels', { id: id, slot: 'reel-' + id, tag: 'New', title: 'New reel', sub: '', likesN: 0, commentCount: '0', placeholder: 'Drop a vertical cover here', audio: 'Original audio', comments: [] }); }
+  admAddStory() { this.admAdd('stories', { label: 'New', glyph: 'N', grad: this._palette()[0], slides: [{ kicker: 'KICKER', title: 'New story', body: 'Say something here.' }] }); }
+  admAddTile() { const d = this.state.adminDraft; this.admAdd('tiles', { kicker: 'NEW', label: 'New tile', grad: this._palette()[0], big: 'N', span: 'span 1', pid: (d.posts[0] || {}).id || 'p1' }); }
+  admAddPerson() { this.admAdd('people', { u: 'username', name: 'Name · role', bg: this._palette()[0] }); }
+  publishAdmin() {
+    const d = JSON.parse(JSON.stringify(this.state.adminDraft));
+    this._d = d;
+    this.setState({ profile: Object.assign({}, this.state.profile, d.profile || {}), adminMsg: 'Published ✓ — portfolio updated' });
+    try { if (window.PortfolioContent) window.PortfolioContent.saveContent(d); } catch (e) {}
+    clearTimeout(this._admT); this._admT = setTimeout(() => this.setState({ adminMsg: null }), 2200);
+    this.forceUpdate();
+  }
+
+  renderVals() {
+    const S = this.state;
+    const D = this.data();
+    const tab = S.tab;
+
+    const stories = D.stories.map((s, i) => ({
+      label: s.label, glyph: s.glyph, grad: s.grad,
+      dim: S.viewed[i] ? '.45' : '1',
+      open: () => this.openStory(i)
+    }));
+
+    const mapPost = (p) => {
+      const liked = !!S.likes[p.id];
+      const saved = !!S.saves[p.id];
+      const merged = p.comments.concat(S.extraComments[p.id] || []);
+      const expanded = !!S.expandedCaps[p.id];
+      const long = p.caption.length > 88;
+      const imgs = (p.images && p.images.length) ? p.images : [{ slot: p.slot, placeholder: p.placeholder }];
+      const ci = Math.min(S.carousel[p.id] || 0, imgs.length - 1);
+      return Object.assign({}, p, {
+        slides: imgs,
+        multi: imgs.length > 1,
+        counter: (ci + 1) + '/' + imgs.length,
+        trackX: ci === 0 ? '0%' : '-' + (ci * 100) + '%',
+        dots: imgs.map((x, i) => ({ bg: i === ci ? '#1d8ef0' : 'rgba(255,255,255,.6)' })),
+        showPrev: ci > 0,
+        showNext: ci < imgs.length - 1,
+        carPrev: () => this.carouselGo(p.id, ci - 1, imgs.length),
+        carNext: () => this.carouselGo(p.id, ci + 1, imgs.length),
+        touchStart: (e) => { this._cx = (e.touches && e.touches[0]) ? e.touches[0].clientX : 0; },
+        touchEnd: (e) => { const t = (e.changedTouches && e.changedTouches[0]) ? e.changedTouches[0].clientX : 0; const dx = t - (this._cx || 0); if (Math.abs(dx) > 42) this.carouselGo(p.id, ci + (dx < 0 ? 1 : -1), imgs.length); },
+        commentCount: String(merged.length),
+        heartFill: liked ? '#ff3040' : 'none',
+        heartColor: liked ? '#ff3040' : 'var(--text)',
+        saveFill: saved ? 'currentColor' : 'none',
+        likeCount: (p.likes + (liked ? 1 : 0)).toLocaleString('en-US'),
+        caption: (long && !expanded) ? p.caption.slice(0, 84).trim() + '… ' : p.caption + ' ',
+        showMore: long && !expanded,
+        toggleCap: () => this.toggleCaption(p.id),
+        toggleLike: () => this.toggleLike(p.id),
+        toggleSave: () => this.toggleSave(p.id),
+        openComments: () => this.setState({ commentsFor: p.id, draft: '' }),
+        openOptions: () => this.setState({ optionsFor: p.id }),
+        onDouble: () => this.doubleTap(p.id),
+        share: () => this.share(),
+        heartEl: this.heartEl(p.id)
+      });
+    };
+    const posts = D.posts.map(mapPost);
+    const viewPost = S.postView ? mapPost(D.posts.find((p) => p.id === S.postView) || D.posts[0]) : null;
+
+    const reels = D.reels.map((r) => {
+      const liked = !!S.reelLikes[r.id];
+      const playing = !!S.reelPlaying[r.id];
+      const cc = (r.comments || []).length + (S.extraComments[r.id] || []).length;
+      return Object.assign({}, r, {
+        paused: !playing,
+        muted: S.reelMuted,
+        unmuted: !S.reelMuted,
+        commentCount: String(cc),
+        heartFill: liked ? '#ff3040' : 'none',
+        heartColor: liked ? '#ff3040' : '#ffffff',
+        likeCount: (r.likesN + (liked ? 1 : 0)).toLocaleString('en-US'),
+        toggle: () => {
+          const rp = Object.assign({}, this.state.reelPlaying);
+          rp[r.id] = !rp[r.id];
+          this.setState({ reelPlaying: rp });
+        },
+        toggleMute: (e) => { if (e) e.stopPropagation(); this.setState({ reelMuted: !this.state.reelMuted }); },
+        like: () => {
+          const rl = Object.assign({}, this.state.reelLikes);
+          rl[r.id] = !rl[r.id];
+          this.setState({ reelLikes: rl });
+          this._save('reelLikes', r.id, rl[r.id]);
+        },
+        doubleLike: () => {
+          const rl = Object.assign({}, this.state.reelLikes);
+          rl[r.id] = true;
+          this.setState({ reelLikes: rl });
+          this._save('reelLikes', r.id, true);
+        },
+        share: () => this.share(),
+        openComments: () => this.setState({ commentsFor: r.id, draft: '' }),
+        openDm: () => this.setState({ dmOpen: true, dmSeen: true }),
+        progressEl: playing ? React.createElement('div', {
+          style: { position: 'absolute', left: 0, bottom: 0, height: '2.5px', background: 'rgba(255,255,255,.9)', zIndex: 4, width: '0%', animation: 'reelbar 14s linear infinite' }
+        }) : null
+      });
+    });
+
+    const q = S.search.trim().toLowerCase();
+    const tiles = D.tiles.filter((t) => !q || (t.label + ' ' + t.kicker).toLowerCase().indexOf(q) !== -1)
+      .map((t) => Object.assign({}, t, { open: () => this.openPost(t.pid) }));
+    const peopleResults = D.people.filter((pp) => !q || (pp.u + ' ' + pp.name).toLowerCase().indexOf(q) !== -1)
+      .map((pp) => Object.assign({}, pp, {
+        initial: pp.u.charAt(0).toUpperCase(),
+        following: !!S.follows[pp.u],
+        followLabel: S.follows[pp.u] ? 'Following' : 'Follow',
+        toggleFollow: () => this.toggleFollowUser(pp.u)
+      }));
+
+    const story = S.story;
+    const st = (story === null || story === undefined) ? null : D.stories[story];
+    const sl = st ? st.slides[S.slide] : null;
+    const commentBgs = ['linear-gradient(140deg,#f59e0b,#ef4444)', 'linear-gradient(140deg,#10b981,#0ea5e9)', 'linear-gradient(140deg,#8b5cf6,#ec4899)', 'linear-gradient(140deg,#06b6d4,#3b82f6)'];
+    const activePost = D.posts.find((p) => p.id === S.commentsFor) || D.reels.find((r) => r.id === S.commentsFor);
+    const baseLikes = [12, 4, 9, 3, 7, 2, 5, 1];
+    const cList = activePost ? activePost.comments.concat(S.extraComments[activePost.id] || []).map((c, i) => {
+      const key = activePost.id + ':' + i;
+      const liked = !!S.commentLikes[key];
+      const n = (c.u === 'you' ? 0 : baseLikes[i % baseLikes.length]) + (liked ? 1 : 0);
+      return {
+        u: c.u, t: c.t, when: c.when || 'now',
+        initial: c.u.charAt(0).toUpperCase(),
+        bg: c.u === 'you' ? 'linear-gradient(140deg,#64748b,#334155)' : commentBgs[i % commentBgs.length],
+        likeFill: liked ? '#ff3040' : 'none',
+        likeColor: liked ? '#ff3040' : 'var(--text2)',
+        likeText: n > 0 ? (n + (n === 1 ? ' like' : ' likes')) : '',
+        toggleLike: () => this.toggleCommentLike(key),
+        reply: () => this.setState({ draft: '@' + c.u + ' ' })
+      };
+    }) : [];
+
+    const dmMsgs = S.dmMsgs.map((m) => ({
+      text: m.text,
+      align: m.from === 'me' ? 'flex-end' : 'flex-start',
+      bg: m.from === 'me' ? 'linear-gradient(120deg,#06b6d4,#3b82f6)' : 'var(--bg2)',
+      color: m.from === 'me' ? '#ffffff' : 'var(--text)'
+    }));
+
+    const navC = (t) => (tab === t ? 'var(--text)' : 'var(--text2)');
+    const navSw = (t) => (tab === t ? '2.4' : '1.8');
+
+    // ---------- /admin CRM view-models ----------
+    const AD = S.adminDraft || D;
+    const palette = this._palette();
+    const swatches = (cur, setFn) => palette.map((g) => ({ grad: g, ring: g === cur ? '2px solid var(--text)' : '2px solid var(--border)', pick: () => setFn(g) }));
+    const postOptions = (AD.posts || []).map((p) => ({ id: p.id, label: p.label, sel: false }));
+    const admPosts = (AD.posts || []).map((p, i) => {
+      const imgs = (p.images && p.images.length) ? p.images : [{ slot: p.slot, placeholder: p.placeholder }];
+      return {
+        n: '#' + (i + 1), label: p.label, time: p.time, caption: p.caption, big: p.big, likes: p.likes, grad: p.grad,
+        setLabel: (e) => this.admSet('posts.' + i + '.label', e.target.value),
+        setTime: (e) => this.admSet('posts.' + i + '.time', e.target.value),
+        setCaption: (e) => this.admSet('posts.' + i + '.caption', e.target.value),
+        setBig: (e) => this.admSet('posts.' + i + '.big', e.target.value),
+        setLikes: (e) => this.admSet('posts.' + i + '.likes', parseInt(e.target.value, 10) || 0),
+        swatches: swatches(p.grad, (g) => this.admSet('posts.' + i + '.grad', g)),
+        up: () => this.admMove('posts', i, -1),
+        down: () => this.admMove('posts', i, 1),
+        del: () => this.admDel('posts', i),
+        images: imgs.map((im, j) => ({
+          slot: im.slot, placeholder: im.placeholder || 'Image',
+          setPh: (e) => this.admSetImagePlaceholder(i, j, e.target.value),
+          remove: () => this.admRemoveImage(i, j), canRemove: imgs.length > 1
+        })),
+        addImage: () => this.admAddImage(i)
+      };
+    });
+    const admReels = (AD.reels || []).map((r, i) => ({
+      n: '#' + (i + 1), title: r.title, sub: r.sub, tag: r.tag, audio: r.audio, likesN: r.likesN, slot: r.slot,
+      setTitle: (e) => this.admSet('reels.' + i + '.title', e.target.value),
+      setSub: (e) => this.admSet('reels.' + i + '.sub', e.target.value),
+      setTag: (e) => this.admSet('reels.' + i + '.tag', e.target.value),
+      setAudio: (e) => this.admSet('reels.' + i + '.audio', e.target.value),
+      setLikes: (e) => this.admSet('reels.' + i + '.likesN', parseInt(e.target.value, 10) || 0),
+      up: () => this.admMove('reels', i, -1), down: () => this.admMove('reels', i, 1), del: () => this.admDel('reels', i)
+    }));
+    const admStories = (AD.stories || []).map((s, i) => ({
+      n: '#' + (i + 1), label: s.label, glyph: s.glyph, grad: s.grad,
+      setLabel: (e) => this.admSet('stories.' + i + '.label', e.target.value),
+      setGlyph: (e) => this.admSet('stories.' + i + '.glyph', e.target.value),
+      swatches: swatches(s.grad, (g) => this.admSet('stories.' + i + '.grad', g)),
+      up: () => this.admMove('stories', i, -1), down: () => this.admMove('stories', i, 1), del: () => this.admDel('stories', i),
+      slides: (s.slides || []).map((sl, j) => ({
+        sn: 'Slide ' + (j + 1), kicker: sl.kicker, title: sl.title, body: sl.body,
+        setKicker: (e) => this.admSet('stories.' + i + '.slides.' + j + '.kicker', e.target.value),
+        setTitle: (e) => this.admSet('stories.' + i + '.slides.' + j + '.title', e.target.value),
+        setBody: (e) => this.admSet('stories.' + i + '.slides.' + j + '.body', e.target.value),
+        del: () => this.admDel('stories.' + i + '.slides', j), canDel: (s.slides || []).length > 1
+      })),
+      addSlide: () => this.admAdd('stories.' + i + '.slides', { kicker: 'KICKER', title: 'New slide', body: 'Say something.' })
+    }));
+    const admTiles = (AD.tiles || []).map((t, i) => ({
+      n: '#' + (i + 1), kicker: t.kicker, label: t.label, big: t.big, pid: t.pid, grad: t.grad,
+      wide: t.span === 'span 2',
+      wideLabel: t.span === 'span 2' ? 'Wide ✓' : 'Standard',
+      setKicker: (e) => this.admSet('tiles.' + i + '.kicker', e.target.value),
+      setLabel: (e) => this.admSet('tiles.' + i + '.label', e.target.value),
+      setBig: (e) => this.admSet('tiles.' + i + '.big', e.target.value),
+      setPid: (e) => this.admSet('tiles.' + i + '.pid', e.target.value),
+      toggleWide: () => this.admSet('tiles.' + i + '.span', t.span === 'span 2' ? 'span 1' : 'span 2'),
+      swatches: swatches(t.grad, (g) => this.admSet('tiles.' + i + '.grad', g)),
+      options: postOptions.map((o) => ({ id: o.id, label: o.label })),
+      up: () => this.admMove('tiles', i, -1), down: () => this.admMove('tiles', i, 1), del: () => this.admDel('tiles', i)
+    }));
+    const admPeople = (AD.people || []).map((pp, i) => ({
+      n: '#' + (i + 1), u: pp.u, name: pp.name, grad: pp.bg,
+      setU: (e) => this.admSet('people.' + i + '.u', e.target.value),
+      setName: (e) => this.admSet('people.' + i + '.name', e.target.value),
+      swatches: swatches(pp.bg, (g) => this.admSet('people.' + i + '.bg', g)),
+      del: () => this.admDel('people', i)
+    }));
+    const admNotifs = (AD.notifs || []).map((g, gi) => ({
+      span: g.span,
+      setSpan: (e) => this.admSet('notifs.' + gi + '.span', e.target.value),
+      items: (g.items || []).map((it, ii) => ({
+        u: it.u, text: it.text, when: it.when,
+        setU: (e) => this.admSet('notifs.' + gi + '.items.' + ii + '.u', e.target.value),
+        setText: (e) => this.admSet('notifs.' + gi + '.items.' + ii + '.text', e.target.value),
+        setWhen: (e) => this.admSet('notifs.' + gi + '.items.' + ii + '.when', e.target.value),
+        del: () => this.admDel('notifs.' + gi + '.items', ii)
+      })),
+      addItem: () => this.admAdd('notifs.' + gi + '.items', { id: 'n' + Date.now(), type: 'follow', u: 'username', bg: palette[0], text: 'started following you.', when: 'now' })
+    }));
+    const admProfile = AD.profile || {};
+
+    return {
+      dark: S.dark, light: !S.dark,
+      emailText: S.profile.email,
+      emailHref: 'mailto:' + S.profile.email,
+      pfName: S.profile.name,
+      pfUsername: S.profile.username,
+      pfRole: S.profile.role,
+      pfBio: S.profile.bio,
+      toggleTheme: () => { const d = !S.dark; this.setState({ dark: d }); this.applyTheme(d); },
+
+      editOpen: S.editOpen,
+      openEdit: () => this.openEdit(),
+      closeEdit: () => this.closeEdit(),
+      saveProfile: () => this.saveProfile(),
+      edName: (S.editDraft || S.profile).name,
+      edUsername: (S.editDraft || S.profile).username,
+      edRole: (S.editDraft || S.profile).role,
+      edBio: (S.editDraft || S.profile).bio,
+      edEmail: (S.editDraft || S.profile).email,
+      setEdName: (e) => this.setEditField('name', e.target.value),
+      setEdUsername: (e) => this.setEditField('username', e.target.value),
+      setEdRole: (e) => this.setEditField('role', e.target.value),
+      setEdBio: (e) => this.setEditField('bio', e.target.value),
+      setEdEmail: (e) => this.setEditField('email', e.target.value),
+
+      isHome: tab === 'home', isExplore: tab === 'explore', isReels: tab === 'reels', isProfile: tab === 'profile',
+      goHome: () => this.setState({ tab: 'home' }),
+      goExplore: () => this.setState({ tab: 'explore' }),
+      goReels: () => this.setState({ tab: 'reels' }),
+      goProfile: () => this.setState({ tab: 'profile' }),
+      navHomeC: navC('home'), navHomeSw: navSw('home'),
+      navSearchC: navC('explore'), navSearchSw: navSw('explore'),
+      navReelsC: navC('reels'), navReelsSw: navSw('reels'),
+      navProfileRing: tab === 'profile' ? '2px solid var(--text)' : '2px solid transparent',
+
+      stories, posts, reels, tiles,
+      noTiles: tiles.length === 0,
+      search: S.search,
+      setSearch: (e) => this.setState({ search: e.target.value }),
+
+      storyOpen: st !== null,
+      svGrad: st ? st.grad : '',
+      svGlyph: st ? st.glyph : '',
+      svLabel: st ? st.label : '',
+      svKicker: sl ? sl.kicker : '',
+      svTitle: sl ? sl.title : '',
+      svBody: sl ? sl.body : '',
+      svBars: st ? st.slides.map((x, i) => ({ w: i < S.slide ? '100%' : (i === S.slide ? Math.min(100, S.progress) + '%' : '0%') })) : [],
+      closeStory: () => this.closeStory(),
+      prevTap: () => {
+        if (S.slide > 0) this.setState({ slide: S.slide - 1, progress: 0 });
+        else if (S.story > 0) this.openStory(S.story - 1);
+        else this.setState({ progress: 0 });
+      },
+      nextTap: () => {
+        const slides = st ? st.slides : [];
+        if (S.slide < slides.length - 1) this.setState({ slide: S.slide + 1, progress: 0 });
+        else this.nextStory();
+      },
+      storyReply: S.storyReply,
+      setStoryReply: (e) => this.setState({ storyReply: e.target.value }),
+      storyReplyKey: (e) => { if (e.key === 'Enter') this.sendStoryReply(); },
+      sendStoryReply: () => this.sendStoryReply(),
+      reactLove: () => this.quickReact('❤️'),
+      reactFire: () => this.quickReact('🔥'),
+
+      commentsOpen: !!activePost,
+      cList,
+      draft: S.draft,
+      setDraft: (e) => this.setState({ draft: e.target.value }),
+      draftKey: (e) => { if (e.key === 'Enter') this.addComment(); },
+      addComment: () => this.addComment(),
+      closeComments: () => this.setState({ commentsFor: null }),
+      postBtnColor: S.draft.trim() ? '#0095f6' : 'var(--text2)',
+
+      createOpen: S.createOpen,
+      openCreate: () => this.setState({ createOpen: true }),
+      closeCreate: () => this.setState({ createOpen: false }),
+      createToDm: () => this.setState({ createOpen: false, dmOpen: true, dmSeen: true }),
+
+      dmOpen: S.dmOpen,
+      dmDot: !S.dmSeen,
+      openDm: () => this.setState({ dmOpen: true, dmSeen: true }),
+      closeDm: () => this.setState({ dmOpen: false }),
+      dmMsgs,
+      dmDraft: S.dmDraft,
+      setDmDraft: (e) => this.setState({ dmDraft: e.target.value }),
+      dmKey: (e) => { if (e.key === 'Enter') this.sendDm(); },
+      sendDm: () => this.sendDm(),
+
+      following: S.following,
+      followLabel: S.following ? 'Following' : 'Follow',
+      followBg: S.following ? 'var(--bg2)' : 'linear-gradient(120deg,#06b6d4,#3b82f6)',
+      followColor: S.following ? 'var(--text)' : '#ffffff',
+      toggleFollow: () => {
+        const f = !S.following;
+        this.setState({ following: f });
+        this._save('following', null, f);
+        if (f) this.showToast('Thanks for the follow 💙');
+      },
+      statPosts: String(D.posts.length),
+      profileTab: S.profileTab,
+      isPostsTab: S.profileTab === 'posts',
+      isReelsTab: S.profileTab === 'reels',
+      isTaggedTab: S.profileTab === 'tagged',
+      postsTabBorder: S.profileTab === 'posts' ? 'var(--text)' : 'transparent',
+      postsTabColor: S.profileTab === 'posts' ? 'var(--text)' : 'var(--text2)',
+      reelsTabBorder: S.profileTab === 'reels' ? 'var(--text)' : 'transparent',
+      reelsTabColor: S.profileTab === 'reels' ? 'var(--text)' : 'var(--text2)',
+      taggedTabBorder: S.profileTab === 'tagged' ? 'var(--text)' : 'transparent',
+      taggedTabColor: S.profileTab === 'tagged' ? 'var(--text)' : 'var(--text2)',
+      setPostsTab: () => this.setState({ profileTab: 'posts' }),
+      setReelsTab: () => this.setState({ profileTab: 'reels' }),
+      setTaggedTab: () => this.setState({ profileTab: 'tagged' }),
+      gridPosts: D.posts.map((p) => ({
+        grad: p.grad, big: p.big, label: p.label,
+        likes: (p.likes + (S.likes[p.id] ? 1 : 0)).toLocaleString('en-US'),
+        open: () => this.openPost(p.id)
+      })),
+      reelGrid: D.reels.map((r) => ({
+        grad: r.id === 'r1' ? 'linear-gradient(135deg,#06b6d4,#3b82f6)' : (r.id === 'r2' ? 'linear-gradient(135deg,#0891b2,#155e75)' : 'linear-gradient(135deg,#1d4ed8,#6d28d9)'),
+        big: r.id === 'r1' ? 'O' : (r.id === 'r2' ? 'S' : 'H'),
+        title: r.title, views: r.likesN.toLocaleString('en-US'),
+        open: () => this.setState({ tab: 'reels' })
+      })),
+
+      // Notifications / activity
+      notifOpen: S.notifOpen,
+      notifDot: !S.notifSeen,
+      openNotif: () => this.setState({ notifOpen: true, notifSeen: true }),
+      closeNotif: () => this.setState({ notifOpen: false }),
+      notifGroups: D.notifs.map((g) => ({
+        span: g.span,
+        items: g.items.map((n) => ({
+          u: n.u, text: n.text, when: n.when, bg: n.bg, initial: n.u.charAt(0).toUpperCase(),
+          isFollow: n.type === 'follow', hasThumb: !!n.thumb, thumb: n.thumb || '', big: n.big || '',
+          following: !!S.follows[n.u],
+          followLabel: S.follows[n.u] ? 'Following' : 'Follow back',
+          followBg: S.follows[n.u] ? 'var(--bg2)' : 'linear-gradient(120deg,#06b6d4,#3b82f6)',
+          followColor: S.follows[n.u] ? 'var(--text)' : '#ffffff',
+          toggleFollow: () => this.toggleFollowUser(n.u)
+        }))
+      })),
+
+      // Post detail viewer
+      postViewOpen: viewPost !== null,
+      viewPost: viewPost,
+      closePost: () => this.closePost(),
+
+      // Post options sheet
+      optionsOpen: !!S.optionsFor,
+      closeOptions: () => this.setState({ optionsFor: null }),
+      optShare: () => { this.share(); this.setState({ optionsFor: null }); },
+      optSave: () => { const id = S.optionsFor; this.toggleSave(id); this.setState({ optionsFor: null }); },
+      optDm: () => this.setState({ optionsFor: null, dmOpen: true, dmSeen: true }),
+
+      // Search
+      recents: S.recents.map((term) => ({ term, set: () => this.setState({ search: term }) })),
+      showRecents: q.length === 0 && S.recents.length > 0,
+      peopleResults,
+      searching: q.length > 0,
+      clearRecents: () => this.setState({ recents: [] }),
+
+      // Profile menu + saved
+      menuOpen: S.menuOpen,
+      openMenu: () => this.setState({ menuOpen: true }),
+      closeMenu: () => this.setState({ menuOpen: false }),
+      savedOpen: S.savedOpen,
+      openSaved: () => this.setState({ menuOpen: false, savedOpen: true }),
+      closeSaved: () => this.setState({ savedOpen: false }),
+      savedPosts: D.posts.filter((p) => S.saves[p.id]).map((p) => ({
+        grad: p.grad, big: p.big, label: p.label, open: () => this.openPost(p.id)
+      })),
+      savedCount: D.posts.filter((p) => S.saves[p.id]).length,
+      hasSaved: D.posts.filter((p) => S.saves[p.id]).length > 0,
+      noSaved: D.posts.filter((p) => S.saves[p.id]).length === 0,
+
+      // ---------- /admin CRM ----------
+      admOpen: S.adminOpen,
+      admAuthed: S.adminAuthed,
+      admLocked: S.adminOpen && !S.adminAuthed,
+      admReady: S.adminOpen && S.adminAuthed,
+      admPw: S.adminPw,
+      admPwError: S.adminPwError,
+      admMsg: S.adminMsg,
+      setAdmPw: (e) => this.setState({ adminPw: e.target.value, adminPwError: false }),
+      admPwKey: (e) => { if (e.key === 'Enter') this.admUnlock(); },
+      admUnlock: () => this.admUnlock(),
+      admLogout: () => this.admLogout(),
+      closeAdmin: () => this.closeAdmin(),
+      publishAdmin: () => this.publishAdmin(),
+      admSection: S.adminSection,
+      admIsPosts: S.adminSection === 'posts',
+      admIsReels: S.adminSection === 'reels',
+      admIsStories: S.adminSection === 'stories',
+      admIsTiles: S.adminSection === 'tiles',
+      admIsPeople: S.adminSection === 'people',
+      admIsNotifs: S.adminSection === 'notifs',
+      admIsProfile: S.adminSection === 'profile',
+      goAdmPosts: () => this.setState({ adminSection: 'posts' }),
+      goAdmReels: () => this.setState({ adminSection: 'reels' }),
+      goAdmStories: () => this.setState({ adminSection: 'stories' }),
+      goAdmTiles: () => this.setState({ adminSection: 'tiles' }),
+      goAdmPeople: () => this.setState({ adminSection: 'people' }),
+      goAdmNotifs: () => this.setState({ adminSection: 'notifs' }),
+      goAdmProfile: () => this.setState({ adminSection: 'profile' }),
+      admTabPostsC: S.adminSection === 'posts' ? 'var(--text)' : 'var(--text2)',
+      admTabPostsBg: S.adminSection === 'posts' ? 'var(--bg)' : 'transparent',
+      admTabReelsC: S.adminSection === 'reels' ? 'var(--text)' : 'var(--text2)',
+      admTabReelsBg: S.adminSection === 'reels' ? 'var(--bg)' : 'transparent',
+      admTabStoriesC: S.adminSection === 'stories' ? 'var(--text)' : 'var(--text2)',
+      admTabStoriesBg: S.adminSection === 'stories' ? 'var(--bg)' : 'transparent',
+      admTabTilesC: S.adminSection === 'tiles' ? 'var(--text)' : 'var(--text2)',
+      admTabTilesBg: S.adminSection === 'tiles' ? 'var(--bg)' : 'transparent',
+      admTabPeopleC: S.adminSection === 'people' ? 'var(--text)' : 'var(--text2)',
+      admTabPeopleBg: S.adminSection === 'people' ? 'var(--bg)' : 'transparent',
+      admTabNotifsC: S.adminSection === 'notifs' ? 'var(--text)' : 'var(--text2)',
+      admTabNotifsBg: S.adminSection === 'notifs' ? 'var(--bg)' : 'transparent',
+      admTabProfileC: S.adminSection === 'profile' ? 'var(--text)' : 'var(--text2)',
+      admTabProfileBg: S.adminSection === 'profile' ? 'var(--bg)' : 'transparent',
+      admPosts, admReels, admStories, admTiles, admPeople, admNotifs,
+      admAddPost: () => this.admAddPost(),
+      admAddReel: () => this.admAddReel(),
+      admAddStory: () => this.admAddStory(),
+      admAddTile: () => this.admAddTile(),
+      admAddPerson: () => this.admAddPerson(),
+      admPfName: admProfile.name, admPfUsername: admProfile.username, admPfRole: admProfile.role, admPfBio: admProfile.bio, admPfEmail: admProfile.email,
+      setAdmPfName: (e) => this.admSet('profile.name', e.target.value),
+      setAdmPfUsername: (e) => this.admSet('profile.username', e.target.value),
+      setAdmPfRole: (e) => this.admSet('profile.role', e.target.value),
+      setAdmPfBio: (e) => this.admSet('profile.bio', e.target.value),
+      setAdmPfEmail: (e) => this.admSet('profile.email', e.target.value),
+
+      toastMsg: S.toast
+    };
+  }
+}
+</script>
+</body>
+</html>

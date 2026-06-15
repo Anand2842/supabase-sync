@@ -43,7 +43,7 @@
       username: 'anand.builds',
       role: 'Founder & Full-Stack Developer',
       bio: 'Building things people actually use.\nStackline (\u201923) \u2192 Orbitly (\u201925) \u00B7 3\u00D7 hackathon winner',
-      email: 'hi@anand.dev'
+      email: 'aanand.ak15@gmail.com'
     },
     posts: [
       { id: 'p1', time: '2d', label: 'Orbitly \u00B7 launch week', slot: 'post-orbitly', aspect: '4 / 5', grad: G.orbitly, big: 'O',
@@ -114,7 +114,7 @@
         { kicker: 'TOOLBOX', title: 'TypeScript \u00B7 React \u00B7 Node', body: 'Postgres, Redis, AWS \u2014 and whatever the problem actually needs.' }
       ] },
       { label: 'Contact', glyph: '@', grad: 'linear-gradient(150deg,#0e7490,#0f766e)', slides: [
-        { kicker: 'SAY HI', title: 'hi@anand.dev', body: 'Open to collabs, contracts and coffee chats. DM me right here, too.' }
+        { kicker: 'SAY HI', title: 'aanand.ak15@gmail.com', body: 'Open to collabs, contracts and coffee chats. DM me right here, too.' }
       ] }
     ],
     reels: [

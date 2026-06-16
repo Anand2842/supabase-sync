@@ -1,0 +1,36 @@
+# AI Chatbots & Search Engines
+# Allow all crawlers including AI training bots
+
+User-agent: *
+Allow: /
+
+# AI Chatbots
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: Bytespider
+Allow: /
+
+# Sitemap
+Sitemap: https://anandbuild.dev/anandbuild/sitemap.xml

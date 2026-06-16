@@ -324,7 +324,8 @@
         const { error } = await s.from('comments').insert({
           target_id: targetId,
           username: comment.u || 'you',
-          body: comment.t
+          body: comment.t,
+          avatar: comment.avatar || null
         });
         if (error) throw error;
         return comment;
@@ -336,6 +337,66 @@
     all[targetId] = (all[targetId] || []).concat([comment]);
     writeLS(KEYS.comments, all);
     return comment;
+  }
+
+  /* ==========================================================================
+     6b. IDENTITY — display name + emoji avatar for anonymous commenters
+     ========================================================================== */
+  var AVATARS = ['🦊','🐼','🦁','🐧','🐸','🐵','🦄','🐙','🦉','🐯','🐨','🐺'];
+  var ADJ = ['quiet','curious','sunny','brave','calm','swift','bold','witty','kind','clever','lucky','mellow'];
+  var ANIMALS = ['otter','panda','fox','koala','tiger','owl','wolf','seal','crane','heron','lynx','moth'];
+  var IDENTITY_KEY = 'anand_visitor_identity';
+
+  function _randName() {
+    return ADJ[Math.floor(Math.random()*ADJ.length)] + '_' + ANIMALS[Math.floor(Math.random()*ANIMALS.length)] + Math.floor(100 + Math.random()*900);
+  }
+
+  async function getIdentity() {
+    var local = readLS(IDENTITY_KEY, null);
+    if (local) return local;
+    if (isLive()) {
+      try {
+        const s = await db(), vid = visitorId();
+        const { data } = await s.from('visitor_identities').select('display_name,avatar_key').eq('visitor_id', vid).maybeSingle();
+        if (data) {
+          var id = { displayName: data.display_name, avatar: data.avatar_key };
+          writeLS(IDENTITY_KEY, id);
+          return id;
+        }
+      } catch (e) {}
+    }
+    return null;
+  }
+
+  async function setIdentity(opts) {
+    var avatar = (opts && opts.avatar) || AVATARS[Math.floor(Math.random()*AVATARS.length)];
+    var name = (opts && opts.displayName && String(opts.displayName).trim()) || '';
+    var randomName = null;
+    if (!name) {
+      // try a few times to land a unique random name
+      if (isLive()) {
+        try {
+          const s = await db();
+          for (var i = 0; i < 6; i++) {
+            var cand = _randName();
+            var { data } = await s.from('visitor_identities').select('visitor_id').eq('random_name', cand).maybeSingle();
+            if (!data) { name = cand; randomName = cand; break; }
+          }
+        } catch (e) {}
+      }
+      if (!name) { name = _randName(); randomName = name; }
+    }
+    var id = { displayName: name, avatar: avatar };
+    writeLS(IDENTITY_KEY, id);
+    if (isLive()) {
+      try {
+        const s = await db(), vid = visitorId();
+        await s.from('visitor_identities').upsert({
+          visitor_id: vid, display_name: name, random_name: randomName, avatar_key: avatar
+        });
+      } catch (e) { console.warn('[content] setIdentity persist failed:', e); }
+    }
+    return id;
   }
 
   /* ==========================================================================

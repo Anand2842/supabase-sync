@@ -46,6 +46,7 @@
       email: 'aanand.ak15@gmail.com',
       resumeUrl: ''
     },
+    feedRatio: { posts: 2, reels: 1 },
     posts: [
       { id: 'p1', time: '2d', label: 'Orbitly \u00B7 launch week', slot: 'post-orbitly', aspect: '4 / 5', grad: G.orbitly, big: 'O',
         placeholder: 'Drop an Orbitly screenshot here',
@@ -95,38 +96,38 @@
         ] }
     ],
     stories: [
-      { label: 'About', glyph: 'A', grad: 'linear-gradient(150deg,#0ea5e9,#1d4ed8)', slides: [
-        { kicker: 'ABOUT', title: 'Hey, I\u2019m Anand \uD83D\uDC4B', body: 'Founder and full-stack developer. I turn ideas into shipped products \u2014 fast.' },
-        { kicker: 'THE SHORT VERSION', title: '2 startups. 3 hackathon wins.', body: 'One obsession: building things people actually use.' }
+      { label: 'About', glyph: 'A', grad: 'linear-gradient(150deg,#0ea5e9,#1d4ed8)', time: '2y', slides: [
+        { kicker: 'ABOUT', title: 'Hey, I\u2019m Anand \uD83D\uDC4B', body: 'Founder and full-stack developer. I turn ideas into shipped products \u2014 fast.', slot: 'slide-about-1', placeholder: 'About slide 1' },
+        { kicker: 'THE SHORT VERSION', title: '2 startups. 3 hackathon wins.', body: 'One obsession: building things people actually use.', slot: 'slide-about-2', placeholder: 'About slide 2' }
       ] },
-      { label: 'Stackline', glyph: 'S', grad: 'linear-gradient(150deg,#0891b2,#155e75)', slides: [
-        { kicker: 'STARTUP 01 \u00B7 2023', title: 'Stackline', body: 'Inventory autopilot for small e-commerce stores. Started as a dorm-room script.' },
-        { kicker: 'TRACTION', title: '120 stores \u00B7 50k orders/mo', body: 'Bootstrapped to real revenue \u2014 no funding, just customers.' }
+      { label: 'Stackline', glyph: 'S', grad: 'linear-gradient(150deg,#0891b2,#155e75)', time: '2y', slides: [
+        { kicker: 'STARTUP 01 \u00B7 2023', title: 'Stackline', body: 'Inventory autopilot for small e-commerce stores. Started as a dorm-room script.', slot: 'slide-stackline-1', placeholder: 'Stackline slide 1' },
+        { kicker: 'TRACTION', title: '120 stores \u00B7 50k orders/mo', body: 'Bootstrapped to real revenue \u2014 no funding, just customers.', slot: 'slide-stackline-2', placeholder: 'Stackline slide 2' }
       ] },
-      { label: 'Orbitly', glyph: 'O', grad: 'linear-gradient(150deg,#06b6d4,#3b82f6)', slides: [
-        { kicker: 'STARTUP 02 \u00B7 2025', title: 'Orbitly', body: 'Team onboarding that runs itself. My second company.' },
-        { kicker: 'WEEK ONE', title: '1,000 users', body: 'Launched on Product Hunt \u2014 #2 Product of the Day.' }
+      { label: 'Orbitly', glyph: 'O', grad: 'linear-gradient(150deg,#06b6d4,#3b82f6)', time: '1mo', slides: [
+        { kicker: 'STARTUP 02 \u00B7 2025', title: 'Orbitly', body: 'Team onboarding that runs itself. My second company.', slot: 'slide-orbitly-1', placeholder: 'Orbitly slide 1' },
+        { kicker: 'WEEK ONE', title: '1,000 users', body: 'Launched on Product Hunt \u2014 #2 Product of the Day.', slot: 'slide-orbitly-2', placeholder: 'Orbitly slide 2' }
       ] },
-      { label: 'Wins', glyph: '3\u00D7', grad: 'linear-gradient(150deg,#1d4ed8,#6d28d9)', slides: [
-        { kicker: 'HACKATHONS', title: '3 wins, 36-hour sprints', body: 'HackNova \u201925 \u00B7 DevsHack \u201925 \u00B7 CodeStorm \u201924.' },
-        { kicker: 'WHY I LOVE THEM', title: 'Idea \u2192 demo in a weekend', body: 'Hackathons are where I prototype the future.' }
+      { label: 'Wins', glyph: '3\u00D7', grad: 'linear-gradient(150deg,#1d4ed8,#6d28d9)', time: '1y', slides: [
+        { kicker: 'HACKATHONS', title: '3 wins, 36-hour sprints', body: 'HackNova \u201925 \u00B7 DevsHack \u201925 \u00B7 CodeStorm \u201924.', slot: 'slide-wins-1', placeholder: 'Wins slide 1' },
+        { kicker: 'WHY I LOVE THEM', title: 'Idea \u2192 demo in a weekend', body: 'Hackathons are where I prototype the future.', slot: 'slide-wins-2', placeholder: 'Wins slide 2' }
       ] },
-      { label: 'Stack', glyph: '</>', grad: 'linear-gradient(150deg,#0f172a,#334155)', slides: [
-        { kicker: 'TOOLBOX', title: 'TypeScript \u00B7 React \u00B7 Node', body: 'Postgres, Redis, AWS \u2014 and whatever the problem actually needs.' }
+      { label: 'Stack', glyph: '</>', grad: 'linear-gradient(150deg,#0f172a,#334155)', time: '3y', slides: [
+        { kicker: 'TOOLBOX', title: 'TypeScript \u00B7 React \u00B7 Node', body: 'Postgres, Redis, AWS \u2014 and whatever the problem actually needs.', slot: 'slide-stack-1', placeholder: 'Stack slide 1' }
       ] },
-      { label: 'Contact', glyph: '@', grad: 'linear-gradient(150deg,#0e7490,#0f766e)', slides: [
-        { kicker: 'SAY HI', title: 'aanand.ak15@gmail.com', body: 'Open to collabs, contracts and coffee chats. DM me right here, too.' }
+      { label: 'Contact', glyph: '@', grad: 'linear-gradient(150deg,#0e7490,#0f766e)', time: 'now', slides: [
+        { kicker: 'SAY HI', title: 'aanand.ak15@gmail.com', body: 'Open to collabs, contracts and coffee chats. DM me right here, too.', slot: 'slide-contact-1', placeholder: 'Contact slide 1' }
       ] }
     ],
     reels: [
-      { id: 'r1', slot: 'reel-orbitly', tag: 'Demo', title: 'Orbitly onboarding \u2014 30s demo', sub: 'From signup to first win in one take.', likesN: 1208, commentCount: '86', placeholder: 'Drop a vertical Orbitly demo cover here', audio: 'Original audio \u00B7 anand.builds', comments: [
+      { id: 'r1', slot: 'reel-orbitly', tag: 'Demo', title: 'Orbitly onboarding \u2014 30s demo', sub: 'From signup to first win in one take.', likesN: 1208, commentCount: '86', placeholder: 'Drop a vertical Orbitly demo cover here', audio: 'Original audio \u00B7 anand.builds', time: '1d', comments: [
         { u: 'priya.codes', t: 'This onboarding is *chef\u2019s kiss* \uD83D\uDC4C', when: '1d' },
         { u: 'devraj_', t: 'How long did the flow take to build?', when: '20h' }
       ] },
-      { id: 'r2', slot: 'reel-journey', tag: 'Story', title: 'Dorm room \u2192 demo day', sub: 'Two years of Stackline in 45 seconds.', likesN: 986, commentCount: '54', placeholder: 'Drop a vertical startup-journey cover here', audio: 'Original audio \u00B7 anand.builds', comments: [
+      { id: 'r2', slot: 'reel-journey', tag: 'Story', title: 'Dorm room \u2192 demo day', sub: 'Two years of Stackline in 45 seconds.', likesN: 986, commentCount: '54', placeholder: 'Drop a vertical startup-journey cover here', audio: 'Original audio \u00B7 anand.builds', time: '3d', comments: [
         { u: 'mentor.vik', t: 'The grind is real. Proud of you.', when: '3d' }
       ] },
-      { id: 'r3', slot: 'reel-hack', tag: 'Hackathon', title: '36 hours in 60 seconds', sub: 'HackNova time-lapse. Yes, that\u2019s me asleep at 4am.', likesN: 743, commentCount: '41', placeholder: 'Drop a vertical hackathon montage cover here', audio: 'Original audio \u00B7 anand.builds', comments: [
+      { id: 'r3', slot: 'reel-hack', tag: 'Hackathon', title: '36 hours in 60 seconds', sub: 'HackNova time-lapse. Yes, that\u2019s me asleep at 4am.', likesN: 743, commentCount: '41', placeholder: 'Drop a vertical hackathon montage cover here', audio: 'Original audio \u00B7 anand.builds', time: '5d', comments: [
         { u: 'teammate.ish', t: '4am espresso gang \uD83D\uDE05', when: '5d' }
       ] }
     ],
@@ -578,6 +579,24 @@
     logoutAdmin: logoutAdmin,
     getInbox: getInbox,
     replyToThread: replyToThread,
+    getSubscribers: async function() {
+      if (!db) return [];
+      try {
+        var r = await db.from('subscribers').select('*').order('created_at', { ascending: false });
+        return (r && r.data) ? r.data : [];
+      } catch (e) { console.warn('[content] getSubscribers failed:', e); return []; }
+    },
+    uploadResume: async function(file) {
+      if (!db) return null;
+      try {
+        var ext = file.name.split('.').pop() || 'pdf';
+        var path = 'resume/resume.' + ext;
+        var r = await db.storage.from('portfolio-images').upload(path, file, { upsert: true });
+        if (r && r.error) { console.warn('[content] uploadResume error:', r.error); return null; }
+        var url = db.storage.from('portfolio-images').getPublicUrl(path);
+        return (url && url.data) ? url.data.publicUrl : null;
+      } catch (e) { console.warn('[content] uploadResume failed:', e); return null; }
+    },
     getIdentity: getIdentity,
     setIdentity: setIdentity,
     AVATARS: AVATARS,

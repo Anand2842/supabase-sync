@@ -71,7 +71,34 @@
             </sc-for>
           </div>
 
-          <sc-for list="{{ posts }}" as="p" hint-placeholder-count="2">
+          <sc-if value="{{ hasReels }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:14px 14px 4px;">
+              <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+                <div style="font-size:14px; font-weight:700;">Reels</div>
+                <button onClick="{{ goReels }}" style="background:none; border:none; cursor:pointer; color:#3b82f6; font-size:13px; font-weight:600;">See all</button>
+              </div>
+              <div style="display:flex; gap:8px; overflow-x:auto; scrollbar-width:none; padding-bottom:4px;">
+                <sc-for list="{{ reelPreviews }}" as="rp" hint-placeholder-count="3">
+                  <button onClick="{{ rp.open }}" style="flex:none; width:110px; aspect-ratio:9/16; border-radius:10px; overflow:hidden; position:relative; border:none; cursor:pointer; background:{{ rp.grad }};">
+                    <div style="position:absolute; inset:0; display:flex; flex-direction:column; justify-content:flex-end; padding:8px; background:linear-gradient(transparent 40%, rgba(0,0,0,.65));">
+                      <div style="font-size:11px; font-weight:600; color:#fff; line-height:1.2;">{{ rp.title }}</div>
+                      <div style="display:flex; align-items:center; gap:3px; margin-top:3px; font-size:10px; color:rgba(255,255,255,.8);">
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="#fff" stroke="none"><path d="M8.5 5.8v12.4l10-6.2z"></path></svg>
+                        {{ rp.tag }}
+                      </div>
+                    </div>
+                    <div style="position:absolute; top:6px; left:6px; display:flex; align-items:center; gap:2px; background:rgba(0,0,0,.4); border-radius:4px; padding:2px 5px;">
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="2.5" y="3.5" width="19" height="17" rx="4.5"></rect><path d="M10.5 11.8v5.6l4.7-2.8z" fill="#fff" stroke="none"></path></svg>
+                    </div>
+                  </button>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-for list="{{ feedItems }}" as="fi" hint-placeholder-count="2">
+
+            <sc-if value="{{ fi.feedTypePost }}" hint-placeholder-val="{{ false }}">
             <article data-screen-label="Post" style="border-bottom:1px solid var(--border); padding-bottom:8px;">
               <div style="display:flex; align-items:center; gap:10px; padding:10px 14px;">
                 <div style="width:36px; height:36px; border-radius:50%; padding:2px; background:conic-gradient(from 210deg,#06b6d4,#3b82f6,#7dd3fc,#06b6d4); flex:none;">
@@ -79,30 +106,30 @@
                 </div>
                 <div style="flex:1; min-width:0;">
                   <div style="font-size:14px; font-weight:600; line-height:1.2;">anand.builds</div>
-                  <div style="font-size:12px; color:var(--text2); line-height:1.3; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ p.label }}</div>
+                  <div style="font-size:12px; color:var(--text2); line-height:1.3; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ fi.label }}</div>
                 </div>
-                <button onClick="{{ p.openOptions }}" style="background:none; border:none; padding:6px; cursor:pointer; display:flex; color:var(--text);"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg></button>
+                <button onClick="{{ fi.openOptions }}" style="background:none; border:none; padding:6px; cursor:pointer; display:flex; color:var(--text);"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg></button>
               </div>
 
-              <div onDoubleClick="{{ p.onDouble }}" onTouchStart="{{ p.touchStart }}" onTouchEnd="{{ p.touchEnd }}" style="position:relative; width:100%; aspect-ratio: {{ p.aspect }}; background:var(--bg2); overflow:hidden;">
-                <div style="display:flex; height:100%; width:100%; transition:transform .32s cubic-bezier(.4,0,.2,1); transform:translateX( {{ p.trackX }} );">
-                  <sc-for list="{{ p.slides }}" as="sl" hint-placeholder-count="1">
+              <div onDoubleClick="{{ fi.onDouble }}" onTouchStart="{{ fi.touchStart }}" onTouchEnd="{{ fi.touchEnd }}" style="position:relative; width:100%; aspect-ratio: {{ fi.aspect }}; background:var(--bg2); overflow:hidden;">
+                <div style="display:flex; height:100%; width:100%; transition:transform .32s cubic-bezier(.4,0,.2,1); transform:translateX( {{ fi.trackX }} );">
+                  <sc-for list="{{ fi.slides }}" as="sl" hint-placeholder-count="1">
                     <div style="flex:none; width:100%; height:100%; position:relative;">
                       <image-slot id="{{ sl.slot }}" shape="rect" placeholder="{{ sl.placeholder }}" style="position:absolute; inset:0; width:100%; height:100%;"></image-slot>
                     </div>
                   </sc-for>
                 </div>
-                {{ p.heartEl }}
-                <sc-if value="{{ p.multi }}" hint-placeholder-val="{{ false }}">
-                  <div style="position:absolute; top:12px; right:12px; background:rgba(0,0,0,.55); color:#ffffff; font-size:12px; font-weight:600; padding:3px 9px; border-radius:99px; z-index:4;">{{ p.counter }}</div>
-                  <sc-if value="{{ p.showPrev }}" hint-placeholder-val="{{ false }}">
-                    <button onClick="{{ p.carPrev }}" style="position:absolute; left:8px; top:50%; transform:translateY(-50%); z-index:4; width:30px; height:30px; border-radius:50%; border:none; cursor:pointer; background:rgba(255,255,255,.85); display:flex; align-items:center; justify-content:center; box-shadow:0 1px 4px rgba(0,0,0,.2);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#181b1f" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m14 6-6 6 6 6"></path></svg></button>
+                {{ fi.heartEl }}
+                <sc-if value="{{ fi.multi }}" hint-placeholder-val="{{ false }}">
+                  <div style="position:absolute; top:12px; right:12px; background:rgba(0,0,0,.55); color:#ffffff; font-size:12px; font-weight:600; padding:3px 9px; border-radius:99px; z-index:4;">{{ fi.counter }}</div>
+                  <sc-if value="{{ fi.showPrev }}" hint-placeholder-val="{{ false }}">
+                    <button onClick="{{ fi.carPrev }}" style="position:absolute; left:8px; top:50%; transform:translateY(-50%); z-index:4; width:30px; height:30px; border-radius:50%; border:none; cursor:pointer; background:rgba(255,255,255,.85); display:flex; align-items:center; justify-content:center; box-shadow:0 1px 4px rgba(0,0,0,.2);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#181b1f" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m14 6-6 6 6 6"></path></svg></button>
                   </sc-if>
-                  <sc-if value="{{ p.showNext }}" hint-placeholder-val="{{ true }}">
-                    <button onClick="{{ p.carNext }}" style="position:absolute; right:8px; top:50%; transform:translateY(-50%); z-index:4; width:30px; height:30px; border-radius:50%; border:none; cursor:pointer; background:rgba(255,255,255,.85); display:flex; align-items:center; justify-content:center; box-shadow:0 1px 4px rgba(0,0,0,.2);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#181b1f" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m10 6 6 6-6 6"></path></svg></button>
+                  <sc-if value="{{ fi.showNext }}" hint-placeholder-val="{{ true }}">
+                    <button onClick="{{ fi.carNext }}" style="position:absolute; right:8px; top:50%; transform:translateY(-50%); z-index:4; width:30px; height:30px; border-radius:50%; border:none; cursor:pointer; background:rgba(255,255,255,.85); display:flex; align-items:center; justify-content:center; box-shadow:0 1px 4px rgba(0,0,0,.2);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#181b1f" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m10 6 6 6-6 6"></path></svg></button>
                   </sc-if>
                   <div style="position:absolute; left:0; right:0; bottom:12px; z-index:4; display:flex; justify-content:center; gap:5px; filter:drop-shadow(0 1px 2px rgba(0,0,0,.3));">
-                    <sc-for list="{{ p.dots }}" as="d" hint-placeholder-count="3">
+                    <sc-for list="{{ fi.dots }}" as="d" hint-placeholder-count="3">
                       <span style="width:6px; height:6px; border-radius:50%; background: {{ d.bg }};"></span>
                     </sc-for>
                   </div>
@@ -110,26 +137,70 @@
               </div>
 
               <div style="display:flex; align-items:center; gap:4px; padding:6px 8px 0;">
-                <button onClick="{{ p.toggleLike }}" style="background:none; border:none; padding:6px; cursor:pointer; display:flex; color: {{ p.heartColor }};">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="{{ p.heartFill }}" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                <button onClick="{{ fi.toggleLike }}" style="background:none; border:none; padding:6px; cursor:pointer; display:flex; color: {{ fi.heartColor }};">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="{{ fi.heartFill }}" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
                 </button>
-                <button onClick="{{ p.openComments }}" style="background:none; border:none; padding:6px; cursor:pointer; display:flex; color:var(--text);">
+                <button onClick="{{ fi.openComments }}" style="background:none; border:none; padding:6px; cursor:pointer; display:flex; color:var(--text);">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
                 </button>
-                <button onClick="{{ p.share }}" style="background:none; border:none; padding:6px; cursor:pointer; display:flex; color:var(--text);">
+                <button onClick="{{ fi.share }}" style="background:none; border:none; padding:6px; cursor:pointer; display:flex; color:var(--text);">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg>
                 </button>
                 <div style="flex:1;"></div>
-                <button onClick="{{ p.toggleSave }}" style="background:none; border:none; padding:6px; cursor:pointer; display:flex; color:var(--text);">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="{{ p.saveFill }}" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="m19 21-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"></path></svg>
+                <button onClick="{{ fi.toggleSave }}" style="background:none; border:none; padding:6px; cursor:pointer; display:flex; color:var(--text);">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="{{ fi.saveFill }}" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="m19 21-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"></path></svg>
                 </button>
               </div>
 
-              <div style="font-weight:600; font-size:14px; padding:2px 14px;">{{ p.likeCount }} likes</div>
-              <div style="padding:3px 14px 0; font-size:14px; line-height:1.45;"><span style="font-weight:600;">anand.builds</span> {{ p.caption }}<sc-if value="{{ p.showMore }}" hint-placeholder-val="{{ false }}"><button onClick="{{ p.toggleCap }}" style="background:none; border:none; padding:0; cursor:pointer; color:var(--text2); font-size:14px;">more</button></sc-if></div>
-              <button onClick="{{ p.openComments }}" style="background:none; border:none; cursor:pointer; color:var(--text2); font-size:14px; padding:4px 14px 0; text-align:left; display:block;">View all {{ p.commentCount }} comments</button>
-              <div style="padding:4px 14px 0; font-size:11px; color:var(--text2); text-transform:uppercase; letter-spacing:.4px;">{{ p.time }} ago</div>
+              <div style="font-weight:600; font-size:14px; padding:2px 14px;">{{ fi.likeCount }} likes</div>
+              <div style="padding:3px 14px 0; font-size:14px; line-height:1.45;"><span style="font-weight:600;">anand.builds</span> {{ fi.caption }}<sc-if value="{{ fi.showMore }}" hint-placeholder-val="{{ false }}"><button onClick="{{ fi.toggleCap }}" style="background:none; border:none; padding:0; cursor:pointer; color:var(--text2); font-size:14px;">more</button></sc-if></div>
+              <button onClick="{{ fi.openComments }}" style="background:none; border:none; cursor:pointer; color:var(--text2); font-size:14px; padding:4px 14px 0; text-align:left; display:block;">View all {{ fi.commentCount }} comments</button>
+              <div style="padding:4px 14px 0; font-size:11px; color:var(--text2); text-transform:uppercase; letter-spacing:.4px;">{{ fi.time }} ago</div>
             </article>
+            </sc-if>
+
+            <sc-if value="{{ fi.feedTypeReel }}" hint-placeholder-val="{{ false }}">
+            <article onClick="{{ fi.openReel }}" data-screen-label="Reel card" style="border-bottom:1px solid var(--border); padding-bottom:8px; cursor:pointer;">
+              <div style="display:flex; align-items:center; gap:10px; padding:10px 14px;">
+                <div style="width:36px; height:36px; border-radius:50%; padding:2px; background:conic-gradient(from 210deg,#06b6d4,#3b82f6,#7dd3fc,#06b6d4); flex:none;">
+                  <div style="width:100%; height:100%; border-radius:50%; background:linear-gradient(140deg,#06b6d4,#3b82f6); display:flex; align-items:center; justify-content:center; color:#ffffff; font-weight:700; font-size:14px; border:2px solid var(--bg);">A</div>
+                </div>
+                <div style="flex:1; min-width:0;">
+                  <div style="font-size:14px; font-weight:600; line-height:1.2;">anand.builds</div>
+                  <div style="font-size:12px; color:var(--text2); line-height:1.3; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ fi.title }}</div>
+                </div>
+                <div style="font-size:11px; border:1px solid var(--border); border-radius:6px; padding:3px 8px; color:var(--text2); font-weight:600;">{{ fi.tag }}</div>
+              </div>
+              <div style="position:relative; width:100%; aspect-ratio:9/16; background:{{ fi.grad }}; overflow:hidden;">
+                <image-slot id="{{ fi.slot }}" shape="rect" placeholder="{{ fi.placeholder }}" style="position:absolute; inset:0; width:100%; height:100%;"></image-slot>
+                <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none;">
+                  <div style="width:64px; height:64px; border-radius:50%; background:rgba(0,0,0,.45); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center;">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="#ffffff"><path d="M8.5 5.8v12.4l10-6.2z"></path></svg>
+                  </div>
+                </div>
+                <div style="position:absolute; bottom:12px; left:12px; display:flex; align-items:center; gap:6px; color:#fff; font-size:11px;">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="2.5" y="3.5" width="19" height="17" rx="4.5"></rect><path d="M10.5 11.8v5.6l4.7-2.8z" fill="#fff" stroke="none"></path></svg>
+                  Reel
+                </div>
+              </div>
+              <div style="display:flex; align-items:center; gap:4px; padding:6px 8px 0;">
+                <button onClick="{{ fi.toggleLike }}" style="background:none; border:none; padding:6px; cursor:pointer; display:flex; color: {{ fi.heartColor }};">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="{{ fi.heartFill }}" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                </button>
+                <button onClick="{{ fi.openComments }}" style="background:none; border:none; padding:6px; cursor:pointer; display:flex; color:var(--text);">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                </button>
+                <button onClick="{{ fi.share }}" style="background:none; border:none; padding:6px; cursor:pointer; display:flex; color:var(--text);">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg>
+                </button>
+                <div style="flex:1;"></div>
+              </div>
+              <div style="font-weight:600; font-size:14px; padding:2px 14px;">{{ fi.likeCount }} likes</div>
+              <div style="padding:3px 14px 0; font-size:14px; line-height:1.45;"><span style="font-weight:600;">anand.builds</span> {{ fi.title }} — {{ fi.sub }}</div>
+              <div style="padding:4px 14px 0; font-size:11px; color:var(--text2); text-transform:uppercase; letter-spacing:.4px;">{{ fi.time }} ago</div>
+            </article>
+            </sc-if>
+
           </sc-for>
 
           <div style="padding:24px 18px 36px;">
@@ -204,7 +275,7 @@
       <sc-if value="{{ isReels }}" hint-placeholder-val="{{ false }}">
         <div data-screen-label="Reels" style="height:100%; overflow-y:auto; scroll-snap-type:y mandatory; scrollbar-width:none; background:#000000;">
           <sc-for list="{{ reels }}" as="r" hint-placeholder-count="1">
-            <section data-screen-label="Reel" style="position:relative; height:100%; scroll-snap-align:start; scroll-snap-stop:always; overflow:hidden; background:#0a1016;">
+            <section data-screen-label="Reel" data-reel-id="{{ r.id }}" style="position:relative; height:100%; scroll-snap-align:start; scroll-snap-stop:always; overflow:hidden; background:#0a1016;">
               <image-slot id="{{ r.slot }}" shape="rect" placeholder="{{ r.placeholder }}" style="position:absolute; inset:0; width:100%; height:100%;"></image-slot>
               <div onClick="{{ r.toggle }}" onDoubleClick="{{ r.doubleLike }}" style="position:absolute; inset:0; z-index:2; cursor:pointer;"></div>
               <button onClick="{{ r.toggleMute }}" style="position:absolute; top:14px; right:14px; z-index:4; width:34px; height:34px; border-radius:50%; border:none; cursor:pointer; background:rgba(0,0,0,.45); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; color:#ffffff;">
@@ -227,6 +298,7 @@
                 </div>
                 <div style="font-size:14.5px; font-weight:600; margin-bottom:3px;">{{ r.title }}</div>
                 <div style="font-size:12.5px; opacity:.85; line-height:1.4; margin-bottom:8px;">{{ r.sub }}</div>
+                <sc-if value="{{ r.time }}" hint-placeholder-val="{{ false }}"><div style="font-size:11px; opacity:.65; margin-bottom:4px;">{{ r.time }} ago</div></sc-if>
                 <div style="display:flex; align-items:center; gap:7px; font-size:12px;">
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l11-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="17" cy="16" r="3"></circle></svg>
                   <span style="opacity:.9; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ r.audio }}</span>
@@ -386,25 +458,32 @@
     <sc-if value="{{ storyOpen }}" hint-placeholder-val="{{ false }}">
       <div data-screen-label="Story viewer" style="position:absolute; inset:0; z-index:60; background:#000000; display:flex; flex-direction:column; overflow:hidden;">
         <div style="position:absolute; inset:0; background: {{ svGrad }};"></div>
-        <div style="position:absolute; inset:0; background:radial-gradient(120% 90% at 50% 0%, rgba(255,255,255,.14), transparent 55%);"></div>
+        <sc-if value="{{ svHasImage }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute; inset:0;"><image-slot id="{{ svSlot }}" shape="rect" placeholder="{{ svPlaceholder }}" style="width:100%; height:100%; display:block;"></image-slot></div>
+          <div style="position:absolute; inset:0; background:linear-gradient(transparent 30%, rgba(0,0,0,.55));"></div>
+        </sc-if>
+        <sc-if value="{{ !svHasImage }}" hint-placeholder-val="{{ true }}">
+          <div style="position:absolute; inset:0; background:radial-gradient(120% 90% at 50% 0%, rgba(255,255,255,.14), transparent 55%);"></div>
+        </sc-if>
         <div onClick="{{ prevTap }}" style="position:absolute; left:0; top:0; bottom:0; width:33%; z-index:2; cursor:pointer;"></div>
         <div onClick="{{ nextTap }}" style="position:absolute; right:0; top:0; bottom:0; width:67%; z-index:2; cursor:pointer;"></div>
+        <div onTouchStart="{{ storyTouchStart }}" onTouchEnd="{{ storyTouchEnd }}" style="position:absolute; inset:0; z-index:1;"></div>
         <div style="position:relative; display:flex; gap:4px; padding:12px 12px 0; z-index:3;">
           <sc-for list="{{ svBars }}" as="b" hint-placeholder-count="2">
-            <div style="flex:1; height:2.5px; border-radius:2px; background:rgba(255,255,255,.35); overflow:hidden;"><div style="height:100%; background:#ffffff; width: {{ b.w }};"></div></div>
+            <div style="flex:1; height:2.5px; border-radius:2px; background:rgba(255,255,255,.35); overflow:hidden; transition:width .05s linear;"><div style="height:100%; background:#ffffff; width: {{ b.w }}; transition:width .05s linear;"></div></div>
           </sc-for>
         </div>
         <div style="position:relative; display:flex; align-items:center; gap:10px; padding:12px 12px 0; z-index:3; color:#ffffff;">
           <div style="width:34px; height:34px; border-radius:50%; background:rgba(255,255,255,.22); border:1.5px solid rgba(255,255,255,.7); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px;">{{ svGlyph }}</div>
-          <div style="flex:1; font-size:14px; font-weight:600;">{{ svLabel }} <span style="font-weight:400; opacity:.7; font-size:13px;">· now</span></div>
+          <div style="flex:1; font-size:14px; font-weight:600;">{{ svLabel }} <span style="font-weight:400; opacity:.7; font-size:13px;">· {{ svSlideTime }}</span></div>
           <button onClick="{{ closeStory }}" style="background:none; border:none; cursor:pointer; color:#ffffff; padding:6px; display:flex;">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"></path></svg>
           </button>
         </div>
         <div style="position:relative; flex:1; display:flex; flex-direction:column; justify-content:center; padding:0 34px 60px; color:#ffffff; z-index:1;">
-          <div style="font-size:12px; font-weight:700; letter-spacing:2.5px; opacity:.8; margin-bottom:14px;">{{ svKicker }}</div>
-          <div style="font-size:34px; font-weight:800; line-height:1.12; letter-spacing:-.5px; margin-bottom:14px; text-wrap:pretty;">{{ svTitle }}</div>
-          <div style="font-size:16.5px; line-height:1.55; opacity:.92; max-width:300px; text-wrap:pretty;">{{ svBody }}</div>
+          <div style="font-size:12px; font-weight:700; letter-spacing:2.5px; opacity:.8; margin-bottom:14px; transition:opacity .2s ease;">{{ svKicker }}</div>
+          <div style="font-size:34px; font-weight:800; line-height:1.12; letter-spacing:-.5px; margin-bottom:14px; text-wrap:pretty; transition:opacity .2s ease;">{{ svTitle }}</div>
+          <div style="font-size:16.5px; line-height:1.55; opacity:.92; max-width:300px; text-wrap:pretty; transition:opacity .2s ease;">{{ svBody }}</div>
         </div>
         <div style="position:relative; z-index:5; display:flex; align-items:center; gap:10px; padding:12px 14px 16px;">
           <div style="flex:1; display:flex; align-items:center; border:1px solid rgba(255,255,255,.55); border-radius:22px; padding:9px 16px;">
@@ -752,6 +831,8 @@
           <button onClick="{{ goAdmTiles }}" style="border:1px solid var(--border); border-radius:99px; padding:7px 14px; font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap; color: {{ admTabTilesC }}; background: {{ admTabTilesBg }};">Explore</button>
           <button onClick="{{ goAdmNotifs }}" style="border:1px solid var(--border); border-radius:99px; padding:7px 14px; font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap; color: {{ admTabNotifsC }}; background: {{ admTabNotifsBg }};">Activity</button>
           <button onClick="{{ goAdmPeople }}" style="border:1px solid var(--border); border-radius:99px; padding:7px 14px; font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap; color: {{ admTabPeopleC }}; background: {{ admTabPeopleBg }};">People</button>
+          <button onClick="{{ goAdmFeed }}" style="border:1px solid var(--border); border-radius:99px; padding:7px 14px; font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap; color: {{ admTabFeedC }}; background: {{ admTabFeedBg }};">Feed</button>
+          <button onClick="{{ goAdmSubscribers }}" style="border:1px solid var(--border); border-radius:99px; padding:7px 14px; font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap; color: {{ admTabSubscribersC }}; background: {{ admTabSubscribersBg }};">Subscribers</button>
           <button onClick="{{ goAdmInbox }}" style="border:1px solid var(--border); border-radius:99px; padding:7px 14px; font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap; color: {{ admTabInboxC }}; background: {{ admTabInboxBg }};">Inbox</button>
         </div>
 
@@ -832,12 +913,23 @@
                   </div>
                   <div style="display:flex; gap:10px; align-items:center;">
                     <div style="width:80px;"><label style="font-size:10.5px; color:var(--text2); font-weight:700; text-transform:uppercase; letter-spacing:.5px;">Glyph</label><input value="{{ s.glyph }}" onChange="{{ s.setGlyph }}" style="width:100%; background:var(--bg2); border:1px solid var(--border); border-radius:8px; padding:8px 10px; font-size:13.5px; color:var(--text); outline:none; margin-top:4px;" /></div>
+                    <div style="flex:1;"><label style="font-size:10.5px; color:var(--text2); font-weight:700; text-transform:uppercase; letter-spacing:.5px;">Posted</label><input value="{{ s.time }}" onChange="{{ s.setTime }}" placeholder="2d" style="width:100%; background:var(--bg2); border:1px solid var(--border); border-radius:8px; padding:8px 10px; font-size:13.5px; color:var(--text); outline:none; margin-top:4px;" /></div>
                     <div style="flex:1;"><label style="font-size:10.5px; color:var(--text2); font-weight:700; text-transform:uppercase; letter-spacing:.5px;">Cover color</label><div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:5px;"><sc-for list="{{ s.swatches }}" as="sw" hint-placeholder-count="6"><button onClick="{{ sw.pick }}" style="width:26px; height:26px; border-radius:7px; cursor:pointer; background: {{ sw.grad }}; border: {{ sw.ring }};"></button></sc-for></div></div>
                   </div>
                   <div style="margin-top:12px; padding-top:11px; border-top:1px dashed var(--border); display:flex; flex-direction:column; gap:9px;">
                     <sc-for list="{{ s.slides }}" as="sl" hint-placeholder-count="1">
                       <div style="background:var(--bg2); border-radius:10px; padding:11px;">
-                        <div style="display:flex; align-items:center; margin-bottom:7px;"><span style="font-size:11px; font-weight:700; color:var(--text2);">{{ sl.sn }}</span><div style="flex:1;"></div><sc-if value="{{ sl.canDel }}" hint-placeholder-val="{{ false }}"><button onClick="{{ sl.del }}" style="background:none; border:none; cursor:pointer; color:#ff3040; font-size:12px; font-weight:600;">Remove</button></sc-if></div>
+                        <div style="display:flex; align-items:center; margin-bottom:7px;">
+                          <span style="font-size:11px; font-weight:700; color:var(--text2);">{{ sl.sn }}</span>
+                          <div style="flex:1;"></div>
+                          <button onClick="{{ sl.up }}" title="Move up" style="background:var(--bg); border:none; border-radius:5px; cursor:pointer; color:var(--text); padding:4px; display:flex;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"></path></svg></button>
+                          <button onClick="{{ sl.down }}" title="Move down" style="background:var(--bg); border:none; border-radius:5px; cursor:pointer; color:var(--text); padding:4px; display:flex;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg></button>
+                          <button onClick="{{ sl.dup }}" title="Duplicate" style="background:var(--bg); border:none; border-radius:5px; cursor:pointer; color:var(--text2); padding:4px; display:flex;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"></rect><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"></path></svg></button>
+                          <sc-if value="{{ sl.canDel }}" hint-placeholder-val="{{ false }}"><button onClick="{{ sl.del }}" style="background:none; border:none; cursor:pointer; color:#ff3040; font-size:12px; font-weight:600; padding:4px;">Remove</button></sc-if>
+                        </div>
+                        <div style="aspect-ratio:9/16; max-height:180px; border-radius:8px; overflow:hidden; background:var(--bg); border:1px solid var(--border); margin-bottom:8px; position:relative;">
+                          <image-slot id="{{ sl.slot }}" shape="rect" placeholder="{{ sl.placeholder }}" style="width:100%; height:100%; display:block;"></image-slot>
+                        </div>
                         <input value="{{ sl.kicker }}" onChange="{{ sl.setKicker }}" placeholder="KICKER" style="width:100%; background:var(--bg); border:1px solid var(--border); border-radius:7px; padding:8px 10px; font-size:12px; color:var(--text); outline:none; text-transform:uppercase; letter-spacing:.5px;" />
                         <input value="{{ sl.title }}" onChange="{{ sl.setTitle }}" placeholder="Title" style="width:100%; background:var(--bg); border:1px solid var(--border); border-radius:7px; padding:8px 10px; font-size:14px; font-weight:600; color:var(--text); outline:none; margin-top:6px;" />
                         <textarea value="{{ sl.body }}" onChange="{{ sl.setBody }}" rows="2" placeholder="Body" style="width:100%; background:var(--bg); border:1px solid var(--border); border-radius:7px; padding:8px 10px; font-size:13px; color:var(--text); outline:none; margin-top:6px; resize:none; font-family:inherit; line-height:1.45;"></textarea>
@@ -870,6 +962,9 @@
                   <div style="display:flex; gap:10px; margin-top:11px;">
                     <div style="width:100px;"><label style="font-size:10.5px; color:var(--text2); font-weight:700; text-transform:uppercase; letter-spacing:.5px;">Tag</label><input value="{{ r.tag }}" onChange="{{ r.setTag }}" style="width:100%; background:var(--bg2); border:1px solid var(--border); border-radius:8px; padding:8px 10px; font-size:13px; color:var(--text); outline:none; margin-top:4px;" /></div>
                     <div style="width:90px;"><label style="font-size:10.5px; color:var(--text2); font-weight:700; text-transform:uppercase; letter-spacing:.5px;">Likes</label><input value="{{ r.likesN }}" onChange="{{ r.setLikes }}" type="number" style="width:100%; background:var(--bg2); border:1px solid var(--border); border-radius:8px; padding:8px 10px; font-size:13px; color:var(--text); outline:none; margin-top:4px;" /></div>
+                    <div style="flex:1;"><label style="font-size:10.5px; color:var(--text2); font-weight:700; text-transform:uppercase; letter-spacing:.5px;">Posted</label><input value="{{ r.time }}" onChange="{{ r.setTime }}" placeholder="2d" style="width:100%; background:var(--bg2); border:1px solid var(--border); border-radius:8px; padding:8px 10px; font-size:13px; color:var(--text); outline:none; margin-top:4px;" /></div>
+                  </div>
+                  <div style="display:flex; gap:10px; margin-top:8px;">
                     <div style="flex:1;"><label style="font-size:10.5px; color:var(--text2); font-weight:700; text-transform:uppercase; letter-spacing:.5px;">Audio</label><input value="{{ r.audio }}" onChange="{{ r.setAudio }}" style="width:100%; background:var(--bg2); border:1px solid var(--border); border-radius:8px; padding:8px 10px; font-size:13px; color:var(--text); outline:none; margin-top:4px;" /></div>
                   </div>
                 </div>
@@ -947,6 +1042,68 @@
                 </div>
               </sc-for>
               <button onClick="{{ admAddPerson }}" style="width:100%; border:1.5px dashed var(--border); border-radius:13px; background:none; cursor:pointer; color:var(--text); padding:15px; font-size:14px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:8px;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>Add person</button>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ admIsFeed }}" hint-placeholder-val="{{ false }}">
+            <div style="background:var(--bg); border:1px solid var(--border); border-radius:14px; padding:16px;">
+              <div style="font-size:15px; font-weight:800; margin-bottom:4px;">Feed Mix</div>
+              <div style="font-size:12px; color:var(--text2); margin-bottom:14px;">Configure how posts and reels are interleaved in the home feed. E.g. 2:1 means 2 posts then 1 reel, repeating.</div>
+              <div style="display:flex; gap:12px;">
+                <div style="flex:1;">
+                  <label style="font-size:11px; color:var(--text2); font-weight:700; text-transform:uppercase; letter-spacing:.5px;">Posts per cycle</label>
+                  <input value="{{ admFeedPosts }}" onChange="{{ setAdmFeedPosts }}" type="number" min="0" max="10" style="width:100%; background:var(--bg2); border:1px solid var(--border); border-radius:9px; padding:10px 12px; font-size:14px; color:var(--text); outline:none; margin-top:5px;" />
+                </div>
+                <div style="flex:1;">
+                  <label style="font-size:11px; color:var(--text2); font-weight:700; text-transform:uppercase; letter-spacing:.5px;">Reels per cycle</label>
+                  <input value="{{ admFeedReels }}" onChange="{{ setAdmFeedReels }}" type="number" min="0" max="10" style="width:100%; background:var(--bg2); border:1px solid var(--border); border-radius:9px; padding:10px 12px; font-size:14px; color:var(--text); outline:none; margin-top:5px;" />
+                </div>
+              </div>
+              <div style="font-size:11px; color:var(--text2); margin-top:10px; padding:8px 10px; background:var(--bg2); border-radius:8px;">Preview: {{ admFeedPreview }}</div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ admIsSubscribers }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; flex-direction:column; gap:12px;">
+              <div style="background:var(--bg); border:1px solid var(--border); border-radius:14px; padding:16px;">
+                <div style="font-size:15px; font-weight:800; margin-bottom:4px;">Subscribers</div>
+                <div style="font-size:12px; color:var(--text2); margin-bottom:12px;">People who subscribed to your newsletter.</div>
+                <sc-if value="{{ admSubLoading }}" hint-placeholder-val="{{ false }}">
+                  <div style="text-align:center; color:var(--text2); padding:20px; font-size:13px;">Loading...</div>
+                </sc-if>
+                <sc-if value="{{ !admSubLoading && admSubCount === 0 }}" hint-placeholder-val="{{ false }}">
+                  <div style="text-align:center; color:var(--text2); padding:20px; font-size:13px;">No subscribers yet.</div>
+                </sc-if>
+                <sc-if value="{{ !admSubLoading && admSubCount > 0 }}" hint-placeholder-val="{{ false }}">
+                  <div style="font-size:13px; font-weight:700; margin-bottom:8px;">{{ admSubCount }} subscriber{{ admSubCountText }}</div>
+                  <div style="display:flex; flex-direction:column; gap:6px; max-height:300px; overflow-y:auto;">
+                    <sc-for list="{{ admSubscribers }}" as="sub" hint-placeholder-count="3">
+                      <div style="display:flex; align-items:center; gap:10px; padding:8px 10px; background:var(--bg2); border-radius:8px;">
+                        <div style="width:30px; height:30px; border-radius:50%; background:linear-gradient(140deg,#06b6d4,#3b82f6); display:flex; align-items:center; justify-content:center; color:#fff; font-size:12px; font-weight:700; flex:none;">{{ sub.initial }}</div>
+                        <div style="flex:1; min-width:0; font-size:13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ sub.email }}</div>
+                        <div style="font-size:11px; color:var(--text2);">{{ sub.when }}</div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </sc-if>
+              </div>
+              <div style="background:var(--bg); border:1px solid var(--border); border-radius:14px; padding:16px;">
+                <div style="font-size:15px; font-weight:800; margin-bottom:4px;">Resume</div>
+                <div style="font-size:12px; color:var(--text2); margin-bottom:12px;">Upload your resume PDF. Visitors can download it from your profile.</div>
+                <div style="display:flex; gap:10px; align-items:center;">
+                  <label style="flex:1; display:flex; align-items:center; justify-content:center; gap:8px; background:var(--bg2); border:1.5px dashed var(--border); border-radius:10px; padding:14px; cursor:pointer; font-size:13px; font-weight:600; color:var(--text);">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                    {{ admResumeLabel }}
+                    <input type="file" accept=".pdf,.doc,.docx" onChange="{{ uploadResume }}" style="display:none;" />
+                  </label>
+                </div>
+                <sc-if value="{{ admResumeUrl }}" hint-placeholder-val="{{ false }}">
+                  <div style="margin-top:10px; padding:8px 10px; background:var(--bg2); border-radius:8px; font-size:12px; display:flex; align-items:center; gap:8px;">
+                    <span style="flex:1; color:var(--text2); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ admResumeUrl }}</span>
+                    <a href="{{ admResumeUrl }}" target="_blank" rel="noopener" style="color:#3b82f6; font-weight:600; text-decoration:none; flex:none;">Open</a>
+                  </div>
+                </sc-if>
+              </div>
             </div>
           </sc-if>
 
@@ -1038,6 +1195,7 @@ class Component extends DCLogic {
     adminSection: 'posts', adminDraft: null, adminMsg: null,
     inbox: { threads: [], comments: [] }, inboxDrafts: {},
     identity: null, identityOpen: false, idDraftName: '', idDraftAvatar: '', idPending: null,
+    admSubLoading: false, admSubscribers: [],
     profile: {
       name: 'Anand', username: 'anand.builds',
       role: 'Founder & Full-Stack Developer',
@@ -1403,8 +1561,22 @@ class Component extends DCLogic {
   admRemoveImage(i, j) { const d = JSON.parse(JSON.stringify(this.state.adminDraft)); const p = this._admEnsureImages(d, i); if (p.images.length > 1) { p.images.splice(j, 1); p.slot = p.images[0].slot; p.placeholder = p.images[0].placeholder; } this.setState({ adminDraft: d }); }
   admSetImagePlaceholder(i, j, v) { const d = JSON.parse(JSON.stringify(this.state.adminDraft)); const p = this._admEnsureImages(d, i); p.images[j].placeholder = v; if (j === 0) p.placeholder = v; this.setState({ adminDraft: d }); }
   admAddPost() { const id = 'p' + Date.now(); this.admAdd('posts', { id: id, time: 'now', label: 'New project', slot: 'post-' + id, aspect: '1 / 1', grad: this._palette()[0], big: 'N', placeholder: 'Drop an image here', caption: 'Describe this project…', likes: 0, comments: [] }); }
-  admAddReel() { const id = 'r' + Date.now(); this.admAdd('reels', { id: id, slot: 'reel-' + id, tag: 'New', title: 'New reel', sub: '', likesN: 0, commentCount: '0', placeholder: 'Drop a vertical cover here', audio: 'Original audio', comments: [] }); }
-  admAddStory() { this.admAdd('stories', { label: 'New', glyph: 'N', grad: this._palette()[0], slides: [{ kicker: 'KICKER', title: 'New story', body: 'Say something here.' }] }); }
+  admAddReel() { const id = 'r' + Date.now(); this.admAdd('reels', { id: id, slot: 'reel-' + id, tag: 'New', title: 'New reel', sub: '', likesN: 0, commentCount: '0', placeholder: 'Drop a vertical cover here', audio: 'Original audio', time: 'now', comments: [] }); }
+  admAddStory() { this.admAdd('stories', { label: 'New', glyph: 'N', grad: this._palette()[0], time: 'now', slides: [{ kicker: 'KICKER', title: 'New story', body: 'Say something here.', slot: 'slide-' + Date.now(), placeholder: 'Story image' }] }); }
+  admMoveSlide(si, sj, dir) {
+    const d = JSON.parse(JSON.stringify(this.state.adminDraft));
+    const arr = d.stories[si].slides;
+    const ni = sj + dir; if (ni < 0 || ni >= arr.length) return;
+    const t = arr[sj]; arr[sj] = arr[ni]; arr[ni] = t;
+    this.setState({ adminDraft: d });
+  }
+  admDupSlide(si, sj) {
+    const d = JSON.parse(JSON.stringify(this.state.adminDraft));
+    const orig = d.stories[si].slides[sj];
+    const copy = Object.assign({}, orig, { slot: 'slide-' + Date.now(), placeholder: orig.placeholder });
+    d.stories[si].slides.splice(sj + 1, 0, copy);
+    this.setState({ adminDraft: d });
+  }
   admAddTile() { const d = this.state.adminDraft; this.admAdd('tiles', { kicker: 'NEW', label: 'New tile', grad: this._palette()[0], big: 'N', span: 'span 1', pid: (d.posts[0] || {}).id || 'p1' }); }
   admAddPerson() { this.admAdd('people', { u: 'username', name: 'Name · role', bg: this._palette()[0] }); }
   publishAdmin() {
@@ -1414,6 +1586,36 @@ class Component extends DCLogic {
     try { if (window.PortfolioContent) window.PortfolioContent.saveContent(d); } catch (e) {}
     clearTimeout(this._admT); this._admT = setTimeout(() => this.setState({ adminMsg: null }), 2200);
     this.forceUpdate();
+  }
+
+  async _loadSubscribers() {
+    this.setState({ admSubLoading: true });
+    const PC = window.PortfolioContent;
+    if (PC && PC.getSubscribers) {
+      const subs = await PC.getSubscribers();
+      this.setState({ admSubscribers: subs, admSubLoading: false });
+    } else {
+      this.setState({ admSubscribers: [], admSubLoading: false });
+    }
+  }
+
+  _observeReels() {
+    if (this._reelObs) this._reelObs.disconnect();
+    const container = document.querySelector('[data-screen-label="Reels"]');
+    if (!container) return;
+    const sections = container.querySelectorAll('[data-screen-label="Reel"]');
+    if (!sections.length) return;
+    this._reelObs = new IntersectionObserver((entries) => {
+      const rp = Object.assign({}, this.state.reelPlaying);
+      entries.forEach((e) => {
+        const id = e.target.getAttribute('data-reel-id');
+        if (!id) return;
+        if (e.isIntersecting && e.intersectionRatio > 0.5) rp[id] = true;
+        else rp[id] = false;
+      });
+      this.setState({ reelPlaying: rp });
+    }, { root: container, threshold: [0.5] });
+    sections.forEach((s) => this._reelObs.observe(s));
   }
 
   renderVals() {
@@ -1466,6 +1668,31 @@ class Component extends DCLogic {
     };
     const posts = D.posts.map(mapPost);
     const viewPost = S.postView ? mapPost(D.posts.find((p) => p.id === S.postView) || D.posts[0]) : null;
+
+    const feedRatio = D.feedRatio || { posts: 2, reels: 1 };
+    const feedItems = [];
+    { let pi = 0, ri = 0;
+      while (pi < D.posts.length || ri < D.reels.length) {
+        for (let j = 0; j < feedRatio.posts && pi < D.posts.length; j++, pi++)
+          feedItems.push(Object.assign({ feedType: 'post', feedTypePost: true, feedTypeReel: false }, mapPost(D.posts[pi])));
+        for (let j = 0; j < feedRatio.reels && ri < D.reels.length; j++, ri++) {
+          const r = D.reels[ri];
+          const liked = !!S.reelLikes[r.id];
+          feedItems.push({
+            feedType: 'reel', feedTypePost: false, feedTypeReel: true, id: r.id, title: r.title, sub: r.sub, tag: r.tag, slot: r.slot,
+            grad: r.grad, big: r.big, placeholder: r.placeholder, time: r.time,
+            likesN: r.likesN, likeCount: (r.likesN + (liked ? 1 : 0)).toLocaleString('en-US'),
+            heartFill: liked ? '#ff3040' : 'none', heartColor: liked ? '#ff3040' : 'var(--text)',
+            commentCount: String((r.comments || []).length),
+            openReel: () => this.setState({ tab: 'reels' }),
+            toggleLike: () => { const rl = Object.assign({}, this.state.reelLikes); rl[r.id] = !rl[r.id]; this.setState({ reelLikes: rl }); this._save('reelLikes', r.id, rl[r.id]); },
+            openComments: () => this.setState({ commentsFor: r.id, draft: '' }),
+            share: () => this.share(),
+            heartEl: this.heartEl(r.id)
+          });
+        }
+      }
+    }
 
     const reels = D.reels.map((r) => {
       const liked = !!S.reelLikes[r.id];
@@ -1578,28 +1805,35 @@ class Component extends DCLogic {
       };
     });
     const admReels = (AD.reels || []).map((r, i) => ({
-      n: '#' + (i + 1), title: r.title, sub: r.sub, tag: r.tag, audio: r.audio, likesN: r.likesN, slot: r.slot,
+      n: '#' + (i + 1), title: r.title, sub: r.sub, tag: r.tag, audio: r.audio, likesN: r.likesN, slot: r.slot, time: r.time,
       setTitle: (e) => this.admSet('reels.' + i + '.title', e.target.value),
       setSub: (e) => this.admSet('reels.' + i + '.sub', e.target.value),
       setTag: (e) => this.admSet('reels.' + i + '.tag', e.target.value),
       setAudio: (e) => this.admSet('reels.' + i + '.audio', e.target.value),
       setLikes: (e) => this.admSet('reels.' + i + '.likesN', parseInt(e.target.value, 10) || 0),
+      setTime: (e) => this.admSet('reels.' + i + '.time', e.target.value),
       up: () => this.admMove('reels', i, -1), down: () => this.admMove('reels', i, 1), del: () => this.admDel('reels', i)
     }));
     const admStories = (AD.stories || []).map((s, i) => ({
-      n: '#' + (i + 1), label: s.label, glyph: s.glyph, grad: s.grad,
+      n: '#' + (i + 1), label: s.label, glyph: s.glyph, grad: s.grad, time: s.time,
       setLabel: (e) => this.admSet('stories.' + i + '.label', e.target.value),
       setGlyph: (e) => this.admSet('stories.' + i + '.glyph', e.target.value),
+      setTime: (e) => this.admSet('stories.' + i + '.time', e.target.value),
       swatches: swatches(s.grad, (g) => this.admSet('stories.' + i + '.grad', g)),
       up: () => this.admMove('stories', i, -1), down: () => this.admMove('stories', i, 1), del: () => this.admDel('stories', i),
+      slideCount: (s.slides || []).length,
       slides: (s.slides || []).map((sl, j) => ({
-        sn: 'Slide ' + (j + 1), kicker: sl.kicker, title: sl.title, body: sl.body,
+        sn: 'Slide ' + (j + 1) + ' of ' + (s.slides || []).length, kicker: sl.kicker, title: sl.title, body: sl.body,
+        slot: sl.slot || ('slide-' + i + '-' + j), placeholder: sl.placeholder || 'Story image',
         setKicker: (e) => this.admSet('stories.' + i + '.slides.' + j + '.kicker', e.target.value),
         setTitle: (e) => this.admSet('stories.' + i + '.slides.' + j + '.title', e.target.value),
         setBody: (e) => this.admSet('stories.' + i + '.slides.' + j + '.body', e.target.value),
-        del: () => this.admDel('stories.' + i + '.slides', j), canDel: (s.slides || []).length > 1
+        del: () => this.admDel('stories.' + i + '.slides', j), canDel: (s.slides || []).length > 1,
+        canUp: j > 0, canDown: j < (s.slides || []).length - 1,
+        up: () => this.admMoveSlide(i, j, -1), down: () => this.admMoveSlide(i, j, 1),
+        dup: () => this.admDupSlide(i, j)
       })),
-      addSlide: () => this.admAdd('stories.' + i + '.slides', { kicker: 'KICKER', title: 'New slide', body: 'Say something.' })
+      addSlide: () => this.admAdd('stories.' + i + '.slides', { kicker: 'KICKER', title: 'New slide', body: 'Say something.', slot: 'slide-' + Date.now(), placeholder: 'Story image' })
     }));
     const admTiles = (AD.tiles || []).map((t, i) => ({
       n: '#' + (i + 1), kicker: t.kicker, label: t.label, big: t.big, pid: t.pid, grad: t.grad,
@@ -1661,17 +1895,19 @@ class Component extends DCLogic {
       setEdEmail: (e) => this.setEditField('email', e.target.value),
 
       isHome: tab === 'home', isExplore: tab === 'explore', isReels: tab === 'reels', isProfile: tab === 'profile',
-      goHome: () => this.setState({ tab: 'home' }),
-      goExplore: () => this.setState({ tab: 'explore' }),
-      goReels: () => this.setState({ tab: 'reels' }),
-      goProfile: () => this.setState({ tab: 'profile' }),
+      goHome: () => { if (this._reelObs) { this._reelObs.disconnect(); this._reelObs = null; } this.setState({ tab: 'home' }); },
+      goExplore: () => { if (this._reelObs) { this._reelObs.disconnect(); this._reelObs = null; } this.setState({ tab: 'explore' }); },
+      goReels: () => { this.setState({ tab: 'reels' }); setTimeout(() => { const D = this.data(); if (D.reels.length) { const rp = {}; rp[D.reels[0].id] = true; this.setState({ reelPlaying: rp }); } this._observeReels(); }, 60); },
+      goProfile: () => { if (this._reelObs) { this._reelObs.disconnect(); this._reelObs = null; } this.setState({ tab: 'profile' }); },
       navHomeC: navC('home'), navHomeSw: navSw('home'),
       navSearchC: navC('explore'), navSearchSw: navSw('explore'),
       navReelsC: navC('reels'), navReelsSw: navSw('reels'),
       navProfileRing: tab === 'profile' ? '2px solid var(--text)' : '2px solid transparent',
 
-      stories, posts, reels, tiles,
+      stories, posts, reels, tiles, feedItems,
       noTiles: tiles.length === 0,
+      reelPreviews: D.reels.map((r) => ({ title: r.title, tag: r.tag, grad: r.grad, open: () => this.setState({ tab: 'reels' }) })),
+      hasReels: D.reels.length > 0,
       search: S.search,
       setSearch: (e) => this.setState({ search: e.target.value }),
 
@@ -1682,6 +1918,10 @@ class Component extends DCLogic {
       svKicker: sl ? sl.kicker : '',
       svTitle: sl ? sl.title : '',
       svBody: sl ? sl.body : '',
+      svHasImage: !!(sl && sl.slot),
+      svSlot: sl ? (sl.slot || '') : '',
+      svPlaceholder: sl ? (sl.placeholder || 'Story image') : '',
+      svSlideTime: sl ? (S.slide + 1) + ' of ' + (st ? st.slides.length : 0) : '',
       svBars: st ? st.slides.map((x, i) => ({ w: i < S.slide ? '100%' : (i === S.slide ? Math.min(100, S.progress) + '%' : '0%') })) : [],
       closeStory: () => this.closeStory(),
       prevTap: () => {
@@ -1693,6 +1933,17 @@ class Component extends DCLogic {
         const slides = st ? st.slides : [];
         if (S.slide < slides.length - 1) this.setState({ slide: S.slide + 1, progress: 0 });
         else this.nextStory();
+      },
+      storyTouchStart: (e) => { this._svTouchX = (e.touches && e.touches[0]) ? e.touches[0].clientX : 0; this._svTouchY = (e.touches && e.touches[0]) ? e.touches[0].clientY : 0; },
+      storyTouchEnd: (e) => {
+        const t = (e.changedTouches && e.changedTouches[0]) ? e.changedTouches[0].clientX : 0;
+        const ty = (e.changedTouches && e.changedTouches[0]) ? e.changedTouches[0].clientY : 0;
+        const dx = t - (this._svTouchX || 0);
+        const dy = ty - (this._svTouchY || 0);
+        if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+          if (dx < 0) this.nextTap();
+          else this.prevTap();
+        }
       },
       storyReply: S.storyReply,
       setStoryReply: (e) => this.setState({ storyReply: e.target.value }),
@@ -1866,6 +2117,8 @@ class Component extends DCLogic {
       admIsNotifs: S.adminSection === 'notifs',
       admIsProfile: S.adminSection === 'profile',
       admIsInbox: S.adminSection === 'inbox',
+      admIsFeed: S.adminSection === 'feed',
+      admIsSubscribers: S.adminSection === 'subscribers',
       goAdmPosts: () => this.setState({ adminSection: 'posts' }),
       goAdmReels: () => this.setState({ adminSection: 'reels' }),
       goAdmStories: () => this.setState({ adminSection: 'stories' }),
@@ -1873,6 +2126,8 @@ class Component extends DCLogic {
       goAdmPeople: () => this.setState({ adminSection: 'people' }),
       goAdmNotifs: () => this.setState({ adminSection: 'notifs' }),
       goAdmProfile: () => this.setState({ adminSection: 'profile' }),
+      goAdmFeed: () => this.setState({ adminSection: 'feed' }),
+      goAdmSubscribers: () => { this.setState({ adminSection: 'subscribers' }); this._loadSubscribers(); },
       goAdmInbox: () => { this.setState({ adminSection: 'inbox' }); this.reloadInbox(); },
       admTabPostsC: S.adminSection === 'posts' ? 'var(--text)' : 'var(--text2)',
       admTabPostsBg: S.adminSection === 'posts' ? 'var(--bg)' : 'transparent',
@@ -1888,9 +2143,38 @@ class Component extends DCLogic {
       admTabNotifsBg: S.adminSection === 'notifs' ? 'var(--bg)' : 'transparent',
       admTabProfileC: S.adminSection === 'profile' ? 'var(--text)' : 'var(--text2)',
       admTabProfileBg: S.adminSection === 'profile' ? 'var(--bg)' : 'transparent',
+      admTabFeedC: S.adminSection === 'feed' ? 'var(--text)' : 'var(--text2)',
+      admTabFeedBg: S.adminSection === 'feed' ? 'var(--bg)' : 'transparent',
+      admTabSubscribersC: S.adminSection === 'subscribers' ? 'var(--text)' : 'var(--text2)',
+      admTabSubscribersBg: S.adminSection === 'subscribers' ? 'var(--bg)' : 'transparent',
       admTabInboxC: S.adminSection === 'inbox' ? 'var(--text)' : 'var(--text2)',
       admTabInboxBg: S.adminSection === 'inbox' ? 'var(--bg)' : 'transparent',
       admPosts, admReels, admStories, admTiles, admPeople, admNotifs,
+      admFeedPosts: (AD.feedRatio || { posts: 2, reels: 1 }).posts,
+      admFeedReels: (AD.feedRatio || { posts: 2, reels: 1 }).reels,
+      admFeedPreview: (() => { const r = AD.feedRatio || { posts: 2, reels: 1 }; const parts = []; if (r.posts > 0) parts.push(r.posts + ' post' + (r.posts > 1 ? 's' : '')); if (r.reels > 0) parts.push(r.reels + ' reel' + (r.reels > 1 ? 's' : '')); return parts.join(' + ') || 'Empty feed'; })(),
+      setAdmFeedPosts: (e) => { this.admSet('feedRatio.posts', parseInt(e.target.value, 10) || 0); this.forceUpdate(); },
+      setAdmFeedReels: (e) => { this.admSet('feedRatio.reels', parseInt(e.target.value, 10) || 0); this.forceUpdate(); },
+      admSubLoading: S.admSubLoading || false,
+      admSubscribers: (S.admSubscribers || []).map((s) => ({
+        email: s.email, initial: (s.email || '?').charAt(0).toUpperCase(),
+        when: s.created_at ? new Date(s.created_at).toLocaleDateString() : ''
+      })),
+      admSubCount: (S.admSubscribers || []).length,
+      admSubCountText: (S.admSubscribers || []).length !== 1 ? 's' : '',
+      admResumeUrl: D.profile.resumeUrl || '',
+      admResumeLabel: D.profile.resumeUrl ? 'Replace resume' : 'Upload resume',
+      uploadResume: async (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        const PC = window.PortfolioContent;
+        if (!PC || !PC.uploadResume) return;
+        const url = await PC.uploadResume(file);
+        if (url) {
+          this.admSet('profile.resumeUrl', url);
+          this.forceUpdate();
+        }
+      },
       admAddPost: () => this.admAddPost(),
       admAddReel: () => this.admAddReel(),
       admAddStory: () => this.admAddStory(),

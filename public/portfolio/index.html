@@ -132,12 +132,21 @@
             </article>
           </sc-for>
 
-          <div style="display:flex; flex-direction:column; align-items:center; gap:8px; padding:36px 24px 48px; text-align:center;">
-            <div style="width:56px; height:56px; border-radius:50%; border:2px solid #3b82f6; display:flex; align-items:center; justify-content:center; color:#3b82f6;">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"></path></svg>
+          <div style="padding:24px 18px 36px;">
+            <button onClick="{{ openDmFromCta }}" style="width:100%; border:none; cursor:pointer; border-radius:18px; padding:22px 20px; background:linear-gradient(135deg, rgba(6,182,212,.12), rgba(59,130,246,.18)); border:1px solid var(--border); text-align:left; color:var(--text); display:flex; align-items:center; gap:14px;">
+              <div style="width:48px; height:48px; border-radius:50%; background:linear-gradient(140deg,#06b6d4,#3b82f6); display:flex; align-items:center; justify-content:center; color:#ffffff; font-weight:700; font-size:18px; flex:none;">A</div>
+              <div style="flex:1; min-width:0;">
+                <div style="font-weight:700; font-size:15px; letter-spacing:-.2px; margin-bottom:3px;">Want to know more about Anand?</div>
+                <div style="font-size:13px; color:var(--text2); line-height:1.45;">Tap to chat — DMs are open, replies are fast.</div>
+              </div>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="color:#3b82f6; flex:none;"><path d="m9 6 6 6-6 6"></path></svg>
+            </button>
+          </div>
+          <div style="display:flex; flex-direction:column; align-items:center; gap:8px; padding:0 24px 48px; text-align:center;">
+            <div style="width:48px; height:48px; border-radius:50%; border:2px solid #3b82f6; display:flex; align-items:center; justify-content:center; color:#3b82f6;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"></path></svg>
             </div>
-            <div style="font-weight:600; font-size:15px;">You're all caught up</div>
-            <div style="font-size:13px; color:var(--text2); max-width:280px;">That's everything I've shipped (so far). Want the live demos? Check Reels — or DM me.</div>
+            <div style="font-weight:600; font-size:14px;">You're all caught up</div>
           </div>
         </div>
       </sc-if>
@@ -425,9 +434,29 @@
             </sc-for>
           </div>
           <div style="display:flex; align-items:center; gap:10px; padding:10px 14px 14px; border-top:1px solid var(--border);">
-            <div style="width:34px; height:34px; border-radius:50%; background:var(--bg2); flex:none; display:flex; align-items:center; justify-content:center; color:var(--text2); font-weight:700; font-size:13px;">?</div>
+            <div style="width:34px; height:34px; border-radius:50%; background:var(--bg2); flex:none; display:flex; align-items:center; justify-content:center; color:var(--text); font-weight:700; font-size:18px;">{{ composerAvatar }}</div>
             <input value="{{ draft }}" onChange="{{ setDraft }}" onKeyDown="{{ draftKey }}" placeholder="Add a comment…" style="flex:1; background:none; border:none; outline:none; font-size:14px; color:var(--text); min-width:0;" />
             <button onClick="{{ addComment }}" style="background:none; border:none; cursor:pointer; font-weight:700; font-size:14px; color: {{ postBtnColor }};">Post</button>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ identityOpen }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Pick avatar" style="position:absolute; inset:0; z-index:60; display:flex; align-items:center; justify-content:center; padding:24px;">
+        <div onClick="{{ cancelIdentity }}" style="position:absolute; inset:0; background:rgba(0,0,0,.55);"></div>
+        <div style="position:relative; background:var(--bg); border-radius:20px; padding:22px 20px 18px; width:100%; max-width:340px; animation:popIn .22s ease; box-shadow:0 24px 60px rgba(0,0,0,.3);">
+          <div style="font-size:17px; font-weight:800; letter-spacing:-.3px; margin-bottom:4px;">Pick an avatar</div>
+          <div style="font-size:13px; color:var(--text2); margin-bottom:14px; line-height:1.45;">Choose a vibe and a name. Leave name blank and we'll pick a random one.</div>
+          <div style="display:grid; grid-template-columns:repeat(6, 1fr); gap:8px; margin-bottom:14px;">
+            <sc-for list="{{ idAvatars }}" as="ia" hint-placeholder-count="12">
+              <button onClick="{{ ia.pick }}" style="aspect-ratio:1; border-radius:12px; background:var(--bg2); border: {{ ia.ring }}; cursor:pointer; font-size:22px; line-height:1; display:flex; align-items:center; justify-content:center;">{{ ia.a }}</button>
+            </sc-for>
+          </div>
+          <input value="{{ idDraftName }}" onChange="{{ setIdName }}" placeholder="display name (optional)" style="width:100%; border:1px solid var(--border); border-radius:10px; padding:10px 12px; font-size:14px; background:var(--bg2); color:var(--text); outline:none; margin-bottom:12px; box-sizing:border-box;" />
+          <div style="display:flex; gap:8px;">
+            <button onClick="{{ cancelIdentity }}" style="flex:1; background:var(--bg2); color:var(--text); border:none; border-radius:11px; padding:11px 0; font-size:14px; font-weight:700; cursor:pointer;">Cancel</button>
+            <button onClick="{{ saveIdentity }}" style="flex:2; background:linear-gradient(120deg,#06b6d4,#3b82f6); color:#ffffff; border:none; border-radius:11px; padding:11px 0; font-size:14px; font-weight:700; cursor:pointer;">Save & comment</button>
           </div>
         </div>
       </div>
@@ -1008,6 +1037,7 @@ class Component extends DCLogic {
     adminOpen: false, adminAuthed: false, adminEmail: '', adminPw: '', adminPwError: null, adminMode: 'login',
     adminSection: 'posts', adminDraft: null, adminMsg: null,
     inbox: { threads: [], comments: [] }, inboxDrafts: {},
+    identity: null, identityOpen: false, idDraftName: '', idDraftAvatar: '', idPending: null,
     profile: {
       name: 'Anand', username: 'anand.builds',
       role: 'Founder & Full-Stack Developer',
@@ -1063,6 +1093,11 @@ class Component extends DCLogic {
     // 3. Load the DM thread.
     if (PC && PC.getDms) {
       PC.getDms().then((dms) => { if (dms && dms.length) this.setState({ dmMsgs: dms }); });
+    }
+
+    // 3b. Load visitor identity (display name + avatar).
+    if (PC && PC.getIdentity) {
+      PC.getIdentity().then((id) => { if (id) this.setState({ identity: id }); });
     }
 
     this._replies = [
@@ -1212,11 +1247,34 @@ class Component extends DCLogic {
     const t = this.state.draft.trim();
     if (!t) return;
     const id = this.state.commentsFor;
-    const c = { u: 'you', t: t, when: 'now' };
+    // First-time commenters: gate on identity (display name + avatar).
+    if (!this.state.identity) {
+      this.setState({
+        identityOpen: true, idPending: { id, t },
+        idDraftName: '',
+        idDraftAvatar: (window.PortfolioContent && window.PortfolioContent.AVATARS || ['🦊'])[0]
+      });
+      return;
+    }
+    this._postComment(id, t, this.state.identity);
+  }
+  _postComment(id, t, identity) {
+    const c = { u: identity.displayName, t: t, avatar: identity.avatar, when: 'now' };
     const ex = Object.assign({}, this.state.extraComments);
     ex[id] = (ex[id] || []).concat([c]);
     this.setState({ extraComments: ex, draft: '' });
     try { if (window.PortfolioContent) window.PortfolioContent.addComment(id, c); } catch (e) {}
+  }
+  pickIdAvatar(a) { this.setState({ idDraftAvatar: a }); }
+  setIdName(e) { this.setState({ idDraftName: e.target.value }); }
+  cancelIdentity() { this.setState({ identityOpen: false, idPending: null }); }
+  async saveIdentity() {
+    const PC = window.PortfolioContent;
+    if (!PC || !PC.setIdentity) { this.setState({ identityOpen: false }); return; }
+    const id = await PC.setIdentity({ displayName: this.state.idDraftName, avatar: this.state.idDraftAvatar });
+    const pending = this.state.idPending;
+    this.setState({ identity: id, identityOpen: false, idPending: null });
+    if (pending) this._postComment(pending.id, pending.t, id);
   }
 
   _saveDms(thread) { try { if (window.PortfolioContent) window.PortfolioContent.saveDms(thread); } catch (e) {} }
@@ -1468,11 +1526,13 @@ class Component extends DCLogic {
     const cList = activePost ? activePost.comments.concat(S.extraComments[activePost.id] || []).map((c, i) => {
       const key = activePost.id + ':' + i;
       const liked = !!S.commentLikes[key];
-      const n = (c.u === 'you' ? 0 : baseLikes[i % baseLikes.length]) + (liked ? 1 : 0);
+      const isYou = (S.identity && c.u === S.identity.displayName) || c.u === 'you';
+      const n = (isYou ? 0 : baseLikes[i % baseLikes.length]) + (liked ? 1 : 0);
+      const hasEmoji = !!c.avatar;
       return {
         u: c.u, t: c.t, when: c.when || 'now',
-        initial: c.u.charAt(0).toUpperCase(),
-        bg: c.u === 'you' ? 'linear-gradient(140deg,#64748b,#334155)' : commentBgs[i % commentBgs.length],
+        initial: hasEmoji ? c.avatar : c.u.charAt(0).toUpperCase(),
+        bg: hasEmoji ? 'var(--bg2)' : (isYou ? 'linear-gradient(140deg,#64748b,#334155)' : commentBgs[i % commentBgs.length]),
         likeFill: liked ? '#ff3040' : 'none',
         likeColor: liked ? '#ff3040' : 'var(--text2)',
         likeText: n > 0 ? (n + (n === 1 ? ' like' : ' likes')) : '',
@@ -1649,6 +1709,21 @@ class Component extends DCLogic {
       addComment: () => this.addComment(),
       closeComments: () => this.setState({ commentsFor: null }),
       postBtnColor: S.draft.trim() ? '#0095f6' : 'var(--text2)',
+      composerAvatar: (S.identity && S.identity.avatar) || '?',
+      composerAvatarBg: S.identity ? 'var(--bg2)' : 'var(--bg2)',
+
+      identityOpen: S.identityOpen,
+      idDraftName: S.idDraftName,
+      idDraftAvatar: S.idDraftAvatar,
+      setIdName: (e) => this.setIdName(e),
+      cancelIdentity: () => this.cancelIdentity(),
+      saveIdentity: () => this.saveIdentity(),
+      idAvatars: ((window.PortfolioContent && window.PortfolioContent.AVATARS) || []).map((a) => ({
+        a, pick: () => this.pickIdAvatar(a),
+        ring: a === S.idDraftAvatar ? '2px solid var(--text)' : '2px solid var(--border)'
+      })),
+      idCtaCta: 'Want to know more about Anand? DM him here.',
+      openDmFromCta: () => this.setState({ dmOpen: true, dmSeen: true }),
 
       createOpen: S.createOpen,
       openCreate: () => this.setState({ createOpen: true }),

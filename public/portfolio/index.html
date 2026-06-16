@@ -1066,6 +1066,11 @@ class Component extends DCLogic {
       PC.getDms().then((dms) => { if (dms && dms.length) this.setState({ dmMsgs: dms }); });
     }
 
+    // 3b. Load visitor identity (display name + avatar).
+    if (PC && PC.getIdentity) {
+      PC.getIdentity().then((id) => { if (id) this.setState({ identity: id }); });
+    }
+
     this._replies = [
       'Got it — thanks! For anything serious, email aanand.ak15@gmail.com. I read everything 🙌',
       'Appreciate it! Meanwhile, the Reels tab has quick demos of my work.',

@@ -1218,11 +1218,34 @@ class Component extends DCLogic {
     const t = this.state.draft.trim();
     if (!t) return;
     const id = this.state.commentsFor;
-    const c = { u: 'you', t: t, when: 'now' };
+    // First-time commenters: gate on identity (display name + avatar).
+    if (!this.state.identity) {
+      this.setState({
+        identityOpen: true, idPending: { id, t },
+        idDraftName: '',
+        idDraftAvatar: (window.PortfolioContent && window.PortfolioContent.AVATARS || ['🦊'])[0]
+      });
+      return;
+    }
+    this._postComment(id, t, this.state.identity);
+  }
+  _postComment(id, t, identity) {
+    const c = { u: identity.displayName, t: t, avatar: identity.avatar, when: 'now' };
     const ex = Object.assign({}, this.state.extraComments);
     ex[id] = (ex[id] || []).concat([c]);
     this.setState({ extraComments: ex, draft: '' });
     try { if (window.PortfolioContent) window.PortfolioContent.addComment(id, c); } catch (e) {}
+  }
+  pickIdAvatar(a) { this.setState({ idDraftAvatar: a }); }
+  setIdName(e) { this.setState({ idDraftName: e.target.value }); }
+  cancelIdentity() { this.setState({ identityOpen: false, idPending: null }); }
+  async saveIdentity() {
+    const PC = window.PortfolioContent;
+    if (!PC || !PC.setIdentity) { this.setState({ identityOpen: false }); return; }
+    const id = await PC.setIdentity({ displayName: this.state.idDraftName, avatar: this.state.idDraftAvatar });
+    const pending = this.state.idPending;
+    this.setState({ identity: id, identityOpen: false, idPending: null });
+    if (pending) this._postComment(pending.id, pending.t, id);
   }
 
   _saveDms(thread) { try { if (window.PortfolioContent) window.PortfolioContent.saveDms(thread); } catch (e) {} }

@@ -304,11 +304,11 @@
       try {
         const s = await db();
         const { data, error } = await s.from('comments')
-          .select('username,body,created_at')
+          .select('username,body,avatar,created_at')
           .eq('target_id', targetId)
           .order('created_at');
         if (error) throw error;
-        return (data || []).map(function (r) { return { u: r.username, t: r.body, when: 'now' }; });
+        return (data || []).map(function (r) { return { u: r.username, t: r.body, avatar: r.avatar || null, when: 'now' }; });
       } catch (e) {
         console.warn('[content] getComments fell back to demo:', e);
       }

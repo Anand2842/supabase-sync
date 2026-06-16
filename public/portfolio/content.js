@@ -578,6 +578,9 @@
     logoutAdmin: logoutAdmin,
     getInbox: getInbox,
     replyToThread: replyToThread,
+    getIdentity: getIdentity,
+    setIdentity: setIdentity,
+    AVATARS: AVATARS,
     isLive: isLive,
     _db: db
   };

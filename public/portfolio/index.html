@@ -1680,6 +1680,21 @@ class Component extends DCLogic {
       addComment: () => this.addComment(),
       closeComments: () => this.setState({ commentsFor: null }),
       postBtnColor: S.draft.trim() ? '#0095f6' : 'var(--text2)',
+      composerAvatar: (S.identity && S.identity.avatar) || '?',
+      composerAvatarBg: S.identity ? 'var(--bg2)' : 'var(--bg2)',
+
+      identityOpen: S.identityOpen,
+      idDraftName: S.idDraftName,
+      idDraftAvatar: S.idDraftAvatar,
+      setIdName: (e) => this.setIdName(e),
+      cancelIdentity: () => this.cancelIdentity(),
+      saveIdentity: () => this.saveIdentity(),
+      idAvatars: ((window.PortfolioContent && window.PortfolioContent.AVATARS) || []).map((a) => ({
+        a, pick: () => this.pickIdAvatar(a),
+        ring: a === S.idDraftAvatar ? '2px solid var(--text)' : '2px solid var(--border)'
+      })),
+      idCtaCta: 'Want to know more about Anand? DM him here.',
+      openDmFromCta: () => this.setState({ dmOpen: true, dmSeen: true }),
 
       createOpen: S.createOpen,
       openCreate: () => this.setState({ createOpen: true }),

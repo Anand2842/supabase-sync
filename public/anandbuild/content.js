@@ -358,7 +358,7 @@
     if (isLive()) {
       try {
         const s = await db(), vid = visitorId();
-        const { data } = await s.from('visitor_identities').select('display_name,avatar_key').eq('visitor_id', vid).maybeSingle();
+          const { data } = await s.from('visitor_identities_public').select('display_name,avatar_key').eq('visitor_id', vid).maybeSingle();
         if (data) {
           var id = { displayName: data.display_name, avatar: data.avatar_key };
           writeLS(IDENTITY_KEY, id);
@@ -380,7 +380,7 @@
           const s = await db();
           for (var i = 0; i < 6; i++) {
             var cand = _randName();
-            var { data } = await s.from('visitor_identities').select('visitor_id').eq('random_name', cand).maybeSingle();
+            var { data } = await s.from('visitor_identities_public').select('visitor_id').eq('random_name', cand).maybeSingle();
             if (!data) { name = cand; randomName = cand; break; }
           }
         } catch (e) {}

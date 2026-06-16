@@ -1497,11 +1497,13 @@ class Component extends DCLogic {
     const cList = activePost ? activePost.comments.concat(S.extraComments[activePost.id] || []).map((c, i) => {
       const key = activePost.id + ':' + i;
       const liked = !!S.commentLikes[key];
-      const n = (c.u === 'you' ? 0 : baseLikes[i % baseLikes.length]) + (liked ? 1 : 0);
+      const isYou = (S.identity && c.u === S.identity.displayName) || c.u === 'you';
+      const n = (isYou ? 0 : baseLikes[i % baseLikes.length]) + (liked ? 1 : 0);
+      const hasEmoji = !!c.avatar;
       return {
         u: c.u, t: c.t, when: c.when || 'now',
-        initial: c.u.charAt(0).toUpperCase(),
-        bg: c.u === 'you' ? 'linear-gradient(140deg,#64748b,#334155)' : commentBgs[i % commentBgs.length],
+        initial: hasEmoji ? c.avatar : c.u.charAt(0).toUpperCase(),
+        bg: hasEmoji ? 'var(--bg2)' : (isYou ? 'linear-gradient(140deg,#64748b,#334155)' : commentBgs[i % commentBgs.length]),
         likeFill: liked ? '#ff3040' : 'none',
         likeColor: liked ? '#ff3040' : 'var(--text2)',
         likeText: n > 0 ? (n + (n === 1 ? ' like' : ' likes')) : '',

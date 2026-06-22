@@ -109,7 +109,7 @@ export const editPendingPayload = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin
       .from("pending_changes")
-      .update({ payload: data.payload })
+      .update({ payload: data.payload as never })
       .eq("id", data.id)
       .eq("status", "pending");
     if (error) throw new Error(error.message);

@@ -23,7 +23,7 @@ export async function readLiveContent(): Promise<LiveContent> {
 export async function writeLiveContent(next: LiveContent): Promise<void> {
   const { error } = await supabaseAdmin
     .from("content")
-    .upsert({ id: "live", data: next, updated_at: new Date().toISOString() });
+    .upsert({ id: "live", data: next as never, updated_at: new Date().toISOString() });
   if (error) throw new Error(`writeLiveContent: ${error.message}`);
 }
 

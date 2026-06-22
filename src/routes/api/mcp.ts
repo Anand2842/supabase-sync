@@ -128,7 +128,7 @@ async function insertPending(args: {
       action: args.action,
       entity: args.entity,
       entity_id: args.entity_id ?? null,
-      payload: args.payload as object,
+      payload: args.payload as never,
     })
     .select("id")
     .single();

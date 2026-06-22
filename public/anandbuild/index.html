@@ -880,6 +880,7 @@
           <button onClick="{{ goAdmFeed }}" style="border:1px solid var(--border); border-radius:99px; padding:7px 14px; font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap; color: {{ admTabFeedC }}; background: {{ admTabFeedBg }};">Feed</button>
           <button onClick="{{ goAdmSubscribers }}" style="border:1px solid var(--border); border-radius:99px; padding:7px 14px; font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap; color: {{ admTabSubscribersC }}; background: {{ admTabSubscribersBg }};">Subscribers</button>
           <button onClick="{{ goAdmInbox }}" style="border:1px solid var(--border); border-radius:99px; padding:7px 14px; font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap; color: {{ admTabInboxC }}; background: {{ admTabInboxBg }};">Inbox</button>
+          <button onClick="{{ goAdmPending }}" style="border:1px solid var(--border); border-radius:99px; padding:7px 14px; font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap; color: {{ admTabPendingC }}; background: {{ admTabPendingBg }}; display:flex; align-items:center; gap:6px;">MCP Pending<sc-if value="{{ admPendingBadgeShow }}" hint-placeholder-val="{{ false }}"><span style="background:#ff3040; color:#fff; border-radius:99px; padding:2px 7px; font-size:10.5px; font-weight:800; min-width:18px; text-align:center;">{{ admPendingCount }}</span></sc-if></button>
         </div>
 
         <div style="flex:1; min-height:0; overflow-y:auto; scrollbar-width:none; padding:14px 14px 96px;">

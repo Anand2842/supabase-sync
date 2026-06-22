@@ -880,6 +880,7 @@
           <button onClick="{{ goAdmFeed }}" style="border:1px solid var(--border); border-radius:99px; padding:7px 14px; font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap; color: {{ admTabFeedC }}; background: {{ admTabFeedBg }};">Feed</button>
           <button onClick="{{ goAdmSubscribers }}" style="border:1px solid var(--border); border-radius:99px; padding:7px 14px; font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap; color: {{ admTabSubscribersC }}; background: {{ admTabSubscribersBg }};">Subscribers</button>
           <button onClick="{{ goAdmInbox }}" style="border:1px solid var(--border); border-radius:99px; padding:7px 14px; font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap; color: {{ admTabInboxC }}; background: {{ admTabInboxBg }};">Inbox</button>
+          <button onClick="{{ goAdmPending }}" style="border:1px solid var(--border); border-radius:99px; padding:7px 14px; font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap; color: {{ admTabPendingC }}; background: {{ admTabPendingBg }}; display:flex; align-items:center; gap:6px;">MCP Pending<sc-if value="{{ admPendingBadgeShow }}" hint-placeholder-val="{{ false }}"><span style="background:#ff3040; color:#fff; border-radius:99px; padding:2px 7px; font-size:10.5px; font-weight:800; min-width:18px; text-align:center;">{{ admPendingCount }}</span></sc-if></button>
         </div>
 
         <div style="flex:1; min-height:0; overflow-y:auto; scrollbar-width:none; padding:14px 14px 96px;">
@@ -1201,9 +1202,44 @@
             </div>
           </sc-if>
 
-
+          <sc-if value="{{ admIsPending }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; flex-direction:column; gap:12px;">
+              <div style="background:var(--bg); border:1px solid var(--border); border-radius:14px; padding:14px;">
+                <div style="font-size:13px; font-weight:800; margin-bottom:6px;">MCP server</div>
+                <div style="font-size:12.5px; color:var(--text2); line-height:1.55;">External AI clients (Claude, Codex, ChatGPT) can read live data and propose changes here. Endpoint: <code style="background:var(--bg2); padding:1px 6px; border-radius:5px;">POST /api/mcp</code> with header <code style="background:var(--bg2); padding:1px 6px; border-radius:5px;">Authorization: Bearer &lt;MCP_TOKEN&gt;</code>. Token lives in Lovable Cloud secrets as <b>MCP_TOKEN</b>.</div>
+              </div>
+              <div style="display:flex; gap:8px; align-items:center;">
+                <button onClick="{{ admReloadPending }}" style="background:var(--bg); border:1px solid var(--border); border-radius:9px; padding:8px 14px; font-size:12.5px; font-weight:700; cursor:pointer; color:var(--text);">Refresh</button>
+                <button onClick="{{ admFilterPending }}" style="background: {{ admPendFilterPendingBg }}; border:1px solid var(--border); border-radius:9px; padding:8px 12px; font-size:12px; font-weight:600; cursor:pointer; color:var(--text);">Pending ({{ admPendingCount }})</button>
+                <button onClick="{{ admFilterAll }}" style="background: {{ admPendFilterAllBg }}; border:1px solid var(--border); border-radius:9px; padding:8px 12px; font-size:12px; font-weight:600; cursor:pointer; color:var(--text);">All</button>
+              </div>
+              <sc-if value="{{ admPendingEmpty }}" hint-placeholder-val="{{ false }}">
+                <div style="background:var(--bg); border:1px dashed var(--border); border-radius:14px; padding:24px; text-align:center; color:var(--text2); font-size:13px;">No changes here yet. Connect Claude/Codex/ChatGPT to <code>/api/mcp</code> and propose an edit.</div>
+              </sc-if>
+              <sc-for list="{{ admPendingList }}" as="pc" hint-placeholder-count="2">
+                <div style="background:var(--bg); border:1px solid var(--border); border-radius:14px; padding:14px;">
+                  <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:8px;">
+                    <span style="background: {{ pc.statusBg }}; color: {{ pc.statusFg }}; border-radius:99px; padding:3px 9px; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.4px;">{{ pc.status }}</span>
+                    <span style="font-size:12.5px; font-weight:700; color:var(--text);">{{ pc.action }} {{ pc.entity }}</span>
+                    <sc-if value="{{ pc.entityIdShow }}" hint-placeholder-val="{{ false }}"><span style="font-size:11.5px; color:var(--text2);">· {{ pc.entity_id }}</span></sc-if>
+                    <div style="flex:1;"></div>
+                    <span style="font-size:11.5px; color:var(--text2);">{{ pc.when }} · {{ pc.client_label }}</span>
+                  </div>
+                  <pre style="background:var(--bg2); border:1px solid var(--border); border-radius:9px; padding:10px; font-size:11.5px; color:var(--text); overflow:auto; max-height:200px; margin:0; white-space:pre-wrap; word-break:break-word; font-family:'SFMono-Regular',Menlo,monospace;">{{ pc.payloadStr }}</pre>
+                  <sc-if value="{{ pc.applyErrorShow }}" hint-placeholder-val="{{ false }}"><div style="margin-top:8px; font-size:12px; color:#ff3040;">Apply error: {{ pc.apply_error }}</div></sc-if>
+                  <sc-if value="{{ pc.canDecide }}" hint-placeholder-val="{{ false }}">
+                    <div style="display:flex; gap:8px; margin-top:11px;">
+                      <button onClick="{{ pc.approve }}" style="flex:1; background:linear-gradient(120deg,#10b981,#0ea5e9); border:none; border-radius:9px; padding:10px; font-size:13px; font-weight:800; color:#fff; cursor:pointer;">Approve &amp; apply</button>
+                      <button onClick="{{ pc.reject }}" style="flex:1; background:var(--bg2); border:1px solid var(--border); border-radius:9px; padding:10px; font-size:13px; font-weight:700; color:#ff3040; cursor:pointer;">Reject</button>
+                    </div>
+                  </sc-if>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
 
         </div>
+
 
         <div style="position:absolute; left:0; right:0; bottom:0; padding:12px 14px; background:var(--bg); border-top:1px solid var(--border); display:flex; align-items:center; gap:12px;">
           <sc-if value="{{ admMsg }}" hint-placeholder-val="{{ false }}"><div style="flex:1; font-size:12.5px; font-weight:600; color:#1f8a5b;">{{ admMsg }}</div></sc-if>
@@ -1242,6 +1278,7 @@ class Component extends DCLogic {
     inbox: { threads: [], comments: [] }, inboxDrafts: {},
     identity: null, identityOpen: false, idDraftName: '', idDraftAvatar: '', idPending: null,
     admSubLoading: false, admSubscribers: [],
+    admPending: [], admPendingCount: 0, admPendingLoading: false, admPendingFilter: 'pending',
     profile: {
       name: 'Anand', username: 'anand.builds',
       role: 'Founder & Full-Stack Developer',
@@ -1526,15 +1563,24 @@ class Component extends DCLogic {
     const authed = !!(PC && PC.isAdminSession && PC.isAdminSession());
     const draft = JSON.parse(JSON.stringify(this.data()));
     this.setState({ adminOpen: true, adminAuthed: authed, adminDraft: draft, adminPw: '', adminPwError: null, adminSection: 'posts' });
-    if (authed) this.reloadInbox();
+    if (authed) { this.reloadInbox(); this._loadPending(); this._startPendingPoll(); }
     // React to auth changes (e.g. session restored / token refresh).
     if (PC && PC.onAuthChange && !this._authSub) {
       this._authSub = true;
       PC.onAuthChange((on) => {
         this.setState({ adminAuthed: on });
-        if (on) this.reloadInbox();
+        if (on) { this.reloadInbox(); this._loadPending(); this._startPendingPoll(); }
       });
     }
+  }
+  _startPendingPoll() {
+    if (this._pendingPoll) return;
+    this._pendingPoll = setInterval(() => {
+      if (!this.state.adminOpen || !this.state.adminAuthed) return;
+      const PC = window.PortfolioContent;
+      if (!PC || !PC.getPendingCount) return;
+      PC.getPendingCount().then((n) => { if ((n || 0) !== this.state.admPendingCount) this.setState({ admPendingCount: n || 0 }); });
+    }, 15000);
   }
   closeAdmin() {
     this.setState({ adminOpen: false });
@@ -1644,6 +1690,36 @@ class Component extends DCLogic {
       this.setState({ admSubscribers: [], admSubLoading: false });
     }
   }
+
+  async _loadPending() {
+    const PC = window.PortfolioContent;
+    if (!PC || !PC.getPendingChanges) { this.setState({ admPending: [], admPendingCount: 0 }); return; }
+    this.setState({ admPendingLoading: true });
+    const filter = this.state.admPendingFilter;
+    const rows = await PC.getPendingChanges(filter === 'all' ? null : filter);
+    const count = (await PC.getPendingCount()) || 0;
+    this.setState({ admPending: rows || [], admPendingCount: count, admPendingLoading: false });
+  }
+  async _approvePending(id) {
+    const PC = window.PortfolioContent;
+    if (!PC || !PC.applyPending) return;
+    const r = await PC.applyPending(id);
+    if (!r.ok) { this.setState({ adminMsg: 'Apply failed: ' + (r.error || 'unknown') }); setTimeout(() => this.setState({ adminMsg: null }), 4000); }
+    else { this.setState({ adminMsg: 'Applied to live.' }); setTimeout(() => this.setState({ adminMsg: null }), 2500); }
+    // Refresh local draft from saved content + pending list
+    try {
+      const fresh = await PC.loadContent();
+      this.setState({ adminDraft: JSON.parse(JSON.stringify(fresh)) });
+    } catch (e) {}
+    this._loadPending();
+  }
+  async _rejectPending(id) {
+    const PC = window.PortfolioContent;
+    if (!PC || !PC.rejectPending) return;
+    await PC.rejectPending(id);
+    this._loadPending();
+  }
+
 
   _observeReels() {
     if (this._reelObs) this._reelObs.disconnect();
@@ -2195,6 +2271,48 @@ class Component extends DCLogic {
       admTabSubscribersBg: S.adminSection === 'subscribers' ? 'var(--bg)' : 'transparent',
       admTabInboxC: S.adminSection === 'inbox' ? 'var(--text)' : 'var(--text2)',
       admTabInboxBg: S.adminSection === 'inbox' ? 'var(--bg)' : 'transparent',
+      admIsPending: S.adminSection === 'pending',
+      admTabPendingC: S.adminSection === 'pending' ? 'var(--text)' : 'var(--text2)',
+      admTabPendingBg: S.adminSection === 'pending' ? 'var(--bg)' : 'transparent',
+      goAdmPending: () => { this.setState({ adminSection: 'pending' }); this._loadPending(); },
+      admPendingCount: S.admPendingCount || 0,
+      admPendingBadgeShow: (S.admPendingCount || 0) > 0,
+      admReloadPending: () => this._loadPending(),
+      admFilterPending: () => { this.setState({ admPendingFilter: 'pending' }); setTimeout(() => this._loadPending(), 0); },
+      admFilterAll: () => { this.setState({ admPendingFilter: 'all' }); setTimeout(() => this._loadPending(), 0); },
+      admPendFilterPendingBg: S.admPendingFilter === 'pending' ? 'var(--bg2)' : 'var(--bg)',
+      admPendFilterAllBg: S.admPendingFilter === 'all' ? 'var(--bg2)' : 'var(--bg)',
+      admPendingEmpty: !S.admPendingLoading && (S.admPending || []).length === 0,
+      admPendingList: (S.admPending || []).map((p) => {
+        const statusColors = {
+          pending: { bg: '#fef3c7', fg: '#92400e' },
+          applied: { bg: '#d1fae5', fg: '#065f46' },
+          rejected: { bg: '#fee2e2', fg: '#991b1b' },
+          failed: { bg: '#fee2e2', fg: '#991b1b' },
+          approved: { bg: '#dbeafe', fg: '#1e40af' }
+        };
+        const sc = statusColors[p.status] || { bg: 'var(--bg2)', fg: 'var(--text2)' };
+        let payloadStr = '';
+        try { payloadStr = JSON.stringify(p.payload, null, 2); } catch (e) { payloadStr = String(p.payload); }
+        const dt = p.created_at ? new Date(p.created_at) : null;
+        return {
+          id: p.id,
+          status: p.status,
+          statusBg: sc.bg, statusFg: sc.fg,
+          action: p.action,
+          entity: p.entity,
+          entity_id: p.entity_id || '',
+          entityIdShow: !!p.entity_id,
+          client_label: p.client_label || p.source || 'mcp',
+          when: dt ? dt.toLocaleString() : '',
+          payloadStr,
+          apply_error: p.apply_error || '',
+          applyErrorShow: !!p.apply_error,
+          canDecide: p.status === 'pending',
+          approve: () => this._approvePending(p.id),
+          reject: () => this._rejectPending(p.id)
+        };
+      }),
       admPosts, admReels, admStories, admTiles, admPeople, admNotifs,
       admFeedPosts: (AD.feedRatio || { posts: 2, reels: 1 }).posts,
       admFeedReels: (AD.feedRatio || { posts: 2, reels: 1 }).reels,

@@ -137,6 +137,54 @@ export type Database = {
         }
         Relationships: []
       }
+      pending_changes: {
+        Row: {
+          action: string
+          apply_error: string | null
+          client_label: string | null
+          created_at: string
+          decided_at: string | null
+          decided_by: string | null
+          entity: string
+          entity_id: string | null
+          id: string
+          payload: Json
+          source: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          action: string
+          apply_error?: string | null
+          client_label?: string | null
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          entity: string
+          entity_id?: string | null
+          id?: string
+          payload: Json
+          source?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          action?: string
+          apply_error?: string | null
+          client_label?: string | null
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          entity?: string
+          entity_id?: string | null
+          id?: string
+          payload?: Json
+          source?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       reel_likes: {
         Row: {
           created_at: string

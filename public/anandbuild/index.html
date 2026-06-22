@@ -2271,6 +2271,48 @@ class Component extends DCLogic {
       admTabSubscribersBg: S.adminSection === 'subscribers' ? 'var(--bg)' : 'transparent',
       admTabInboxC: S.adminSection === 'inbox' ? 'var(--text)' : 'var(--text2)',
       admTabInboxBg: S.adminSection === 'inbox' ? 'var(--bg)' : 'transparent',
+      admIsPending: S.adminSection === 'pending',
+      admTabPendingC: S.adminSection === 'pending' ? 'var(--text)' : 'var(--text2)',
+      admTabPendingBg: S.adminSection === 'pending' ? 'var(--bg)' : 'transparent',
+      goAdmPending: () => { this.setState({ adminSection: 'pending' }); this._loadPending(); },
+      admPendingCount: S.admPendingCount || 0,
+      admPendingBadgeShow: (S.admPendingCount || 0) > 0,
+      admReloadPending: () => this._loadPending(),
+      admFilterPending: () => { this.setState({ admPendingFilter: 'pending' }); setTimeout(() => this._loadPending(), 0); },
+      admFilterAll: () => { this.setState({ admPendingFilter: 'all' }); setTimeout(() => this._loadPending(), 0); },
+      admPendFilterPendingBg: S.admPendingFilter === 'pending' ? 'var(--bg2)' : 'var(--bg)',
+      admPendFilterAllBg: S.admPendingFilter === 'all' ? 'var(--bg2)' : 'var(--bg)',
+      admPendingEmpty: !S.admPendingLoading && (S.admPending || []).length === 0,
+      admPendingList: (S.admPending || []).map((p) => {
+        const statusColors = {
+          pending: { bg: '#fef3c7', fg: '#92400e' },
+          applied: { bg: '#d1fae5', fg: '#065f46' },
+          rejected: { bg: '#fee2e2', fg: '#991b1b' },
+          failed: { bg: '#fee2e2', fg: '#991b1b' },
+          approved: { bg: '#dbeafe', fg: '#1e40af' }
+        };
+        const sc = statusColors[p.status] || { bg: 'var(--bg2)', fg: 'var(--text2)' };
+        let payloadStr = '';
+        try { payloadStr = JSON.stringify(p.payload, null, 2); } catch (e) { payloadStr = String(p.payload); }
+        const dt = p.created_at ? new Date(p.created_at) : null;
+        return {
+          id: p.id,
+          status: p.status,
+          statusBg: sc.bg, statusFg: sc.fg,
+          action: p.action,
+          entity: p.entity,
+          entity_id: p.entity_id || '',
+          entityIdShow: !!p.entity_id,
+          client_label: p.client_label || p.source || 'mcp',
+          when: dt ? dt.toLocaleString() : '',
+          payloadStr,
+          apply_error: p.apply_error || '',
+          applyErrorShow: !!p.apply_error,
+          canDecide: p.status === 'pending',
+          approve: () => this._approvePending(p.id),
+          reject: () => this._rejectPending(p.id)
+        };
+      }),
       admPosts, admReels, admStories, admTiles, admPeople, admNotifs,
       admFeedPosts: (AD.feedRatio || { posts: 2, reels: 1 }).posts,
       admFeedReels: (AD.feedRatio || { posts: 2, reels: 1 }).reels,

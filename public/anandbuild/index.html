@@ -1563,15 +1563,24 @@ class Component extends DCLogic {
     const authed = !!(PC && PC.isAdminSession && PC.isAdminSession());
     const draft = JSON.parse(JSON.stringify(this.data()));
     this.setState({ adminOpen: true, adminAuthed: authed, adminDraft: draft, adminPw: '', adminPwError: null, adminSection: 'posts' });
-    if (authed) this.reloadInbox();
+    if (authed) { this.reloadInbox(); this._loadPending(); this._startPendingPoll(); }
     // React to auth changes (e.g. session restored / token refresh).
     if (PC && PC.onAuthChange && !this._authSub) {
       this._authSub = true;
       PC.onAuthChange((on) => {
         this.setState({ adminAuthed: on });
-        if (on) this.reloadInbox();
+        if (on) { this.reloadInbox(); this._loadPending(); this._startPendingPoll(); }
       });
     }
+  }
+  _startPendingPoll() {
+    if (this._pendingPoll) return;
+    this._pendingPoll = setInterval(() => {
+      if (!this.state.adminOpen || !this.state.adminAuthed) return;
+      const PC = window.PortfolioContent;
+      if (!PC || !PC.getPendingCount) return;
+      PC.getPendingCount().then((n) => { if ((n || 0) !== this.state.admPendingCount) this.setState({ admPendingCount: n || 0 }); });
+    }, 15000);
   }
   closeAdmin() {
     this.setState({ adminOpen: false });

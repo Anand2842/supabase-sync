@@ -601,6 +601,95 @@
     setIdentity: setIdentity,
     AVATARS: AVATARS,
     isLive: isLive,
-    _db: db
+    _db: db,
+
+    /* ===== MCP pending changes (admin approval queue) ===== */
+    getPendingChanges: async function (status) {
+      try {
+        var s = await db();
+        var q = s.from('pending_changes').select('*').order('created_at', { ascending: false }).limit(200);
+        if (status) q = q.eq('status', status);
+        var r = await q;
+        if (r.error) throw r.error;
+        return r.data || [];
+      } catch (e) { console.warn('[content] getPendingChanges failed:', e); return []; }
+    },
+    getPendingCount: async function () {
+      try {
+        var s = await db();
+        var r = await s.from('pending_changes').select('id', { count: 'exact', head: true }).eq('status', 'pending');
+        return r.count || 0;
+      } catch (e) { return 0; }
+    },
+    rejectPending: async function (id) {
+      try {
+        var s = await db();
+        var r = await s.from('pending_changes').update({ status: 'rejected', decided_at: new Date().toISOString() }).eq('id', id).eq('status', 'pending');
+        if (r.error) throw r.error;
+        return { ok: true };
+      } catch (e) { return { ok: false, error: String(e && e.message || e) }; }
+    },
+    editPendingPayload: async function (id, payload) {
+      try {
+        var s = await db();
+        var r = await s.from('pending_changes').update({ payload: payload }).eq('id', id).eq('status', 'pending');
+        if (r.error) throw r.error;
+        return { ok: true };
+      } catch (e) { return { ok: false, error: String(e && e.message || e) }; }
+    },
+    applyPending: async function (id) {
+      try {
+        var s = await db();
+        var rowRes = await s.from('pending_changes').select('*').eq('id', id).maybeSingle();
+        if (rowRes.error || !rowRes.data) throw rowRes.error || new Error('Pending change not found');
+        var row = rowRes.data;
+        if (row.status !== 'pending') throw new Error('Already ' + row.status);
+        var contentRes = await s.from('content').select('data').eq('id', 'live').maybeSingle();
+        if (contentRes.error) throw contentRes.error;
+        var content = (contentRes.data && contentRes.data.data) || JSON.parse(JSON.stringify(DEFAULT_CONTENT));
+        var KEYS = { post: 'posts', reel: 'reels', story_group: 'stories', about_item: 'about' };
+        var payload = row.payload || {};
+        if (row.entity === 'profile') {
+          content.profile = Object.assign({}, content.profile || {}, payload);
+        } else if (row.entity === 'feed_ratio') {
+          content.feedRatio = { posts: +payload.posts || 0, reels: +payload.reels || 0 };
+        } else {
+          var key = KEYS[row.entity];
+          if (!key) throw new Error('Unknown entity ' + row.entity);
+          var list = Array.isArray(content[key]) ? content[key].slice() : [];
+          if (row.action === 'create') {
+            if (!payload.id) payload.id = (row.entity[0] + Math.random().toString(36).slice(2, 8));
+            list.push(payload);
+          } else if (row.action === 'update') {
+            var idx = -1;
+            for (var i = 0; i < list.length; i++) { if (String(list[i].id || list[i].label || '') === String(row.entity_id)) { idx = i; break; } }
+            if (idx === -1) throw new Error('Item ' + row.entity_id + ' not found');
+            list[idx] = Object.assign({}, list[idx], payload);
+          } else if (row.action === 'delete') {
+            list = list.filter(function (it) { return String(it.id || it.label || '') !== String(row.entity_id); });
+          } else if (row.action === 'reorder') {
+            var ids = payload.ordered_ids || [];
+            var byId = {}; list.forEach(function (it) { byId[String(it.id || it.label || '')] = it; });
+            var reordered = []; ids.forEach(function (id2) { if (byId[String(id2)]) reordered.push(byId[String(id2)]); });
+            list.forEach(function (it) { var id2 = String(it.id || it.label || ''); if (ids.indexOf(id2) === -1) reordered.push(it); });
+            list = reordered;
+          } else {
+            throw new Error('Unknown action ' + row.action);
+          }
+          content[key] = list;
+        }
+        var saveRes = await s.from('content').upsert({ id: 'live', data: content, updated_at: new Date().toISOString() });
+        if (saveRes.error) throw saveRes.error;
+        var mark = await s.from('pending_changes').update({ status: 'applied', decided_at: new Date().toISOString(), apply_error: null }).eq('id', id);
+        if (mark.error) console.warn('[content] mark applied error:', mark.error);
+        return { ok: true };
+      } catch (e) {
+        try {
+          var s2 = await db();
+          await s2.from('pending_changes').update({ status: 'failed', decided_at: new Date().toISOString(), apply_error: String(e && e.message || e) }).eq('id', id);
+        } catch (_) {}
+        return { ok: false, error: String(e && e.message || e) };
+      }
+    }
   };
 })();

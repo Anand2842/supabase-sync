@@ -1682,6 +1682,36 @@ class Component extends DCLogic {
     }
   }
 
+  async _loadPending() {
+    const PC = window.PortfolioContent;
+    if (!PC || !PC.getPendingChanges) { this.setState({ admPending: [], admPendingCount: 0 }); return; }
+    this.setState({ admPendingLoading: true });
+    const filter = this.state.admPendingFilter;
+    const rows = await PC.getPendingChanges(filter === 'all' ? null : filter);
+    const count = (await PC.getPendingCount()) || 0;
+    this.setState({ admPending: rows || [], admPendingCount: count, admPendingLoading: false });
+  }
+  async _approvePending(id) {
+    const PC = window.PortfolioContent;
+    if (!PC || !PC.applyPending) return;
+    const r = await PC.applyPending(id);
+    if (!r.ok) { this.setState({ adminMsg: 'Apply failed: ' + (r.error || 'unknown') }); setTimeout(() => this.setState({ adminMsg: null }), 4000); }
+    else { this.setState({ adminMsg: 'Applied to live.' }); setTimeout(() => this.setState({ adminMsg: null }), 2500); }
+    // Refresh local draft from saved content + pending list
+    try {
+      const fresh = await PC.loadContent();
+      this.setState({ adminDraft: JSON.parse(JSON.stringify(fresh)) });
+    } catch (e) {}
+    this._loadPending();
+  }
+  async _rejectPending(id) {
+    const PC = window.PortfolioContent;
+    if (!PC || !PC.rejectPending) return;
+    await PC.rejectPending(id);
+    this._loadPending();
+  }
+
+
   _observeReels() {
     if (this._reelObs) this._reelObs.disconnect();
     const container = document.querySelector('[data-screen-label="Reels"]');

@@ -1728,6 +1728,9 @@ class Component extends DCLogic {
     if (!t) return;
     try { await navigator.clipboard.writeText(t); this.setState({ adminMsg: 'MCP token copied.' }); setTimeout(() => this.setState({ adminMsg: null }), 2000); }
     catch (e) { this.setState({ adminMsg: 'Copy failed — select the token manually.' }); setTimeout(() => this.setState({ adminMsg: null }), 3000); }
+  }
+
+
 
   async _approvePending(id) {
     const PC = window.PortfolioContent;

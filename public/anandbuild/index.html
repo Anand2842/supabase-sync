@@ -1702,6 +1702,20 @@ class Component extends DCLogic {
     const count = (await PC.getPendingCount()) || 0;
     this.setState({ admPending: rows || [], admPendingCount: count, admPendingLoading: false });
   }
+  async _revealMcpToken() {
+    const PC = window.PortfolioContent;
+    if (!PC || !PC.getMcpToken) { this.setState({ admMcpTokenError: 'Content layer not ready.' }); return; }
+    this.setState({ admMcpTokenLoading: true, admMcpTokenError: '' });
+    const r = await PC.getMcpToken();
+    if (r.ok) this.setState({ admMcpToken: r.token, admMcpTokenLoading: false, admMcpTokenError: '' });
+    else this.setState({ admMcpToken: '', admMcpTokenLoading: false, admMcpTokenError: r.error || 'Failed to load token' });
+  }
+  async _copyMcpToken() {
+    const t = this.state.admMcpToken;
+    if (!t) return;
+    try { await navigator.clipboard.writeText(t); this.setState({ adminMsg: 'MCP token copied.' }); setTimeout(() => this.setState({ adminMsg: null }), 2000); }
+    catch (e) { this.setState({ adminMsg: 'Copy failed — select the token manually.' }); setTimeout(() => this.setState({ adminMsg: null }), 3000); }
+
   async _approvePending(id) {
     const PC = window.PortfolioContent;
     if (!PC || !PC.applyPending) return;

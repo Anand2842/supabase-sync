@@ -35,9 +35,7 @@ export const Route = createFileRoute("/api/public/admin-mcp-token")({
 
         const url = process.env.SUPABASE_URL;
         const anon = process.env.SUPABASE_PUBLISHABLE_KEY;
-        const mcpToken = process.env.MCP_TOKEN;
         if (!url || !anon) return json(500, { error: "Server not configured" });
-        if (!mcpToken) return json(500, { error: "MCP_TOKEN is not set" });
 
         const sb = createClient(url, anon, {
           auth: { persistSession: false, autoRefreshToken: false },
@@ -46,7 +44,29 @@ export const Route = createFileRoute("/api/public/admin-mcp-token")({
         const { data, error } = await sb.auth.getUser();
         if (error || !data?.user) return json(401, { error: "Not signed in" });
 
-        return json(200, { token: mcpToken });
+        try {
+          const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+          const { data: configData } = await supabaseAdmin
+            .from("content")
+            .select("data")
+            .eq("id", "mcp_config")
+            .maybeSingle();
+
+          let mcpToken = (configData?.data as any)?.token;
+
+          if (!mcpToken) {
+            mcpToken = "mcp_" + crypto.randomUUID().replace(/-/g, "");
+            await supabaseAdmin.from("content").upsert({
+              id: "mcp_config",
+              data: { token: mcpToken },
+              updated_at: new Date().toISOString()
+            });
+          }
+
+          return json(200, { token: mcpToken });
+        } catch (err: any) {
+          return json(500, { error: err.message || "Failed to initialize supabaseAdmin" });
+        }
       },
     },
   },

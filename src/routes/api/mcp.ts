@@ -286,16 +286,48 @@ const authenticatedHandler = withMcpAuth(
   async (request, auth) => mcp.handleRequest(request, { auth }),
   async (request) => {
     const token = request.headers.get("Authorization")?.replace("Bearer ", "");
-    const expected = process.env.MCP_TOKEN;
-    if (!token || !expected || token !== expected) return null;
-    return { token };
+    if (!token) return null;
+    
+    try {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const { data } = await supabaseAdmin
+        .from("content")
+        .select("data")
+        .eq("id", "mcp_config")
+        .maybeSingle();
+      
+      const expected = (data?.data as any)?.token;
+      if (!expected || token !== expected) return null;
+      return { token };
+    } catch (e) {
+      console.error("Failed to validate MCP token against DB:", e);
+      return null;
+    }
   },
 );
 
 export const Route = createFileRoute("/api/mcp")({
   server: {
     handlers: {
-      POST: async ({ request }) => authenticatedHandler(request),
+      OPTIONS: async () =>
+        new Response(null, {
+          status: 204,
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Headers": "authorization, content-type",
+            "Access-Control-Allow-Methods": "POST, OPTIONS",
+          },
+        }),
+      POST: async ({ request }) => {
+        const response = await authenticatedHandler(request);
+        const headers = new Headers(response.headers);
+        headers.set("Access-Control-Allow-Origin", "*");
+        return new Response(response.body, {
+          status: response.status,
+          statusText: response.statusText,
+          headers,
+        });
+      },
       GET: async () => infoResponse(),
       DELETE: async () => methodNotAllowed(),
     },

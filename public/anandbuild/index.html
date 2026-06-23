@@ -2284,7 +2284,16 @@ class Component extends DCLogic {
       admFilterAll: () => { this.setState({ admPendingFilter: 'all' }); setTimeout(() => this._loadPending(), 0); },
       admPendFilterPendingBg: S.admPendingFilter === 'pending' ? 'var(--bg2)' : 'var(--bg)',
       admPendFilterAllBg: S.admPendingFilter === 'all' ? 'var(--bg2)' : 'var(--bg)',
+      admMcpToken: S.admMcpToken || '',
+      admMcpTokenShow: !!S.admMcpToken,
+      admMcpTokenLoading: !!S.admMcpTokenLoading,
+      admMcpTokenError: S.admMcpTokenError || '',
+      admMcpTokenErrorShow: !!S.admMcpTokenError,
+      admRevealMcpToken: () => this._revealMcpToken(),
+      admCopyMcpToken: () => this._copyMcpToken(),
+      admHideMcpToken: () => this.setState({ admMcpToken: '', admMcpTokenError: '' }),
       admPendingEmpty: !S.admPendingLoading && (S.admPending || []).length === 0,
+
       admPendingList: (S.admPending || []).map((p) => {
         const statusColors = {
           pending: { bg: '#fef3c7', fg: '#92400e' },

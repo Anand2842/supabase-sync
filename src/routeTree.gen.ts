@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiMcpRouteImport } from './routes/api/mcp'
+import { Route as ApiPublicAdminMcpTokenRouteImport } from './routes/api/public/admin-mcp-token'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,31 +23,40 @@ const ApiMcpRoute = ApiMcpRouteImport.update({
   path: '/api/mcp',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicAdminMcpTokenRoute = ApiPublicAdminMcpTokenRouteImport.update({
+  id: '/api/public/admin-mcp-token',
+  path: '/api/public/admin-mcp-token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/api/mcp': typeof ApiMcpRoute
+  '/api/public/admin-mcp-token': typeof ApiPublicAdminMcpTokenRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/api/mcp': typeof ApiMcpRoute
+  '/api/public/admin-mcp-token': typeof ApiPublicAdminMcpTokenRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/api/mcp': typeof ApiMcpRoute
+  '/api/public/admin-mcp-token': typeof ApiPublicAdminMcpTokenRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api/mcp'
+  fullPaths: '/' | '/api/mcp' | '/api/public/admin-mcp-token'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/mcp'
-  id: '__root__' | '/' | '/api/mcp'
+  to: '/' | '/api/mcp' | '/api/public/admin-mcp-token'
+  id: '__root__' | '/' | '/api/mcp' | '/api/public/admin-mcp-token'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ApiMcpRoute: typeof ApiMcpRoute
+  ApiPublicAdminMcpTokenRoute: typeof ApiPublicAdminMcpTokenRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -65,23 +75,21 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiMcpRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/admin-mcp-token': {
+      id: '/api/public/admin-mcp-token'
+      path: '/api/public/admin-mcp-token'
+      fullPath: '/api/public/admin-mcp-token'
+      preLoaderRoute: typeof ApiPublicAdminMcpTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ApiMcpRoute: ApiMcpRoute,
+  ApiPublicAdminMcpTokenRoute: ApiPublicAdminMcpTokenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

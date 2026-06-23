@@ -296,7 +296,7 @@ export const Route = createFileRoute("/api/mcp")({
   server: {
     handlers: {
       POST: async ({ request }) => authenticatedHandler(request),
-      GET: async () => methodNotAllowed(),
+      GET: async () => infoResponse(),
       DELETE: async () => methodNotAllowed(),
     },
   },

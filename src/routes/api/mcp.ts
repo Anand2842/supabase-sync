@@ -262,6 +262,26 @@ const methodNotAllowed = () =>
     },
   );
 
+const infoResponse = () =>
+  new Response(
+    JSON.stringify(
+      {
+        ok: true,
+        name: "anandbuild-portfolio",
+        transport: "Streamable HTTP (MCP)",
+        usage: "POST JSON-RPC 2.0 to this URL with header 'Authorization: Bearer <MCP_TOKEN>'.",
+        note: "GET is not part of the MCP protocol — this is just a friendly status page. Configure your MCP client (Claude / Codex / ChatGPT) to POST here.",
+      },
+      null,
+      2,
+    ),
+    {
+      status: 200,
+      headers: { "Content-Type": "application/json", "Cache-Control": "no-store" },
+    },
+  );
+
+
 const authenticatedHandler = withMcpAuth(
   async (request, auth) => mcp.handleRequest(request, { auth }),
   async (request) => {

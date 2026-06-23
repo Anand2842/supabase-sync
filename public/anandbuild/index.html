@@ -1206,8 +1206,21 @@
             <div style="display:flex; flex-direction:column; gap:12px;">
               <div style="background:var(--bg); border:1px solid var(--border); border-radius:14px; padding:14px;">
                 <div style="font-size:13px; font-weight:800; margin-bottom:6px;">MCP server</div>
-                <div style="font-size:12.5px; color:var(--text2); line-height:1.55;">External AI clients (Claude, Codex, ChatGPT) can read live data and propose changes here. Endpoint: <code style="background:var(--bg2); padding:1px 6px; border-radius:5px;">POST /api/mcp</code> with header <code style="background:var(--bg2); padding:1px 6px; border-radius:5px;">Authorization: Bearer &lt;MCP_TOKEN&gt;</code>. Token lives in Lovable Cloud secrets as <b>MCP_TOKEN</b>.</div>
+                <div style="font-size:12.5px; color:var(--text2); line-height:1.55;">External AI clients (Claude, Codex, ChatGPT) can read live data and propose changes here. Endpoint: <code style="background:var(--bg2); padding:1px 6px; border-radius:5px;">POST /api/mcp</code> with header <code style="background:var(--bg2); padding:1px 6px; border-radius:5px;">Authorization: Bearer &lt;MCP_TOKEN&gt;</code>.</div>
+                <div style="margin-top:10px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                  <sc-if value="{{ admMcpTokenShow }}" hint-placeholder-val="{{ false }}">
+                    <input value="{{ admMcpToken }}" readonly onClick="{{ admCopyMcpToken }}" style="flex:1; min-width:220px; font-family:'SFMono-Regular',Menlo,monospace; font-size:12px; padding:8px 10px; border-radius:8px; border:1px solid var(--border); background:var(--bg2); color:var(--text);" />
+                    <button onClick="{{ admCopyMcpToken }}" style="background:linear-gradient(120deg,#06b6d4,#3b82f6); border:none; border-radius:8px; padding:8px 14px; font-size:12.5px; font-weight:700; color:#fff; cursor:pointer;">Copy</button>
+                    <button onClick="{{ admHideMcpToken }}" style="background:var(--bg2); border:1px solid var(--border); border-radius:8px; padding:8px 12px; font-size:12.5px; font-weight:600; cursor:pointer; color:var(--text);">Hide</button>
+                  </sc-if>
+                  <sc-if value="{{ admMcpTokenShow }}" hint-placeholder-val="{{ true }}">
+                    <button onClick="{{ admRevealMcpToken }}" style="background:var(--bg2); border:1px solid var(--border); border-radius:8px; padding:8px 14px; font-size:12.5px; font-weight:700; cursor:pointer; color:var(--text);">Reveal MCP token</button>
+                    <sc-if value="{{ admMcpTokenLoading }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px; color:var(--text2);">Loading…</span></sc-if>
+                  </sc-if>
+                </div>
+                <sc-if value="{{ admMcpTokenErrorShow }}" hint-placeholder-val="{{ false }}"><div style="margin-top:8px; font-size:12px; color:#ff3040;">{{ admMcpTokenError }}</div></sc-if>
               </div>
+
               <div style="display:flex; gap:8px; align-items:center;">
                 <button onClick="{{ admReloadPending }}" style="background:var(--bg); border:1px solid var(--border); border-radius:9px; padding:8px 14px; font-size:12.5px; font-weight:700; cursor:pointer; color:var(--text);">Refresh</button>
                 <button onClick="{{ admFilterPending }}" style="background: {{ admPendFilterPendingBg }}; border:1px solid var(--border); border-radius:9px; padding:8px 12px; font-size:12px; font-weight:600; cursor:pointer; color:var(--text);">Pending ({{ admPendingCount }})</button>
@@ -1279,6 +1292,8 @@ class Component extends DCLogic {
     identity: null, identityOpen: false, idDraftName: '', idDraftAvatar: '', idPending: null,
     admSubLoading: false, admSubscribers: [],
     admPending: [], admPendingCount: 0, admPendingLoading: false, admPendingFilter: 'pending',
+    admMcpToken: '', admMcpTokenLoading: false, admMcpTokenError: '',
+
     profile: {
       name: 'Anand', username: 'anand.builds',
       role: 'Founder & Full-Stack Developer',
@@ -1700,6 +1715,20 @@ class Component extends DCLogic {
     const count = (await PC.getPendingCount()) || 0;
     this.setState({ admPending: rows || [], admPendingCount: count, admPendingLoading: false });
   }
+  async _revealMcpToken() {
+    const PC = window.PortfolioContent;
+    if (!PC || !PC.getMcpToken) { this.setState({ admMcpTokenError: 'Content layer not ready.' }); return; }
+    this.setState({ admMcpTokenLoading: true, admMcpTokenError: '' });
+    const r = await PC.getMcpToken();
+    if (r.ok) this.setState({ admMcpToken: r.token, admMcpTokenLoading: false, admMcpTokenError: '' });
+    else this.setState({ admMcpToken: '', admMcpTokenLoading: false, admMcpTokenError: r.error || 'Failed to load token' });
+  }
+  async _copyMcpToken() {
+    const t = this.state.admMcpToken;
+    if (!t) return;
+    try { await navigator.clipboard.writeText(t); this.setState({ adminMsg: 'MCP token copied.' }); setTimeout(() => this.setState({ adminMsg: null }), 2000); }
+    catch (e) { this.setState({ adminMsg: 'Copy failed — select the token manually.' }); setTimeout(() => this.setState({ adminMsg: null }), 3000); }
+
   async _approvePending(id) {
     const PC = window.PortfolioContent;
     if (!PC || !PC.applyPending) return;
@@ -2282,7 +2311,16 @@ class Component extends DCLogic {
       admFilterAll: () => { this.setState({ admPendingFilter: 'all' }); setTimeout(() => this._loadPending(), 0); },
       admPendFilterPendingBg: S.admPendingFilter === 'pending' ? 'var(--bg2)' : 'var(--bg)',
       admPendFilterAllBg: S.admPendingFilter === 'all' ? 'var(--bg2)' : 'var(--bg)',
+      admMcpToken: S.admMcpToken || '',
+      admMcpTokenShow: !!S.admMcpToken,
+      admMcpTokenLoading: !!S.admMcpTokenLoading,
+      admMcpTokenError: S.admMcpTokenError || '',
+      admMcpTokenErrorShow: !!S.admMcpTokenError,
+      admRevealMcpToken: () => this._revealMcpToken(),
+      admCopyMcpToken: () => this._copyMcpToken(),
+      admHideMcpToken: () => this.setState({ admMcpToken: '', admMcpTokenError: '' }),
       admPendingEmpty: !S.admPendingLoading && (S.admPending || []).length === 0,
+
       admPendingList: (S.admPending || []).map((p) => {
         const statusColors = {
           pending: { bg: '#fef3c7', fg: '#92400e' },

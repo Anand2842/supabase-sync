@@ -621,6 +621,23 @@
         return r.count || 0;
       } catch (e) { return 0; }
     },
+    getMcpToken: async function () {
+      try {
+        var s = await db();
+        var sess = await s.auth.getSession();
+        var at = sess && sess.data && sess.data.session && sess.data.session.access_token;
+        if (!at) return { ok: false, error: 'Not signed in' };
+        var r = await fetch('/api/public/admin-mcp-token', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + at, 'Content-Type': 'application/json' },
+          body: '{}'
+        });
+        var j = await r.json().catch(function () { return {}; });
+        if (!r.ok) return { ok: false, error: j.error || ('HTTP ' + r.status) };
+        return { ok: true, token: j.token };
+      } catch (e) { return { ok: false, error: String(e && e.message || e) }; }
+    },
+
     rejectPending: async function (id) {
       try {
         var s = await db();
